@@ -66,3 +66,5 @@ web_modules/
 .pnp.*
 
 .idea
+
+.envrc

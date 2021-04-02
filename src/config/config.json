@@ -1,5 +1,5 @@
 {
-  "development": {
+  "local": {
     "username": "postgres",
     "password": "password",
     "database": "local",

@@ -1,11 +1,11 @@
-version: 3.7
+version: "3.7"
 
 services:
   db:
-    image: postgres/postgres:13.2
+    image: postgres
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=local
+      - POSTGRES_DB=qdoc
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
