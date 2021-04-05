@@ -3,6 +3,8 @@
 module.exports = {
   up: async (queryInterface) => {
       await queryInterface.bulkInsert('Clinics', [{
+          name: "Clinic name 1",
+          imageUrl: "http:image.url",
           address: "Clinic Address 1",
           postalCode: "012345",
           email: "email@email.com",
@@ -11,6 +13,8 @@ module.exports = {
           updatedAt: new Date()
         },
       {
+        name: "Clinic name 2",
+        imageUrl: "http:image.url",
         address: "Clinic Address 2",
         postalCode: "222222",
         email: "email2@email.com",

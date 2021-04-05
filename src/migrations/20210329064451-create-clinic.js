@@ -8,6 +8,14 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+            name: {
+                allowNull: false,
+                type: Sequelize.STRING
+            },
+            imageUrl: {
+                allowNull: true,
+                type: Sequelize.STRING
+            },
             address: {
                 allowNull: false,
                 type: Sequelize.STRING

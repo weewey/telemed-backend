@@ -11,6 +11,18 @@ export default class Clinic extends Model<Clinic> {
         type: DataType.CHAR,
         allowNull: false,
     })
+    public name!: string;
+
+    @Column({
+        type: DataType.CHAR,
+        allowNull: true,
+    })
+    public imageUrl!: string;
+
+    @Column({
+        type: DataType.CHAR,
+        allowNull: false,
+    })
     public address!: string;
 
     @Column({
