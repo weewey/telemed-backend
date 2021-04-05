@@ -6,7 +6,7 @@ import Clinic from "../../src/models/clinic";
 
 
 describe("Clinic Route", () => {
-    const clinicBaseUrl = "/api/v1/clinic";
+    const clinicBaseUrl = "/api/v1/clinics";
 
     describe("GET", () => {
         let getClinicByIdSpy: jest.SpyInstance;

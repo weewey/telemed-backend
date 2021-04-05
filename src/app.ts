@@ -6,6 +6,6 @@ const app: express.Application = express();
 const apiV1Router = Router();
 
 app.use("/api/v1", apiV1Router)
-apiV1Router.use("/clinic", clinicRoute);
+apiV1Router.use("/clinics", clinicRoute);
 
 export default app;
