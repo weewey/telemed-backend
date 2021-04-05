@@ -23,6 +23,12 @@ export default class Clinic extends Model<Clinic> {
         type: DataType.CHAR,
         allowNull: false
     })
+    public email!: string;
+
+    @Column({
+        type: DataType.CHAR,
+        allowNull: false
+    })
     public phoneNumber!: string;
 
     @CreatedAt

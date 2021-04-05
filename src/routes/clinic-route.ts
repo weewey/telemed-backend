@@ -1,11 +1,13 @@
 import {Request, Response, Router} from "express";
 import asyncHandler from "express-async-handler";
+import ClinicService from '../services/clinic-service'
 
 export const clinicRoute = Router()
 
 clinicRoute.get("/:clinicId",
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
             const {clinicId} = req.params;
-            res.json({"clinicId": clinicId})
+            const clinicInfo = await ClinicService.getClinicById(clinicId)
+            res.json(clinicInfo)
         }
     ));

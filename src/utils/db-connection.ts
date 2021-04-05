@@ -9,15 +9,14 @@ const dbProps = (): any => {
     return get(dbConfig, EnvConfig.nodeEnvironment, {});
 };
 
-Logger.info(JSON.stringify(dbProps()))
 export const sequelize = new Sequelize(dbProps());
 const modelsPath = path.resolve(__dirname, "../models");
-Logger.info(`loading entities from ${modelsPath}`);
+Logger.info(`loading models from ${modelsPath}`);
 sequelize.addModels([modelsPath]);
 
 export const initDB = async (): Promise<void> => {
     Logger.info("Initializing DB connection");
-
+    Logger.info(JSON.stringify(dbProps()))
     await sequelize.authenticate()
         .then(() => {
             Logger.info("DB Connection has been established successfully");

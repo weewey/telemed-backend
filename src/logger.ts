@@ -1,4 +1,4 @@
-import winston, {format, level, Logger as WinstonLogger} from "winston";
+import winston, {format, Logger as WinstonLogger} from "winston";
 
 
 export class Logger {

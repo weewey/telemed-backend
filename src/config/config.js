@@ -34,7 +34,7 @@ const currentConfig = defaultConfig;
 const mergeConfigs = (defaultConfig, overriderConfig) => {
     const finalConfig = {};
     Object.keys(defaultConfig).forEach((property) => {
-        finalConfig[property] = !!overriderConfig[property] ? overriderConfig[property] : defaultConfig[property]
+        finalConfig[property] = overriderConfig[property] ? overriderConfig[property] : defaultConfig[property]
     });
     return finalConfig;
 };
