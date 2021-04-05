@@ -20,6 +20,14 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING
             },
+            lat: {
+                allowNull: true,
+                type: Sequelize.DOUBLE
+            },
+            long: {
+                allowNull: true,
+                type: Sequelize.DOUBLE
+            },
             postalCode: {
                 allowNull: false,
                 type: Sequelize.STRING

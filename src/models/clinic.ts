@@ -20,6 +20,18 @@ export default class Clinic extends Model<Clinic> {
     public imageUrl!: string;
 
     @Column({
+        type: DataType.DOUBLE,
+        allowNull: true,
+    })
+    public lat!: number;
+
+    @Column({
+        type: DataType.DOUBLE,
+        allowNull: true,
+    })
+    public long!: number;
+
+    @Column({
         type: DataType.CHAR,
         allowNull: false,
     })
