@@ -5,10 +5,10 @@ import clinicService from "../../src/services/clinic-service"
 import Clinic from "../../src/models/clinic";
 
 
-describe("Clinic Route", () => {
+describe("Clinics Route", () => {
     const clinicBaseUrl = "/api/v1/clinics";
 
-    describe("GET", () => {
+    describe("GET /:clinicId", () => {
         let getClinicByIdSpy: jest.SpyInstance;
         let mockClinic: Clinic
         const clinicId = 1;
@@ -49,4 +49,14 @@ describe("Clinic Route", () => {
         })
     });
 
+    describe("GET /", () => {
+        let getClinicsSpy: jest.SpyInstance;
+        beforeAll(() => {
+            getClinicsSpy = jest.spyOn(clinicService, "getClinics").mockResolvedValue([]);
+        })
+        it("calls getClinics", async () => {
+            await request(app).get(`${clinicBaseUrl}`);
+            expect(getClinicsSpy).toHaveBeenCalled();
+        });
+    });
 });

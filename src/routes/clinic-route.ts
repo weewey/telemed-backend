@@ -10,4 +10,11 @@ clinicRoute.get("/:clinicId",
             const clinicInfo = await ClinicService.getClinicById(clinicId)
             clinicInfo ? res.json(clinicInfo) : res.status(404).send();
         }
-    ));
+));
+
+clinicRoute.get("/",
+    asyncHandler(async (req: Request, res: Response): Promise<void> => {
+            const clinics = await ClinicService.getClinics();
+            res.json(clinics);
+    }
+));

@@ -6,6 +6,10 @@ class ClinicService {
         return await Clinic.findByPk(id)
     }
 
+    async getClinics(): Promise<Clinic[]> {
+        return await Clinic.findAll();
+    }
+
 }
 
 export default new ClinicService();
