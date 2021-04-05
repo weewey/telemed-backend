@@ -4,5 +4,6 @@ console.log(`INFO: Processing .sequelizerc for Environment:[${process.env.NODE_E
 module.exports = {
   'config': path.resolve('src', 'config', 'config.js'),
   'models-path': path.resolve('src', 'entities'),
-  'migrations-path': path.resolve('src', 'migrations')
+  'migrations-path': path.resolve('src', 'migrations'),
+  'seeders-path': path.resolve('src', 'seeders')
 }

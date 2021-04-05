@@ -68,3 +68,5 @@ web_modules/
 .idea
 
 .envrc
+
+test-report.html

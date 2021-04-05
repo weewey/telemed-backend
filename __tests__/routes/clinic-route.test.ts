@@ -25,7 +25,9 @@ describe("Clinic Route", () => {
 
         it("returns the clinic info in the right format", async () => {
             const result = await request(app).get(`${clinicBaseUrl}/${clinicId}`);
-            expect(JSON.stringify(result.body)).toBe(mockClinic)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { updatedAt, createdAt, ...actualBody } = result.body;
+            expect(mockClinic).toEqual(expect.objectContaining(actualBody))
         });
     });
 
