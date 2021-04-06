@@ -1,3 +1,4 @@
 export NODE_ENV=local
 export DB_PASSWORD=password
 export DB_HOST=localhost
+export DB_DATABASE=qdoc
