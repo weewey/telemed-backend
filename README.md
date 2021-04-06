@@ -1,5 +1,7 @@
 # qdoc
 
+[![QDOC CI](https://github.com/hau-zy/qdoc/actions/workflows/ci.yaml/badge.svg)](https://github.com/hau-zy/qdoc/actions/workflows/ci.yaml)
+
 ## Requirements
 - node v15.12.0
 
