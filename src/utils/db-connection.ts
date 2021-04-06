@@ -16,7 +16,6 @@ sequelize.addModels([modelsPath]);
 
 export const initDB = async (): Promise<void> => {
     Logger.info("Initializing DB connection");
-    Logger.info(JSON.stringify(dbProps()))
     await sequelize.authenticate()
         .then(() => {
             Logger.info("DB Connection has been established successfully");
