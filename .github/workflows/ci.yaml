@@ -10,13 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DB_PASSWORD: password
+      DB_USERNAME: postgres
+      DB_HOSTNAME: localhost
+      DB_DATABASE: qdoc_ci
+      NODE_ENV: ci
+
     services:
       postgres:
         image: postgres
         env:
-          POSTGRES_PASSWORD: password
-          POSTGRES_USER: postgres
-          POSTGRES_DB: qdoc
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_USER: ${{ env.DB_USERNAME }}
+          POSTGRES_DB: ${{ env.DB_DATABASE }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -25,11 +32,6 @@ jobs:
         ports:
           - 5432:5432
 
-    env:
-      DB_PASSWORD: password
-      DB_USERNAME: postgres
-      DB_HOSTNAME: localhost
-      DB_DATABASE: qdoc
 
     strategy:
       matrix:

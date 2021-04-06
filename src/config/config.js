@@ -47,14 +47,9 @@ module.exports = {
         ...baseConfig,
         logging: false
     },
-    dev: {
+    ci: {
         ...baseConfig,
-        ...{
-            ssl: true,
-            dialectOptions: {
-                ssl: true
-            },
-        }
+        logging: false
     },
     prod: {
         ...baseConfig,
