@@ -11,7 +11,8 @@ module.exports = {
     "<rootDir>/src/server.ts",
     "<rootDir>/src/migrations/*",
     "<rootDir>/src/utils/db-connection.ts",
-    "<rootDir>/src/config/*"
+    "<rootDir>/src/config/*",
+    "<rootDir>/src/seeders/*",
   ],
   coverageDirectory: "coverage",
   setupFilesAfterEnv: [ "<rootDir>/__tests__/helpers/setup.ts" ],
