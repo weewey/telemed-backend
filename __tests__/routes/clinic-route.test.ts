@@ -4,14 +4,19 @@ import {clinicFactory} from "../factories";
 import clinicService from "../../src/services/clinic-service"
 import Clinic from "../../src/models/clinic";
 
-
 describe("Clinics Route", () => {
     const clinicBaseUrl = "/api/v1/clinics";
 
     describe("GET /:clinicId", () => {
         let getClinicByIdSpy: jest.SpyInstance;
         let mockClinic: Clinic
-        const clinicId = 1;
+        const clinicId = 200;
+
+        afterAll(() => {
+            beforeAll(() => {
+                Clinic.destroy({ where: { id: clinicId }})
+            })
+        })
 
         describe("when the clinic is found", () => {
             beforeAll(async () => {
