@@ -27,6 +27,11 @@ direnv allow
 npm i
 ```
 
+- Install husky (which is used to run pre-push git hook)
+```
+npx husky install
+```
+
 - start docker
 ```shell
 docker-compose up -d
