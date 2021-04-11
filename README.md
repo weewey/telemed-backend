@@ -32,15 +32,21 @@ npm i
 docker-compose up -d
 ```
 
+- init db
+```shell
+npm run db:setup
+```
+
 - run test
 ```shell
 npm test
 ```
 
-- init db
+- seed db
 ```shell
-npm run db:setup
+npm run dev
 ```
+
 
 - run app
 ```shell
