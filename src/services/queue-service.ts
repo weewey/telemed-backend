@@ -1,4 +1,4 @@
-import Queue, {QueueAttributes} from "../models/queue";
+import Queue, { QueueAttributes } from "../models/queue";
 import QueueRepository from "../respository/queue_repository";
 
 class QueueService {
@@ -16,13 +16,13 @@ class QueueService {
     // }
 
 
-    // async changeQueueStatus(queueId: string, status: string): Promise<null> {
-    //     return null
-    // }
-    //
-    // async joinQueue(queueId: string, patientId: string): Promise<null> {
-    //     return null
-    // }
+    public static async changeQueueStatus(queueId: string, status: string): Promise<null> {
+        return null
+    }
+
+   public static async joinQueue(queueId: string, patientId: string): Promise<null> {
+        return null
+    }
 
 }
 
