@@ -23,7 +23,7 @@ describe("QueueService", ()=> {
         })
 
         it("should throw CLINIC_NOT_FOUND business error when there is no associated clinic id", async () => {
-            jest.spyOn(QueueRepository, "create").mockRejectedValue({ message: "failed to create", code: Errors.CLINIC_NOT_FOUND.code });
+            jest.spyOn(QueueRepository, "create").mockRejectedValue({ message: Errors.CLINIC_NOT_FOUND.code });
 
             await expect(QueueService.create(queueAttr)).rejects.toThrow(new BusinessError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code))
         })

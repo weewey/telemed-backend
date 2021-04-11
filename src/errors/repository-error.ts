@@ -1,6 +1,6 @@
 
 export default class RepositoryError extends Error {
-  public constructor(code: string) {
-    super(code);
+  public constructor(message: string) {
+    super(message);
   }
 }
