@@ -1,9 +1,10 @@
 import Queue, { QueueAttributes } from "../models/queue";
 import QueueRepository from "../respository/queue_repository";
-
+// import { ForeignKeyConstraintError } from "sequelize";
 class QueueService {
 
     public static async create(queueAttr: QueueAttributes): Promise<Queue> {
+        // TODO: add trycatch and Business error wrapper
         return QueueRepository.create(queueAttr);
     }
 
