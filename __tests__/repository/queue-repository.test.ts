@@ -7,9 +7,7 @@ describe("QueueRepository", () => {
 
     const queueAttr: QueueAttributes = {
         clinicId: 1,
-        status: QueueStatus.INACTIVE,
-        startedAt: null,
-        closedAt: null
+        status: QueueStatus.INACTIVE
     }
 
     it("call Queue#create", async () => {

@@ -5,8 +5,8 @@ import QueueStatus from "../queue_status";
 export interface QueueAttributes {
     clinicId: number
     status: string
-    startedAt: Date | null
-    closedAt: Date | null
+    startedAt?: Date
+    closedAt?: Date
 }
 
 @Table({tableName: "Queues"})
