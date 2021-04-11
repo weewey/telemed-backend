@@ -30,10 +30,23 @@ describe("Queue", () => {
         "closedAt": new Date(Date.now())
     }
 
-    it("should be valid", async () => {
-        const queue = await Queue.create(queueAttributes)
-        expect(queue.id).toEqual(queueId)
+    describe("valid", () => {
+        it("should create when it has all valid attributes", async () => {
+            const queue = await Queue.create(queueAttributes)
+            expect(queue.id).toEqual(queueId)
+        })
+
+        it("should auto increment id", async () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const {id, ...queueAttributesWithNoId} = queueAttributes
+
+            const queue1 = await Queue.create(queueAttributesWithNoId)
+            const queue2 = await Queue.create(queueAttributesWithNoId)
+
+            expect(queue1.id+1).toEqual(queue2.id)
+        })
     })
+
 
     describe("invalid queue attributes", () => {
 

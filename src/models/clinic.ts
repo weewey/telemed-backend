@@ -4,7 +4,7 @@ import {Table, Column, Model, DataType, CreatedAt, UpdatedAt} from 'sequelize-ty
 
 export default class Clinic extends Model<Clinic> {
 
-    @Column({allowNull: false, primaryKey: true, type: DataType.INTEGER})
+    @Column({allowNull: false, primaryKey: true, type: DataType.INTEGER, autoIncrement: true})
     public id!: number;
 
     @Column({

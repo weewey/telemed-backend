@@ -2,6 +2,13 @@ import {Table, Column, Model, DataType, CreatedAt, UpdatedAt, ForeignKey} from '
 import Clinic from "./clinic";
 import QueueStatus from "../queue_status";
 
+export interface QueueAttributes {
+    clinicId: number
+    status: string
+    startedAt: Date | null
+    closedAt: Date | null
+}
+
 @Table({tableName: "Queues"})
 
 export default class Queue extends Model {
@@ -9,7 +16,8 @@ export default class Queue extends Model {
     @Column({
         allowNull: false,
         primaryKey: true,
-        type: DataType.INTEGER
+        type: DataType.INTEGER,
+        autoIncrement: true
     })
     public id!: number;
 
