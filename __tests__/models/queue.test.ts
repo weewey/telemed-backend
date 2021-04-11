@@ -2,6 +2,7 @@ import QueueStatus from "../../src/queue_status";
 import Queue from "../../src/models/queue";
 import {clinicFactory} from "../factories";
 import Clinic from "../../src/models/clinic";
+import { ForeignKeyConstraintError } from "sequelize";
 
 describe("Queue", () => {
     const queueId = 999;
@@ -63,6 +64,11 @@ describe("Queue", () => {
                 const queueAttributesWithClinicNotFound = {...queueAttributes, clinicId: 888}
                 await expect(Queue.create(queueAttributesWithClinicNotFound))
                     .rejects.toThrow(`insert or update on table "Queues" violates foreign key constraint "Queues_clinicId_fkey"`)
+            })
+
+            it("should throw an error with sequelize foreign key error", async () => {
+                const queueAttributesWithClinicNotFound = {...queueAttributes, clinicId: 888}
+                await expect(Queue.create(queueAttributesWithClinicNotFound)).rejects.toThrow(ForeignKeyConstraintError)
             })
         })
 
