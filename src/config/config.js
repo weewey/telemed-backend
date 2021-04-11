@@ -45,7 +45,8 @@ module.exports = {
     local: baseConfig,
     test: {
         ...baseConfig,
-        logging: false
+        logging: false,
+        database: 'qdoc_test'
     },
     ci: {
         ...baseConfig,

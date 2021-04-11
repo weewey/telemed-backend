@@ -23,16 +23,16 @@ export class Logger {
         return Logger.instance
     }
 
-    public static warn(message: any, ...meta: any[]): void {
+    public static warn(message: string, ...meta: any[]): void {
         console.log(this.getInstance() == null)
         this.getInstance().log("warn", message, meta)
     }
 
-    public static error(message: any, ...meta: any[]): void {
+    public static error(message: string, ...meta: any[]): void {
         this.getInstance().log("error", message, meta)
     }
 
-    public static info(message: any, ...meta: any[]): void {
+    public static info(message: string, ...meta: any[]): void {
         this.getInstance().log("info", message, meta)
     }
 }

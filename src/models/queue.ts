@@ -4,7 +4,7 @@ import QueueStatus from "../queue_status";
 
 @Table({tableName: "Queues"})
 
-export default class Queue extends Model<Queue> {
+export default class Queue extends Model {
 
     @Column({
         allowNull: false,
@@ -19,7 +19,7 @@ export default class Queue extends Model<Queue> {
 
     @Column({
         type: DataType.ENUM(),
-        values: [QueueStatus.NOT_STARTED, QueueStatus.ACTIVE, QueueStatus.PAUSED, QueueStatus.CLOSED],
+        values: [QueueStatus.ACTIVE, QueueStatus.INACTIVE, QueueStatus.CLOSED],
         allowNull: false
     })
     public status!: string;
@@ -37,9 +37,9 @@ export default class Queue extends Model<Queue> {
     public closedAt!: Date;
 
     @CreatedAt
-    public createdAt!: Date;
+    public readonly createdAt!: Date;
 
     @UpdatedAt
-    public updatedAt!: Date;
+    public readonly updatedAt!: Date;
 
 }
