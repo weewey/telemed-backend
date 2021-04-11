@@ -11,7 +11,7 @@ queueRoute.use(express.json());
 queueRoute.post("/"),
     body('clinicId').isNumeric({no_symbols:true}).escape(), // validate clinic_id is numeric
     asyncHandler(async (req: Request, res: Response): Promise<void> =>{
-        const queueInfo = await QueueService.createQueue(req.body.clinicId)
+        const queueInfo = await QueueService.createQueue(req.body.clinicId) 
         queueInfo ? res.json(queueInfo) : res.status(404).send();
     }
 );
@@ -30,7 +30,7 @@ queueRoute.put("/:queueId/status/:targetStatus"),
             isString: true,
             // custom validator to check for valid status string
             custom: {options: (value: string) =>{
-                if (value == 'ACTIVE' || value == 'INACTIVE' || value == 'PAUSED' || value == 'CLOSED'){
+                if (value == 'ACTIVE' || value == 'INACTIVE' || value == 'CLOSED'){
                     return true 
                 }
                 throw new Error('Invalid Status');
