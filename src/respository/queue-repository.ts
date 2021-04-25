@@ -1,7 +1,9 @@
 import Queue, {QueueAttributes} from "../models/queue";
-import { ForeignKeyConstraintError } from "sequelize";
+import {ForeignKeyConstraintError} from "sequelize";
 import RepositoryError from "../errors/repository-error";
-import { Errors } from "../errors/error-mappings";
+import {Errors} from "../errors/error-mappings";
+import QueueStatus from "../queue_status";
+
 class QueueRepository {
 
     public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -15,7 +17,14 @@ class QueueRepository {
             throw error;
         }
         return queue;
+    }
 
+    public static async getByClinicIdAndStatus(clinicId: number, status?: QueueStatus): Promise<Queue[]> {
+        return Queue.findAll({
+            where: {
+                clinicId, ...(status && { status })
+            },
+        })
     }
 }
 
