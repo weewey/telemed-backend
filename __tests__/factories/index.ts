@@ -19,7 +19,6 @@ const buildWrapper = <T>(factory: any): BuildWrapperResult<T> => {
 };
 
 const clinic = Factory.define<Clinic>("clinic", Clinic)
-    .attr("id", () => 1)
     .attr("address", () => "address")
     .attr("name", () => "clinic name")
     .attr("email", () => "email@email.com")

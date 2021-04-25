@@ -5,6 +5,5 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await sequelize.truncate({cascade: true});
     await sequelize.close();
 });

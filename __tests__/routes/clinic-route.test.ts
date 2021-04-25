@@ -1,6 +1,5 @@
 import app from "../../src/app";
 import request from "supertest";
-import {clinicFactory} from "../factories";
 import clinicService from "../../src/services/clinic-service"
 import Clinic from "../../src/models/clinic";
 
@@ -12,15 +11,9 @@ describe("Clinics Route", () => {
         let mockClinic: Clinic
         const clinicId = 200;
 
-        afterAll(() => {
-            beforeAll(() => {
-                Clinic.destroy({ where: { id: clinicId }})
-            })
-        })
-
         describe("when the clinic is found", () => {
             beforeAll(async () => {
-                mockClinic = await clinicFactory.build({id: clinicId})
+                mockClinic = {id: 1} as Clinic
                 getClinicByIdSpy = jest.spyOn(clinicService, "getClinicById").mockResolvedValue(mockClinic);
             });
             it("calls getClinicById", async () => {
