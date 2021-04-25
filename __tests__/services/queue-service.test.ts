@@ -1,4 +1,4 @@
-import Queue, {QueueAttributes} from "../../src/models/queue";
+import Queue, {QueueAttributes, QueueAttributesWithId} from "../../src/models/queue";
 import QueueStatus from "../../src/queue_status";
 import QueueService from "../../src/services/queue-service";
 import BusinessError from "../../src/errors/business-error";
@@ -41,6 +41,23 @@ describe("QueueService", () => {
                     new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message,
                         Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code))
             })
+        })
+    })
+
+    describe("#update", () => {
+        const queueAttr: QueueAttributesWithId = {
+            id: 333,
+            clinicId: 1,
+            status: QueueStatus.INACTIVE
+        }
+
+        it("should update if there is an existing queue given queue id", async () => {
+            jest.spyOn(QueueRepository, "update").mockResolvedValue();
+            await QueueService.update(queueAttr);
+
+            expect(QueueRepository.update).toHaveBeenCalledTimes(1);
+            expect(QueueRepository.update).toHaveBeenCalledWith(queueAttr);
+
         })
     })
 

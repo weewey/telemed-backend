@@ -1,6 +1,6 @@
 import BusinessError from "../errors/business-error";
 import {Errors} from "../errors/error-mappings";
-import Queue, {QueueAttributes} from "../models/queue";
+import Queue, {QueueAttributes, QueueAttributesWithId} from "../models/queue";
 import QueueStatus from "../queue_status";
 import QueueRepository from "../respository/queue-repository";
 import {Logger} from "../logger";
@@ -41,6 +41,10 @@ class QueueService {
         return QueueRepository.getByClinicIdAndStatus(clinicId, queueStatus)
     }
 
+    public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<void> {
+        await QueueRepository.update(queueModelAttributes);
+    }
+
     // async getClinicById(id: string): Promise<Clinic | null> {
     //     return await Clinic.findByPk(id)
     // }
@@ -48,11 +52,6 @@ class QueueService {
     // async getClinics(): Promise<Clinic[]> {
     //     return await Clinic.findAll();
     // }
-
-
-    public static async changeQueueStatus(queueId: string, status: string): Promise<null> {
-        return null
-    }
 
     public static async joinQueue(queueId: string, patientId: string): Promise<null> {
         return null

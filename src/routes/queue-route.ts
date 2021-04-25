@@ -26,6 +26,14 @@ queueRoute.post("/",
     )
 );
 
+queueRoute.put("/",
+    asyncHandler(async (req: Request, res: Response): Promise<void> =>{
+        const queueUpdateAttributes = req.body;
+        await QueueService.update(queueUpdateAttributes);
+        res.status(204).send();
+    }
+));
+
 // queueRoute.put("/:queueId/status/:targetStatus",
 //     checkSchema({
 //         queueID:{

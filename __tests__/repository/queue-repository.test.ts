@@ -36,6 +36,25 @@ describe("QueueRepository", () => {
         });
     });
 
+    describe('#update', function () {
+        const queueModelAttributes = {
+            id: 1111,
+            clinicId: 1112,
+            status: QueueStatus.ACTIVE
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...updateAttributes } = queueModelAttributes;
+        it("should call Queue#update", async () => {
+            const queue = new Queue();
+            jest.spyOn(Queue, "findByPk").mockResolvedValue(queue);
+            jest.spyOn(queue, "update").mockResolvedValue({} as Queue);
+            await QueueRepository.update(queueModelAttributes)
+
+            expect(queue.update).toHaveBeenCalledTimes(1);
+            expect(queue.update).toHaveBeenCalledWith(updateAttributes);
+        })
+    });
+
     describe('#get', function () {
         const mockQueue = {id: 1, status: QueueStatus.ACTIVE, clinicId: 1} as Queue
 

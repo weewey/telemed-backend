@@ -9,6 +9,10 @@ export interface QueueAttributes {
     closedAt?: Date
 }
 
+export interface QueueAttributesWithId extends QueueAttributes {
+    id: number
+}
+
 @Table({tableName: "Queues"})
 
 export default class Queue extends Model {

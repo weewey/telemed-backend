@@ -5,14 +5,14 @@ import Queue from "../../src/models/queue";
 import QueueStatus from "../../src/queue_status";
 import {StatusCodes} from "http-status-codes";
 
-describe('Queue Route', function () {
+describe('Queues Route', function () {
     const queuesPath = '/api/v1/queues';
     const clinicId = 1
     const queue = {id: 1, clinicId, status: QueueStatus.INACTIVE} as Queue
 
     beforeEach(jest.clearAllMocks);
 
-    describe('POST /queue', function () {
+    describe('POST /queues', function () {
         it("should return 201 with the expected body", async () => {
             jest.spyOn(QueueService, "create").mockResolvedValue(queue);
             await request(app).post(queuesPath)
@@ -52,5 +52,25 @@ describe('Queue Route', function () {
             })
         });
 
+    });
+
+    describe('PUT /queues', () => {
+        it('should return 204 with the expected body', async () => {
+            jest.spyOn(QueueService, "update").mockResolvedValue();
+            await request(app).put(queuesPath)
+                .send({status: QueueStatus.ACTIVE})
+                .expect(StatusCodes.NO_CONTENT)
+                .expect("")
+        });
+
+        it("should call QueueService#update with the expected params", async () => {
+            jest.spyOn(QueueService, "update").mockResolvedValue();
+            const expectedQueueAttr = {status: QueueStatus.INACTIVE}
+
+            await request(app).put(queuesPath).send({status: QueueStatus.INACTIVE})
+
+            expect(QueueService.update).toHaveBeenCalledTimes(1);
+            expect(QueueService.update).toHaveBeenCalledWith(expectedQueueAttr);
+        });
     });
 });

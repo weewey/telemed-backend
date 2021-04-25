@@ -15,5 +15,9 @@ export const Errors = {
     message: `Unable to create queue as active queue exists`,
     code: "QDOC-004",
   },
+  QUEUE_NOT_FOUND: {
+    message: `Queue not found.`,
+    code: "QDOC-005",
+  },
 
 };
