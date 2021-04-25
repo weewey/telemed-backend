@@ -1,23 +1,30 @@
-import {Request, Response, Router} from "express";
+import express, {Request, Response, Router} from "express";
 import asyncHandler from "express-async-handler";
 import QueueService from '../services/queue-service'
-import express from "express";
-import { body } from "express-validator";
 import QueueStatus from "../queue_status";
+import {body, validationResult} from "express-validator";
+import {StatusCodes} from "http-status-codes";
 
 export const queueRoute = Router()
 
 queueRoute.use(express.json());
 
 queueRoute.post("/",
-    body('clinicId').isNumeric({ no_symbols:true }).escape(), // validate clinic_id is numeric
-    asyncHandler(async (req: Request, res: Response): Promise<void> =>{
-        const { clinicId } = req.body;
-        const queueAttr = { clinicId , status: QueueStatus.INACTIVE };
-        const queueInfo = await QueueService.create(queueAttr);
-        res.json(queueInfo);
-    }
-));
+    body('clinicId').isNumeric().toInt(),
+    asyncHandler(async (req: Request, res: Response): Promise<void> => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                const errorMessage = errors.array().map((error) => `${error.msg}: ${error.param}`).join("")
+                res.status(StatusCodes.BAD_REQUEST).json({error_message: errorMessage});
+                return
+            }
+            const {clinicId} = req.body;
+            const queueAttr = {clinicId, status: QueueStatus.INACTIVE};
+            const queueInfo = await QueueService.create(queueAttr);
+            res.status(StatusCodes.CREATED).json(queueInfo);
+        }
+    )
+);
 
 // queueRoute.put("/:queueId/status/:targetStatus",
 //     checkSchema({
