@@ -4,7 +4,7 @@ module.exports = {
   up: async (queryInterface) => {
       await queryInterface.bulkInsert('Clinics', [{
           name: "Clinic name 1",
-          imageUrl: "http:image.url",
+          imageUrl: "http://image",
           address: "Clinic Address 1",
           lat: 1.30328,
           long: 103.847049,
