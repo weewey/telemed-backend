@@ -1,8 +1,8 @@
 import QueueStatus from "../../src/queue_status";
 import Queue from "../../src/models/queue";
 import {clinicFactory} from "../factories";
-import Clinic from "../../src/models/clinic";
 import {ForeignKeyConstraintError} from "sequelize";
+import Clinic from "../../src/models/clinic";
 
 describe("Queue", () => {
     let clinicId: number;
@@ -23,9 +23,8 @@ describe("Queue", () => {
     })
 
     afterAll(async () => {
-        console.log(toBeDeletedQueueIds)
-        await Clinic.destroy({where: {id: clinicId}})
         await Queue.destroy({where: {id: toBeDeletedQueueIds}})
+        await Clinic.destroy({where: {id: clinicId}})
     })
 
     describe("valid", () => {
