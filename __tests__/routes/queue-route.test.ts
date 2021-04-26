@@ -140,10 +140,8 @@ describe('Queues Route', function () {
         describe('Error scenarios', () => {
 
             const queueIdCanOnlyContainNumbers = "Queue Id must contain only numbers.";
-            const queueIdNoLongerThanMaxLength = "Queue Id length should not be longer than 9."
             it.each([
                 [ "234ggs24", queueIdCanOnlyContainNumbers ],
-                [ "42532543532453345235", queueIdNoLongerThanMaxLength ],
                 [ "abcfd", queueIdCanOnlyContainNumbers],
             ])('should return 400 when queueId in params has incorrect format (%s)', async (queueId, errorReason) => {
                 const QUEUES_PUT_PATH =`${queuesPath}/${queueId}`
