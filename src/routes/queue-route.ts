@@ -6,7 +6,7 @@ import {body, validationResult } from "express-validator";
 import {StatusCodes} from "http-status-codes";
 import { Errors } from "../errors/error-mappings";
 import { validateRequest } from "./validate-request";
-import { queueIdRule } from "../validation-rules/queue-update-rule";
+import { queueUpdateRules } from "../validation-rules/queue-update-rule";
 
 export const queueRoute = Router()
 
@@ -44,7 +44,7 @@ queueRoute.post("/",
 );
 
 queueRoute.put("/:queueId",
-    validateRequest(queueIdRule),
+    validateRequest(queueUpdateRules),
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
         const id = req.params.queueId;
         const updateAttributes = { id, ...req.body };

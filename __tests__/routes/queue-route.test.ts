@@ -87,24 +87,79 @@ describe('Queues Route', function () {
     });
 
     describe('PUT /queues', () => {
-        const queueId = 4560956;
-        const QUEUES_PUT_PATH =`${queuesPath}/${queueId}`
-        it('should return 204 with the expected body', async () => {
-            jest.spyOn(QueueService, "update").mockResolvedValue();
-            await request(app).put(QUEUES_PUT_PATH)
-                .send({status: QueueStatus.ACTIVE})
-                .expect(StatusCodes.NO_CONTENT)
-                .expect("")
+
+        describe('Successful scenarios', () => {
+            const queueId = 4560956;
+            const QUEUES_PUT_PATH =`${queuesPath}/${queueId}`
+            it('should return 204 with the expected body', async () => {
+                jest.spyOn(QueueService, "update").mockResolvedValue();
+                await request(app).put(QUEUES_PUT_PATH)
+                    .send({status: QueueStatus.ACTIVE})
+                    .expect(StatusCodes.NO_CONTENT)
+                    .expect("")
+            });
+
+            it.each([
+                [ 123, "ACTIVE" ],
+                [ 1234567, "INACTIVE" ],
+                [ 123456789, "CLOSED" ],
+                [ 123, "active" ],
+                [ 4, "InActive" ],
+                [ 9324, "Closed" ]
+            ])("should call QueueService#update with the expected params for queueId (%s) and status (%s)", async (queueIdNo, status) => {
+                jest.spyOn(QueueService, "update").mockResolvedValue();
+                const expectedQueueAttr = { id: queueIdNo, status: status.toUpperCase() }
+
+                await request(app).put(`${queuesPath}/${queueIdNo}`)
+                .send({ status })
+
+                expect(QueueService.update).toHaveBeenCalledTimes(1);
+                expect(QueueService.update).toHaveBeenCalledWith(expectedQueueAttr);
+            });
         });
 
-        it("should call QueueService#update with the expected params", async () => {
-            jest.spyOn(QueueService, "update").mockResolvedValue();
-            const expectedQueueAttr = { id: queueId, status: QueueStatus.INACTIVE}
+        describe('Error scenarios', () => {
 
-            await request(app).put(QUEUES_PUT_PATH).send({status: QueueStatus.INACTIVE})
+            const queueIdCanOnlyContainNumbers = "Queue Id must contain only numbers.";
+            const queueIdNoLongerThanMaxLength = "Queue Id length should not be longer than 9."
+            it.each([
+                [ "234ggs24", queueIdCanOnlyContainNumbers ],
+                [ "42532543532453345235", queueIdNoLongerThanMaxLength ],
+                [ "abcfd", queueIdCanOnlyContainNumbers],
+            ])('should return 400 when queueId in params has incorrect format (%s)', async (queueId, errorReason) => {
+                const QUEUES_PUT_PATH =`${queuesPath}/${queueId}`
+                jest.spyOn(QueueService, "update").mockResolvedValue();
+                const response = await request(app).put(QUEUES_PUT_PATH)
+                    .send({status: QueueStatus.ACTIVE})
+                    .expect(StatusCodes.BAD_REQUEST)
 
-            expect(QueueService.update).toHaveBeenCalledTimes(1);
-            expect(QueueService.update).toHaveBeenCalledWith(expectedQueueAttr);
+                    expect(response.body).toMatchObject({
+                        id: expect.anything(),
+                        invalidParams: [ { name: "queueId", reason: errorReason } ],
+                        type:"validation",
+                      })
+            });
+
+            const statusNotAllowed = "Status should contain only either ACTIVE / CLOSED / INACTIVE";
+            it.each([
+                [ "status", statusNotAllowed ],
+                [ "OPEN", statusNotAllowed ],
+                [ "STARTED", statusNotAllowed],
+            ])('should return 400 when queueId in params has incorrect format (%s)', async (status, errorReason) => {
+                const QUEUES_PUT_PATH =`${queuesPath}/${144}`
+                jest.spyOn(QueueService, "update").mockResolvedValue();
+                const response = await request(app).put(QUEUES_PUT_PATH)
+                    .send({status})
+                    .expect(StatusCodes.BAD_REQUEST)
+
+                    expect(response.body).toMatchObject({
+                        id: expect.anything(),
+                        invalidParams: [ { name: "status", reason: errorReason } ],
+                        type:"validation",
+                      })
+            });
+
         });
+
     });
 });
