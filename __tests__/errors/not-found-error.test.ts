@@ -1,16 +1,16 @@
 import { ApiErrorType } from "../../src/errors/api-error-type";
-import BusinessError from "../../src/errors/business-error";
+import NotFoundError from "../../src/errors/not-found-error";
 
-describe("business error", () => {
-  it("should create a new business error", () => {
-    const error: BusinessError = new BusinessError("Message", "QDOC-TEST-001");
+describe("NotFound error", () => {
+  it("should create a new NotFoundError", () => {
+    const error: NotFoundError = new NotFoundError("Message", "QDOC-TEST-001");
     expect(error.message).toBe("Message");
     expect(error.code).toBe("QDOC-TEST-001");
-    expect(error.type).toBe(ApiErrorType.business);
+    expect(error.type).toBe(ApiErrorType.notFound);
   });
 
   it("should not be able to modify code", () => {
-    const error: BusinessError = new BusinessError("Message", "QDOC-TEST-001");
+    const error: NotFoundError = new NotFoundError("Message", "QDOC-TEST-001");
 
     const propertyDescriptors = Object.getOwnPropertyDescriptors(error);
     if (propertyDescriptors.code !== null) {

@@ -37,7 +37,7 @@ queueRoute.put("/:queueId",
         const updateAttributes = { id, ...req.body };
 
         await QueueService.update(updateAttributes);
-        res.status(204).send();
+        res.status(StatusCodes.NO_CONTENT).send();
     }
 ));
 

@@ -65,7 +65,7 @@ describe('Queues Route', function () {
                     expect(response.body).toEqual({
                         message: 'Clinic not found.',
                         id: expect.anything(),
-                        type: 'business',
+                        type: 'notFound',
                         code: 'QDOC-002'
                       })
             })
@@ -81,7 +81,7 @@ describe('Queues Route', function () {
                     expect(response.body).toEqual({
                         message: 'Clinic not found.',
                         id: expect.anything(),
-                        type: 'business',
+                        type: 'notFound',
                         code: 'QDOC-002'
                       })
             })
