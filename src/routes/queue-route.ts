@@ -4,7 +4,6 @@ import QueueService from '../services/queue-service'
 import QueueStatus from "../queue_status";
 import {body, validationResult } from "express-validator";
 import {StatusCodes} from "http-status-codes";
-import { Errors } from "../errors/error-mappings";
 import { validateRequest } from "./validate-request";
 import { queueUpdateRules } from "../validation-rules/queue-update-rule";
 
@@ -23,22 +22,10 @@ queueRoute.post("/",
                 res.status(StatusCodes.BAD_REQUEST).json({error_message: errorMessage});
                 return
             }
-            const {clinicId} = req.body;
-            const queueAttr = {clinicId, status: QueueStatus.INACTIVE};
-            try {
-                const queueInfo = await QueueService.create(queueAttr);
-                res.status(StatusCodes.CREATED).json(queueInfo);
-                return
-            }catch (error){
-                if(error.message === Errors.CLINIC_NOT_FOUND.message){
-                    res.status(StatusCodes.NOT_FOUND).json({error_message: error.message})
-                    return
-                }else{
-                    // need to review -- not in spec (case not handled in original spec REF: #25)
-                    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error_message: error.message})
-                    return
-                }
-            }
+            const { clinicId } = req.body;
+            const queueAttr = { clinicId, status: QueueStatus.INACTIVE };
+            const queueInfo = await QueueService.create(queueAttr);
+            res.status(StatusCodes.CREATED).json(queueInfo);
         }
     )
 );

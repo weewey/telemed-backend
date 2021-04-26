@@ -6,6 +6,7 @@ import QueueStatus from "../../src/queue_status";
 import BusinessError from "../../src/errors/business-error";
 import {Errors} from "../../src/errors/error-mappings";
 import {StatusCodes} from "http-status-codes";
+import NotFoundError from "../../src/errors/not-found-error";
 
 describe('Queues Route', function () {
     const queuesPath = '/api/v1/queues';
@@ -56,31 +57,49 @@ describe('Queues Route', function () {
 
         describe('when the clinicId is not found in the DB', () => {
             it("should return NOT_FOUND with the expected body", async () => {
-                jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
-                await request(app).post(queuesPath)
+                jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
+
+                const response = await request(app).post(queuesPath)
                     .send({clinicId: 2})
                     .expect(StatusCodes.NOT_FOUND)
-                    .expect({error_message: 'Clinic not found.'})
+                    expect(response.body).toEqual({
+                        message: 'Clinic not found.',
+                        id: expect.anything(),
+                        type: 'business',
+                        code: 'QDOC-002'
+                      })
             })
         });
 
         describe('when the clinicId is not found in the DB', () => {
             it("should return NOT_FOUND with the expected body", async () => {
-                jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
-                await request(app).post(queuesPath)
+                jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
+                const response = await request(app).post(queuesPath)
                     .send({clinicId: 2})
                     .expect(StatusCodes.NOT_FOUND)
-                    .expect({error_message: 'Clinic not found.'})
+
+                    expect(response.body).toEqual({
+                        message: 'Clinic not found.',
+                        id: expect.anything(),
+                        type: 'business',
+                        code: 'QDOC-002'
+                      })
             })
         });
 
         describe('when the queue is not created due to DB error', () => {
-            it("should return INTERNAL_SERVER_ERROR with the expected body", async () => {
+            it("should return BAD_REQUEST with the expected body", async () => {
                 jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code));
-                await request(app).post(queuesPath)
+                const response = await request(app).post(queuesPath)
                     .send({clinicId: 2})
-                    .expect(StatusCodes.INTERNAL_SERVER_ERROR)
-                    .expect({error_message: 'Unable to create queue.'})
+                    .expect(StatusCodes.BAD_REQUEST)
+
+                expect(response.body).toEqual({
+                    message: 'Unable to create queue.',
+                    id: expect.anything(),
+                    type: 'business',
+                    code: 'QDOC-003'
+                  })
             })
         });
 
