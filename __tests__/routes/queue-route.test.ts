@@ -11,98 +11,91 @@ import NotFoundError from "../../src/errors/not-found-error";
 describe('Queues Route', function () {
     const queuesPath = '/api/v1/queues';
     const clinicId = 1
-    const queue = {id: 1, clinicId, status: QueueStatus.INACTIVE} as Queue
+    const queue = { id: 1, clinicId, status: QueueStatus.INACTIVE } as Queue
 
     beforeEach(jest.clearAllMocks);
 
     describe('POST /queues', function () {
-        it("should return 201 with the expected body", async () => {
-            jest.spyOn(QueueService, "create").mockResolvedValue(queue);
-            await request(app).post(queuesPath)
-                .send({clinicId})
-                .expect(StatusCodes.CREATED)
-                .expect(queue)
-        });
 
-        it("calls QueueService#create with the expected params", async () => {
-            jest.spyOn(QueueService, "create").mockResolvedValue(queue);
-            const expectedQueueAttr = {clinicId, status: QueueStatus.INACTIVE}
-
-            await request(app).post(queuesPath)
-                .send({clinicId})
-
-            expect(QueueService.create).toHaveBeenCalledTimes(1);
-            expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
-        });
-
-        describe('when the clinicId is numeric string', () => {
-            it("should call QueueService with the clinicId in numeric", async () => {
+        describe('Successful scenarios', () => {
+            it("should return 201 with the expected body", async () => {
                 jest.spyOn(QueueService, "create").mockResolvedValue(queue);
                 await request(app).post(queuesPath)
-                    .send({clinicId: '1'})
+                    .send({ clinicId })
+                    .expect(StatusCodes.CREATED)
+                    .expect(queue)
+            });
+
+            it("calls QueueService#create with the expected params", async () => {
+                jest.spyOn(QueueService, "create").mockResolvedValue(queue);
                 const expectedQueueAttr = {clinicId, status: QueueStatus.INACTIVE}
+
+                await request(app).post(queuesPath)
+                    .send({clinicId})
+
                 expect(QueueService.create).toHaveBeenCalledTimes(1);
                 expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
-            })
+            });
+
+            describe('when the clinicId is numeric string', () => {
+                it("should call QueueService with the clinicId in numeric", async () => {
+                    jest.spyOn(QueueService, "create").mockResolvedValue(queue);
+                    await request(app).post(queuesPath)
+                        .send({ clinicId: '1' })
+                    const expectedQueueAttr = {clinicId, status: QueueStatus.INACTIVE}
+                    expect(QueueService.create).toHaveBeenCalledTimes(1);
+                    expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
+                })
+            });
         });
 
-        describe('when the clinicId is not a valid number', () => {
-            it("should return BAD_REQUEST with the expected body", async () => {
-                await request(app).post(queuesPath)
-                    .send({clinicId: "asd"})
-                    .expect(StatusCodes.BAD_REQUEST)
-                    .expect({error_message: 'Invalid value: clinicId'})
-            })
-        });
-
-        describe('when the clinicId is not found in the DB', () => {
-            it("should return NOT_FOUND with the expected body", async () => {
-                jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
-
-                const response = await request(app).post(queuesPath)
-                    .send({clinicId: 2})
-                    .expect(StatusCodes.NOT_FOUND)
-                    expect(response.body).toEqual({
-                        message: 'Clinic not found.',
-                        id: expect.anything(),
-                        type: 'notFound',
-                        code: 'QDOC-002'
-                      })
-            })
-        });
-
-        describe('when the clinicId is not found in the DB', () => {
-            it("should return NOT_FOUND with the expected body", async () => {
-                jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
-                const response = await request(app).post(queuesPath)
-                    .send({clinicId: 2})
-                    .expect(StatusCodes.NOT_FOUND)
+        describe('Error scenarios', () => {
+            describe('when the clinicId is not a valid number', () => {
+                it("should return BAD_REQUEST with the expected body", async () => {
+                    const response = await request(app).post(queuesPath)
+                        .send({clinicId: "asd"})
+                        .expect(StatusCodes.BAD_REQUEST)
 
                     expect(response.body).toEqual({
-                        message: 'Clinic not found.',
                         id: expect.anything(),
-                        type: 'notFound',
-                        code: 'QDOC-002'
+                        type: "validation",
+                        invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" }]})
+                })
+            });
+
+            describe('when the clinicId is not found in the DB', () => {
+                it("should return NOT_FOUND with the expected body", async () => {
+                    jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
+
+                    const response = await request(app).post(queuesPath)
+                        .send({clinicId: 2})
+                        .expect(StatusCodes.NOT_FOUND)
+
+                        expect(response.body).toEqual({
+                            message: 'Clinic not found.',
+                            id: expect.anything(),
+                            type: 'notFound',
+                            code: 'QDOC-002'
+                          })
+                })
+            });
+
+            describe('when the queue is not created due to DB error', () => {
+                it("should return BAD_REQUEST with the expected body", async () => {
+                    jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code));
+                    const response = await request(app).post(queuesPath)
+                        .send({clinicId: 2})
+                        .expect(StatusCodes.BAD_REQUEST)
+
+                    expect(response.body).toEqual({
+                        message: 'Unable to create queue.',
+                        id: expect.anything(),
+                        type: 'business',
+                        code: 'QDOC-003'
                       })
-            })
+                })
+            });
         });
-
-        describe('when the queue is not created due to DB error', () => {
-            it("should return BAD_REQUEST with the expected body", async () => {
-                jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code));
-                const response = await request(app).post(queuesPath)
-                    .send({clinicId: 2})
-                    .expect(StatusCodes.BAD_REQUEST)
-
-                expect(response.body).toEqual({
-                    message: 'Unable to create queue.',
-                    id: expect.anything(),
-                    type: 'business',
-                    code: 'QDOC-003'
-                  })
-            })
-        });
-
     });
 
     describe('PUT /queues', () => {
