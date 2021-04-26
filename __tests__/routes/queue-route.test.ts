@@ -3,6 +3,8 @@ import app from "../../src/app";
 import QueueService from "../../src/services/queue-service";
 import Queue from "../../src/models/queue";
 import QueueStatus from "../../src/queue_status";
+import BusinessError from "../../src/errors/business-error";
+import {Errors} from "../../src/errors/error-mappings";
 import {StatusCodes} from "http-status-codes";
 
 describe('Queues Route', function () {
@@ -49,6 +51,36 @@ describe('Queues Route', function () {
                     .send({clinicId: "asd"})
                     .expect(StatusCodes.BAD_REQUEST)
                     .expect({error_message: 'Invalid value: clinicId'})
+            })
+        });
+
+        describe('when the clinicId is not found in the DB', () => {
+            it("should return NOT_FOUND with the expected body", async () => {
+                jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
+                await request(app).post(queuesPath)
+                    .send({clinicId: 2})
+                    .expect(StatusCodes.NOT_FOUND)
+                    .expect({error_message: 'Clinic not found.'})
+            })
+        });
+
+        describe('when the clinicId is not found in the DB', () => {
+            it("should return NOT_FOUND with the expected body", async () => {
+                jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
+                await request(app).post(queuesPath)
+                    .send({clinicId: 2})
+                    .expect(StatusCodes.NOT_FOUND)
+                    .expect({error_message: 'Clinic not found.'})
+            })
+        });
+
+        describe('when the queue is not created due to DB error', () => {
+            it("should return INTERNAL_SERVER_ERROR with the expected body", async () => {
+                jest.spyOn(QueueService, "create").mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code));
+                await request(app).post(queuesPath)
+                    .send({clinicId: 2})
+                    .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+                    .expect({error_message: 'Unable to create queue.'})
             })
         });
 
