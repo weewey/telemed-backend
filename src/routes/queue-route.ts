@@ -4,12 +4,9 @@ import QueueService from '../services/queue-service'
 import QueueStatus from "../queue_status";
 import {body, validationResult } from "express-validator";
 import {StatusCodes} from "http-status-codes";
-<<<<<<< HEAD
 import { Errors } from "../errors/error-mappings";
-=======
 import { validateRequest } from "./validate-request";
 import { queueIdRule } from "../validation-rules/queue-update-rule";
->>>>>>> b451d2b752cf182a1a78f7c3709a1c8cee26e869
 
 export const queueRoute = Router()
 
