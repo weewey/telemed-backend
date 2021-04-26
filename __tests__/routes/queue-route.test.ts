@@ -87,9 +87,11 @@ describe('Queues Route', function () {
     });
 
     describe('PUT /queues', () => {
+        const queueId = 4560956;
+        const QUEUES_PUT_PATH =`${queuesPath}/${queueId}`
         it('should return 204 with the expected body', async () => {
             jest.spyOn(QueueService, "update").mockResolvedValue();
-            await request(app).put(queuesPath)
+            await request(app).put(QUEUES_PUT_PATH)
                 .send({status: QueueStatus.ACTIVE})
                 .expect(StatusCodes.NO_CONTENT)
                 .expect("")
@@ -97,9 +99,9 @@ describe('Queues Route', function () {
 
         it("should call QueueService#update with the expected params", async () => {
             jest.spyOn(QueueService, "update").mockResolvedValue();
-            const expectedQueueAttr = {status: QueueStatus.INACTIVE}
+            const expectedQueueAttr = { id: queueId, status: QueueStatus.INACTIVE}
 
-            await request(app).put(queuesPath).send({status: QueueStatus.INACTIVE})
+            await request(app).put(QUEUES_PUT_PATH).send({status: QueueStatus.INACTIVE})
 
             expect(QueueService.update).toHaveBeenCalledTimes(1);
             expect(QueueService.update).toHaveBeenCalledWith(expectedQueueAttr);

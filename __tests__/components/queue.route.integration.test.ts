@@ -8,7 +8,9 @@ import { createQueue, destroyQueueById, getQueueById } from "../helpers/queue-he
 
 describe("#Queues Component", () => {
   const QUEUES_PATH = "/api/v1/queues";
+
   describe("#PUT /queues", () => {
+
     let queueId: number;
     let clinicId: number;
 
@@ -25,8 +27,8 @@ describe("#Queues Component", () => {
     });
     it("should update existing queue successfully", async () => {
       await request(app)
-        .put(QUEUES_PATH)
-        .send({ id: queueId, status: QueueStatus.ACTIVE })
+        .put(`${QUEUES_PATH}/${queueId}`)
+        .send({ status: QueueStatus.ACTIVE })
         .expect(StatusCodes.NO_CONTENT);
 
         const updatedQueue = await getQueueById(queueId);
@@ -35,10 +37,10 @@ describe("#Queues Component", () => {
     });
 
     it("should throw error if existing queue does not exist", async () => {
-      const queueIdThatDoesNotExist = 989898;
+      const queueIdThatDoesNotExist = 98942809;
       const response = await request(app)
-        .put(QUEUES_PATH)
-        .send({ id: queueIdThatDoesNotExist, status: QueueStatus.ACTIVE })
+        .put(`${QUEUES_PATH}/${queueIdThatDoesNotExist}`)
+        .send({ status: QueueStatus.ACTIVE })
         .expect(StatusCodes.BAD_REQUEST);
 
         expect(response.body).toMatchObject({

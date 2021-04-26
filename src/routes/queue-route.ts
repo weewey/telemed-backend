@@ -2,16 +2,23 @@ import express, {Request, Response, Router} from "express";
 import asyncHandler from "express-async-handler";
 import QueueService from '../services/queue-service'
 import QueueStatus from "../queue_status";
-import {body, validationResult} from "express-validator";
+import {body, validationResult } from "express-validator";
 import {StatusCodes} from "http-status-codes";
+<<<<<<< HEAD
 import { Errors } from "../errors/error-mappings";
+=======
+import { validateRequest } from "./validate-request";
+import { queueIdRule } from "../validation-rules/queue-update-rule";
+>>>>>>> b451d2b752cf182a1a78f7c3709a1c8cee26e869
 
 export const queueRoute = Router()
 
 queueRoute.use(express.json());
 
+const CLINIC_ID = 'clinicId';
+
 queueRoute.post("/",
-    body('clinicId').isNumeric().toInt(),
+    body(CLINIC_ID).isNumeric().toInt(),
     asyncHandler(async (req: Request, res: Response): Promise<void> => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -39,10 +46,13 @@ queueRoute.post("/",
     )
 );
 
-queueRoute.put("/",
-    asyncHandler(async (req: Request, res: Response): Promise<void> =>{
-        const queueUpdateAttributes = req.body;
-        await QueueService.update(queueUpdateAttributes);
+queueRoute.put("/:queueId",
+    validateRequest(queueIdRule),
+    asyncHandler(async (req: Request, res: Response): Promise<void> => {
+        const id = req.params.queueId;
+        const updateAttributes = { id, ...req.body };
+
+        await QueueService.update(updateAttributes);
         res.status(204).send();
     }
 ));
