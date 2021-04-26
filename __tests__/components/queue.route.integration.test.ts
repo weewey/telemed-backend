@@ -49,7 +49,6 @@ describe("#Queues Component", () => {
           expect(response.body).toMatchObject({
             error: {
               message: Errors.CLINIC_NOT_FOUND.message,
-              type:"notFound",
               code: Errors.CLINIC_NOT_FOUND.code
             }
           })
@@ -88,12 +87,11 @@ describe("#Queues Component", () => {
         const response = await request(app)
           .put(`${QUEUES_PATH}/${queueIdThatDoesNotExist}`)
           .send({ status: QueueStatus.ACTIVE })
-          .expect(StatusCodes.BAD_REQUEST);
+          .expect(StatusCodes.NOT_FOUND);
 
           expect(response.body).toMatchObject({
             error: {
               message: Errors.QUEUE_NOT_FOUND.message,
-              type:"business",
               code: Errors.QUEUE_NOT_FOUND.code
             }
           })

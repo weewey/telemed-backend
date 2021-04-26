@@ -13,5 +13,7 @@ export const deserializeError = (json: ApiErrorResponse): ApiError => {
 };
 
 export const serializeError = (err: ApiError): any => {
-  return { ...err };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { type, ...errorAttributes } = err
+  return errorAttributes;
 };
