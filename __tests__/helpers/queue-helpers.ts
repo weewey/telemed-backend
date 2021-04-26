@@ -10,6 +10,15 @@ export const destroyQueueById = async (id: number): Promise<void> => {
     await Queue.destroy({ where: { id } });
 }
 
+export const destroyQueuesByIds = async (ids: number[]): Promise<void> => {
+    await Queue.destroy({ where: { id: ids } });
+}
+
 export const getQueueById = (id: number): Promise<Queue | null> => {
     return Queue.findByPk(id);
+}
+
+export const getQueueIdsByClinicId = async (clinicId: number): Promise<number[]> => {
+    const queues =  await Queue.findAll({ where: { clinicId }});
+    return queues.map((queue) => queue.id )
 }

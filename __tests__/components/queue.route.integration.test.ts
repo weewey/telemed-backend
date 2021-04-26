@@ -4,50 +4,95 @@ import request from "supertest";
 import app from "../../src/app";
 import QueueStatus from "../../src/queue_status";
 import { createClinic, destroyClinicById } from "../helpers/clinic-helper";
-import { createQueue, destroyQueueById, getQueueById } from "../helpers/queue-helpers";
+import { createQueue,
+  destroyQueueById, destroyQueuesByIds, getQueueById,
+  getQueueIdsByClinicId } from "../helpers/queue-helpers";
 
 describe("#Queues Component", () => {
   const QUEUES_PATH = "/api/v1/queues";
 
-  describe("#PUT /queues", () => {
+  describe("#POST /queues", () => {
 
-    let queueId: number;
     let clinicId: number;
 
     beforeAll(async () => {
       const clinicCreated = await createClinic();
       clinicId = clinicCreated.id;
-
-      const queueCreated = await createQueue(clinicId);
-      queueId = queueCreated.id;
     });
     afterAll(async () => {
-      await destroyQueueById(queueId);
+      const queueIdsToDelete = await getQueueIdsByClinicId(clinicId);
+      await destroyQueuesByIds(queueIdsToDelete);
       await destroyClinicById(clinicId);
     });
-    it("should update existing queue successfully", async () => {
-      await request(app)
-        .put(`${QUEUES_PATH}/${queueId}`)
-        .send({ status: QueueStatus.ACTIVE })
-        .expect(StatusCodes.NO_CONTENT);
+    it("should create queue successfully given clinic exists", async () => {
+      const response = await request(app)
+        .post(QUEUES_PATH)
+        .send({ clinicId })
+        .expect(StatusCodes.CREATED)
 
-        const updatedQueue = await getQueueById(queueId);
+      expect(response.body).toEqual(expect.objectContaining({
+          id: expect.any(Number),
+          clinicId,
+          status: QueueStatus.INACTIVE,
+          startedAt: null,
+          closedAt: null,
+        }))
+      })
 
-      expect(updatedQueue?.status).toEqual(QueueStatus.ACTIVE);
+    it("should throw error if existing clinic id does not exist", async () => {
+      const clinicIdThatDoesNotExist = 777889;
+        const response = await request(app)
+          .post(QUEUES_PATH)
+          .send({ clinicId: clinicIdThatDoesNotExist })
+          .expect(StatusCodes.NOT_FOUND);
+
+          expect(response.body).toMatchObject({
+            message: Errors.CLINIC_NOT_FOUND.message,
+            type:"notFound",
+            code: Errors.CLINIC_NOT_FOUND.code
+          })
+      });
     });
 
-    it("should throw error if existing queue does not exist", async () => {
-      const queueIdThatDoesNotExist = 98942809;
-      const response = await request(app)
-        .put(`${QUEUES_PATH}/${queueIdThatDoesNotExist}`)
-        .send({ status: QueueStatus.ACTIVE })
-        .expect(StatusCodes.BAD_REQUEST);
+  describe("#PUT /queues", () => {
 
-        expect(response.body).toMatchObject({
-          message: Errors.QUEUE_NOT_FOUND.message,
-          type:"business",
-          code: Errors.QUEUE_NOT_FOUND.code
-        })
+      let queueId: number;
+      let clinicId: number;
+
+      beforeAll(async () => {
+        const clinicCreated = await createClinic();
+        clinicId = clinicCreated.id;
+
+        const queueCreated = await createQueue(clinicId);
+        queueId = queueCreated.id;
+      });
+      afterAll(async () => {
+        await destroyQueueById(queueId);
+        await destroyClinicById(clinicId);
+      });
+      it("should update existing queue successfully", async () => {
+        await request(app)
+          .put(`${QUEUES_PATH}/${queueId}`)
+          .send({ status: QueueStatus.ACTIVE })
+          .expect(StatusCodes.NO_CONTENT);
+
+          const updatedQueue = await getQueueById(queueId);
+
+        expect(updatedQueue?.status).toEqual(QueueStatus.ACTIVE);
+      });
+
+      it("should throw error if existing queue does not exist", async () => {
+        const queueIdThatDoesNotExist = 98942809;
+        const response = await request(app)
+          .put(`${QUEUES_PATH}/${queueIdThatDoesNotExist}`)
+          .send({ status: QueueStatus.ACTIVE })
+          .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body).toMatchObject({
+            message: Errors.QUEUE_NOT_FOUND.message,
+            type:"business",
+            code: Errors.QUEUE_NOT_FOUND.code
+          })
+      });
     });
   });
-});
