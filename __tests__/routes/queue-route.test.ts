@@ -56,10 +56,11 @@ describe('Queues Route', function () {
                         .send({clinicId: "asd"})
                         .expect(StatusCodes.BAD_REQUEST)
 
-                    expect(response.body).toEqual({
+                    expect(response.body).toEqual({ error: {
                         id: expect.anything(),
                         type: "validation",
-                        invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" }]})
+                        invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" }]
+                    }})
                 })
             });
 
@@ -72,11 +73,13 @@ describe('Queues Route', function () {
                         .expect(StatusCodes.NOT_FOUND)
 
                         expect(response.body).toEqual({
-                            message: 'Clinic not found.',
-                            id: expect.anything(),
-                            type: 'notFound',
-                            code: 'QDOC-002'
-                          })
+                            error: {
+                                message: 'Clinic not found.',
+                                id: expect.anything(),
+                                type: 'notFound',
+                                code: 'QDOC-002'
+                              }
+                        })
                 })
             });
 
@@ -88,11 +91,13 @@ describe('Queues Route', function () {
                         .expect(StatusCodes.BAD_REQUEST)
 
                     expect(response.body).toEqual({
-                        message: 'Unable to create queue.',
-                        id: expect.anything(),
-                        type: 'business',
-                        code: 'QDOC-003'
-                      })
+                        error: {
+                            message: 'Unable to create queue.',
+                            id: expect.anything(),
+                            type: 'business',
+                            code: 'QDOC-003'
+                          }
+                    })
                 })
             });
         });
@@ -144,10 +149,12 @@ describe('Queues Route', function () {
                     .expect(StatusCodes.BAD_REQUEST)
 
                     expect(response.body).toMatchObject({
-                        id: expect.anything(),
-                        invalidParams: [ { name: "queueId", reason: errorReason } ],
-                        type:"validation",
-                      })
+                        error: {
+                            id: expect.anything(),
+                            invalidParams: [ { name: "queueId", reason: errorReason } ],
+                            type:"validation",
+                          }
+                    })
             });
 
             const statusNotAllowed = "Status should contain only either ACTIVE / CLOSED / INACTIVE";
@@ -163,10 +170,12 @@ describe('Queues Route', function () {
                     .expect(StatusCodes.BAD_REQUEST)
 
                     expect(response.body).toMatchObject({
-                        id: expect.anything(),
-                        invalidParams: [ { name: "status", reason: errorReason } ],
-                        type:"validation",
-                      })
+                        error: {
+                            id: expect.anything(),
+                            invalidParams: [ { name: "status", reason: errorReason } ],
+                            type:"validation",
+                          }
+                    })
             });
 
         });

@@ -47,9 +47,11 @@ describe("#Queues Component", () => {
           .expect(StatusCodes.NOT_FOUND);
 
           expect(response.body).toMatchObject({
-            message: Errors.CLINIC_NOT_FOUND.message,
-            type:"notFound",
-            code: Errors.CLINIC_NOT_FOUND.code
+            error: {
+              message: Errors.CLINIC_NOT_FOUND.message,
+              type:"notFound",
+              code: Errors.CLINIC_NOT_FOUND.code
+            }
           })
       });
     });
@@ -89,9 +91,11 @@ describe("#Queues Component", () => {
           .expect(StatusCodes.BAD_REQUEST);
 
           expect(response.body).toMatchObject({
-            message: Errors.QUEUE_NOT_FOUND.message,
-            type:"business",
-            code: Errors.QUEUE_NOT_FOUND.code
+            error: {
+              message: Errors.QUEUE_NOT_FOUND.message,
+              type:"business",
+              code: Errors.QUEUE_NOT_FOUND.code
+            }
           })
       });
     });

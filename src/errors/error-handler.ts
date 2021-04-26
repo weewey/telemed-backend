@@ -15,7 +15,7 @@ export const errorHandler = (
     : (err as ApiError);
 
   res.status(apiError.status);
-  res.json(serializeError(apiError));
+  res.json({ error: serializeError(apiError) });
 };
 
 const isTechnicalOrUnknowError = (err: Error): boolean => {
