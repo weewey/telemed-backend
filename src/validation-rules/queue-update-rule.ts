@@ -10,7 +10,7 @@ const queueIdRule: ValidationChain[] = [
     .exists()
     .withMessage("Queue Id is required.")
     .bail()
-    .custom(value => /^[0-9]*$/.test(value))
+    .isNumeric()
     .withMessage("Queue Id must contain only numbers.")
     .toInt()
 ]
