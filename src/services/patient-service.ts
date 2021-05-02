@@ -1,5 +1,5 @@
 import Patient from "../models/patient";
-import patientAttributes from "../respository/patient-repository";
+import patientRepository from "../respository/patient-repository";
 
 export interface PatientAttributes {
     firstName: any;
@@ -12,7 +12,7 @@ export interface PatientAttributes {
 class PatientService {
 
     public static async create(patient: PatientAttributes): Promise<Patient> {
-        return patientAttributes.create(patient)
+        return patientRepository.create(patient)
     }
 }
 
