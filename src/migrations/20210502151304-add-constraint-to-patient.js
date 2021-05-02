@@ -13,6 +13,11 @@ module.exports = {
           type: "unique",
           fields: ['email'],
           name: "Patients_email_unique_key"
+        }, { transaction: t }),
+        queryInterface.addConstraint("Patients", {
+          type: "unique",
+          fields: ['mobileNumber'],
+          name: "Patients_mobileNumber_unique_key"
         }, { transaction: t })
       ]);
     });
@@ -23,6 +28,7 @@ module.exports = {
       return Promise.all([
         queryInterface.removeConstraint("Patients", "Patients_authId_unique_key", { transaction: t }),
         queryInterface.removeConstraint("Patients", "Patients_email_unique_key", { transaction: t }),
+        queryInterface.removeConstraint("Patients", "Patients_mobileNumber_unique_key", { transaction: t }),
       ])
     })
   }

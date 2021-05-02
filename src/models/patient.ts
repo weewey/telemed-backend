@@ -31,6 +31,12 @@ export default class Patient extends Model {
     })
     public authId!: string;
 
+    @Column({
+        type: DataType.CHAR,
+        allowNull: false
+    })
+    public mobileNumber!: string;
+
     @CreatedAt
     public createdAt!: Date;
 

@@ -6,12 +6,13 @@ import { v4 as generateUUID } from "uuid";
 describe("Patient", () => {
     const firstName = "patient-model-test";
     const getPatientDetails = (
-        email = `${generateUUID()}@gmail.com`, authId = generateUUID()) => {
+        email = `${generateUUID()}@gmail.com`, authId = generateUUID(), mobileNumber = generateUUID()) => {
         return {
             firstName,
             lastName: "patient-last-name",
             email,
-            authId
+            authId,
+            mobileNumber
         }
     }
 
@@ -49,6 +50,13 @@ describe("Patient", () => {
                 await Patient.create(patientWithEmail12345);
 
                 await expect(Patient.create(patientWithEmail12345)).rejects.toThrow(UniqueConstraintError)
+            })
+
+            it("when inserting mobileNumber that exists in DB", async () => {
+                const patientWithMobileNumber91081111 = getPatientDetails(generateUUID(), generateUUID(), "91081111");
+                await Patient.create(patientWithMobileNumber91081111);
+
+                await expect(Patient.create(patientWithMobileNumber91081111)).rejects.toThrow(UniqueConstraintError)
             })
         });
 
