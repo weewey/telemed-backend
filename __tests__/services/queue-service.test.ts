@@ -52,9 +52,16 @@ describe("QueueService", () => {
             })
 
 
-            it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE when creating queue fails, not due to known reasons", async () => {
+            it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE when QueueRepository.create fails, not due to known reasons", async () => {
                 jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
                 jest.spyOn(QueueRepository, "create").mockRejectedValue(new Error("some DB problem"));
+
+                await expect(QueueService.create(queueAttr)).rejects.toThrow(new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message,
+                    Errors.UNABLE_TO_CREATE_QUEUE.code))
+            })
+
+            it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE when QueueService.getQueuesByClinicAndStatus fails, not due to known reasons", async () => {
+                jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockRejectedValue(new Error("some problem getting queue"));
 
                 await expect(QueueService.create(queueAttr)).rejects.toThrow(new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message,
                     Errors.UNABLE_TO_CREATE_QUEUE.code))

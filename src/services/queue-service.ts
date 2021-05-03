@@ -39,7 +39,14 @@ class QueueService {
     }
 
     public static async getQueuesByClinicAndStatus(clinicId: number, queueStatus?: QueueStatus): Promise<Queue[]> {
-        return QueueRepository.getByClinicIdAndStatus(clinicId, queueStatus)
+        let queue;
+        try {
+            queue = await QueueRepository.getByClinicIdAndStatus(clinicId, queueStatus)
+        } catch (error) {
+            Logger.error(`Error creating queue. Unable to getQueuesByClinicAndStatus. ErrorMessage: ${error.message}`)
+            throw new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code);
+        }
+        return queue;
     }
 
     public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<void> {
