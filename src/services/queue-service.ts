@@ -5,7 +5,7 @@ import QueueStatus from "../queue_status";
 import QueueRepository from "../respository/queue-repository";
 import {Logger} from "../logger";
 import NotFoundError from "../errors/not-found-error";
-
+import TechnicalError from "../errors/technical-error";
 class QueueService {
 
     public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -24,7 +24,7 @@ class QueueService {
             if (error.message === Errors.CLINIC_NOT_FOUND.code) {
                 throw new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code)
             }
-            throw new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code)
+            throw new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code)
         }
         return queue;
     }

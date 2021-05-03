@@ -19,5 +19,8 @@ export const Errors = {
     message: `Queue not found.`,
     code: "QDOC-005",
   },
-
+  UNABLE_TO_CREATE_PATIENT_AS_FIELD_EXISTS: {
+    message: `Unable to create patient as email / auth id / mobile number already exists.`,
+    code: "QDOC-006",
+  }
 };
