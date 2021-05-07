@@ -1,4 +1,5 @@
-import {Table, Column, Model, DataType, CreatedAt, UpdatedAt} from 'sequelize-typescript'
+import {Table, Column, Model, DataType, CreatedAt, UpdatedAt, HasMany} from 'sequelize-typescript'
+import Queue from "./queue";
 
 @Table({tableName: "Clinics"})
 
@@ -54,6 +55,9 @@ export default class Clinic extends Model<Clinic> {
         allowNull: false
     })
     public phoneNumber!: string;
+
+    @HasMany(()=> Queue)
+    public queues!: Queue[]
 
     @CreatedAt
     public createdAt!: Date;
