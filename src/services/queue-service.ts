@@ -60,10 +60,6 @@ class QueueService {
     //     return await Clinic.findAll();
     // }
 
-    public static async joinQueue(queueId: string, patientId: string): Promise<null> {
-        return null
-    }
-
 }
 
 export default QueueService;

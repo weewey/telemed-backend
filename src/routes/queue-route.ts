@@ -31,13 +31,3 @@ queueRoute.put("/:queueId",
         res.status(StatusCodes.NO_CONTENT).send();
     }
 ));
-
-// queueRoute.post("/join",
-//     body('queueId').isNumeric({no_symbols:true}).escape(), // validate clinic_id is numeric
-//     body('patientId').isNumeric({no_symbols:true}).escape(),
-//     // DB side validation (custom validator here)
-//     asyncHandler(async (req: Request, res: Response): Promise<void> =>{
-//         const queueInfo = await QueueService.joinQueue(req.body.queueId, req.body.patientId)
-//         queueInfo ? res.json(queueInfo) : res.status(404).send();
-//     }
-// ));

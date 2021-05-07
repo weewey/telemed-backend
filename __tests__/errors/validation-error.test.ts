@@ -97,7 +97,7 @@ describe("validation error", () => {
   });
 });
 
-describe("ValidtionError.from", () => {
+describe("ValidationError.from", () => {
   it("should return validation error with empty arguments ", () => {
     const error = ValidationError.from({});
     expect(error.invalidParams).toBeInstanceOf(Array);
