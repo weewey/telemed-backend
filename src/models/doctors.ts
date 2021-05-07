@@ -1,6 +1,17 @@
-import {BelongsTo, Column, CreatedAt, DataType, HasOne, Model, Table, Unique, UpdatedAt} from 'sequelize-typescript'
+import {BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, Table, Unique, UpdatedAt} from 'sequelize-typescript'
 import Clinic from "./clinic";
 import Queue from "./queue";
+
+export interface DoctorAttributes {
+    firstName: string,
+    lastName: string,
+    email: string,
+    authId: string,
+    mobileNumber: string,
+    onDuty: boolean,
+    queueId?: number,
+    clinicId?: number,
+}
 
 @Table({tableName: "Doctors"})
 
@@ -21,25 +32,25 @@ export default class Doctor extends Model {
     })
     public lastName!: string;
 
+    @Unique
     @Column({
         type: DataType.CHAR,
         allowNull: false,
     })
-    @Unique
     public email!: string;
 
+    @Unique
     @Column({
         type: DataType.CHAR,
         allowNull: false,
     })
-    @Unique
     public authId!: string;
 
+    @Unique
     @Column({
         type: DataType.CHAR,
         allowNull: false
     })
-    @Unique
     public mobileNumber!: string;
 
     @Column({
@@ -48,14 +59,17 @@ export default class Doctor extends Model {
     })
     public onDuty!: boolean;
 
-    @HasOne(() => Queue)
+    @ForeignKey(() => Queue)
     @Column({
         allowNull: true,
-        type: DataType.INTEGER
+        type: DataType.INTEGER,
     })
     public queueId?: number;
 
-    @BelongsTo(() => Clinic)
+    @BelongsTo(() => Queue)
+    public queue?: Queue;
+
+    @ForeignKey(() => Clinic)
     @Column({
         allowNull: true,
         type: DataType.INTEGER

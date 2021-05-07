@@ -1,6 +1,7 @@
-import {Table, Column, Model, DataType, CreatedAt, UpdatedAt, ForeignKey} from 'sequelize-typescript'
+import {Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Table, UpdatedAt} from 'sequelize-typescript'
 import Clinic from "./clinic";
 import QueueStatus from "../queue_status";
+import Doctor from "./doctors";
 
 export interface QueueAttributes {
     clinicId: number
@@ -47,6 +48,9 @@ export default class Queue extends Model {
         allowNull: true,
     })
     public closedAt!: Date;
+
+    @HasMany(() => Doctor)
+    public doctors?: Doctor[];
 
     @CreatedAt
     public readonly createdAt!: Date;
