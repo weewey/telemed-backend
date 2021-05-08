@@ -23,12 +23,14 @@ export default class Doctor extends Model {
     @Column({
         type: DataType.CHAR,
         allowNull: false,
+        validate: { is: /^[A-Z ]+$/i}
     })
     public firstName!: string;
 
     @Column({
         type: DataType.CHAR,
         allowNull: false,
+        validate: { is: /^[A-Z ]+$/i}
     })
     public lastName!: string;
 
@@ -36,6 +38,7 @@ export default class Doctor extends Model {
     @Column({
         type: DataType.CHAR,
         allowNull: false,
+        validate: {isEmail: true}
     })
     public email!: string;
 

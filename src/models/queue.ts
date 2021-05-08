@@ -1,17 +1,7 @@
-import {
-    BelongsTo,
-    Column,
-    CreatedAt,
-    DataType,
-    ForeignKey,
-    HasMany,
-    Model,
-    Table,
-    UpdatedAt
-} from 'sequelize-typescript'
+import {Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Table, UpdatedAt} from 'sequelize-typescript'
 import Clinic from "./clinic";
 import QueueStatus from "../queue_status";
-import Doctor from "./doctors";
+import Doctor from "./doctor";
 
 export interface QueueAttributes {
     clinicId: number
@@ -39,9 +29,6 @@ export default class Queue extends Model {
     @ForeignKey(() => Clinic)
     @Column
     public clinicId!: number;
-
-    @BelongsTo(() => Clinic)
-    public clinic!: Clinic;
 
     @Column({
         type: DataType.ENUM(),

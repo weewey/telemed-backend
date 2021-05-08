@@ -1,4 +1,4 @@
-import {Table, Column, Model, DataType, CreatedAt, UpdatedAt, HasMany} from 'sequelize-typescript'
+import {Column, CreatedAt, DataType, HasMany, Model, Table, UpdatedAt} from 'sequelize-typescript'
 import Queue from "./queue";
 
 @Table({tableName: "Clinics"})
