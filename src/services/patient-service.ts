@@ -4,11 +4,11 @@ import { Errors } from "../errors/error-mappings";
 import TechnicalError from "../errors/technical-error";
 import BusinessError from "../errors/business-error";
 export interface PatientAttributes {
-    firstName: any;
-    lastName: any;
-    email: any;
-    authId: any;
-    mobileNumber: any;
+    firstName: string;
+    lastName: string;
+    email: string;
+    authId: string;
+    mobileNumber: string;
 }
 
 class PatientService {

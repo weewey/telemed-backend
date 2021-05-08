@@ -10,18 +10,21 @@ export default class Patient extends Model {
     @Column({
         type: DataType.CHAR,
         allowNull: false,
+        validate: { is: /^[A-Z ]+$/i, len: [1, 50] }
     })
     public firstName!: string;
 
     @Column({
         type: DataType.CHAR,
         allowNull: false,
+        validate: { is: /^[A-Z ]+$/i, len: [1, 50] }
     })
     public lastName!: string;
 
     @Column({
         type: DataType.CHAR,
         allowNull: false,
+        validate: { isEmail: true }
     })
     public email!: string;
 
