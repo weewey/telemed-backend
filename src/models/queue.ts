@@ -6,10 +6,7 @@ import Doctor from "./doctor";
 export interface QueueAttributes {
     clinicId: number
     status: string
-    waitingTicketsCount: number
-    waitingTicketsId: Array<number> 
-    closedTicketsId: Array<number> 
-    latestGeneratedTicketDisplayNumber: number
+    latestGeneratedTicketDisplayNumber?: number
     startedAt?: Date
     closedAt?: Date
 }

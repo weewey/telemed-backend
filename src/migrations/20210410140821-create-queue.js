@@ -22,6 +22,22 @@ module.exports = {
                 type: Sequelize.ENUM,
                 values: ['ACTIVE', 'INACTIVE', 'CLOSED'],
             },
+            waitingTicketsCount: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+            },
+            waitingTicketsId:{
+                allowNull: false,
+                type: Sequelize.ARRAY(Sequelize.INTEGER),
+            },
+            closedTicketsId:{
+                allowNull: false,
+                type: Sequelize.ARRAY(Sequelize.INTEGER),
+            },
+            latestGeneratedTicketDisplayNumber: {
+                allowNull: true,
+                type: Sequelize.INTEGER,
+            },
             startedAt: {
                 allowNull: true,
                 type: Sequelize.DATE
