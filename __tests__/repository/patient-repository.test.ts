@@ -1,6 +1,8 @@
 import Patient from "../../src/models/patient";
 import { PatientAttributes } from "../../src/services/patient-service";
 import PatientRepository from "../../src/respository/patient-repository";
+import { UniqueConstraintError, ValidationErrorItem } from "sequelize";
+import RepositoryError from "../../src/errors/repository-error";
 
 describe("PatientRepository", () => {
 
@@ -23,6 +25,21 @@ describe("PatientRepository", () => {
 
             expect(Patient.create).toHaveBeenCalledTimes(1);
             expect(Patient.create).toBeCalledWith(patientAttributes);
+        })
+
+        it("should throw repository error when faced with DB unique constraint error during create", async () => {
+            jest.spyOn(Patient, "create").mockRejectedValue(new UniqueConstraintError({
+                errors: [ new ValidationErrorItem() ]
+            }));
+
+            await expect(PatientRepository.create).rejects.toThrow(RepositoryError)
+        })
+
+
+        it("should throw error as is when DB throws non-unique constraint error", async () => {
+            jest.spyOn(Patient, "create").mockRejectedValue(new Error);
+
+            await expect(PatientRepository.create).rejects.toThrow(Error)
         })
     });
 
