@@ -26,5 +26,9 @@ export const Errors = {
   UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR: {
     message: `Unable to create doctor due to validation / unique constraint errors`,
     code: "QDOC-007",
+  },
+  UNABLE_TO_CREATE_DOCTOR: {
+    message: `Unable to create doctor`,
+    code: "QDOC-008",
   }
 };
