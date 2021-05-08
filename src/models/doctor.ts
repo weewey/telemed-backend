@@ -23,14 +23,14 @@ export default class Doctor extends Model {
     @Column({
         type: DataType.CHAR,
         allowNull: false,
-        validate: { is: /^[A-Z ]+$/i}
+        validate: {is: /^[A-Z ]+$/i, len: [1, 50]}
     })
     public firstName!: string;
 
     @Column({
         type: DataType.CHAR,
         allowNull: false,
-        validate: { is: /^[A-Z ]+$/i}
+        validate: {is: /^[A-Z ]+$/i, len: [1, 50]},
     })
     public lastName!: string;
 

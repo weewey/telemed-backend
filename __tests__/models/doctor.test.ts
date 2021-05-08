@@ -73,6 +73,18 @@ describe("Doctor", () => {
                 .toThrowError(ValidationError)
         });
 
+        it('should return an error when the firstName is above 50 characters', async () => {
+            await expect(Doctor.create({...getDoctorAttrs(), firstName:
+                    "Lorem ipsum dolor sit ameta consectetuer adipiscing"})).rejects
+                .toThrowError(ValidationError)
+        });
+
+        it('should return an error when the lastName is above 50 characters', async () => {
+            await expect(Doctor.create({...getDoctorAttrs(), firstName:
+                    "Lorem ipsum dolor sit ameta consectetuer adipiscing"})).rejects
+                .toThrowError(ValidationError)
+        });
+
         it('should return an error when the lastName is not valid', async () => {
             await expect(Doctor.create({...getDoctorAttrs(), lastName: "1234"})).rejects
                 .toThrowError(ValidationError)
