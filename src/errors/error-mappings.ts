@@ -22,5 +22,9 @@ export const Errors = {
   UNABLE_TO_CREATE_PATIENT_AS_FIELD_EXISTS: {
     message: `Unable to create patient as email / auth id / mobile number already exists.`,
     code: "QDOC-006",
+  },
+  UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR: {
+    message: `Unable to create doctor due to validation / unique constraint errors`,
+    code: "QDOC-007",
   }
 };

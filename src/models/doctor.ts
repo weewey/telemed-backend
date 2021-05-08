@@ -2,17 +2,6 @@ import {BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, Table, Unique
 import Clinic from "./clinic";
 import Queue from "./queue";
 
-export interface DoctorAttributes {
-    firstName: string,
-    lastName: string,
-    email: string,
-    authId: string,
-    mobileNumber: string,
-    onDuty: boolean,
-    queueId?: number,
-    clinicId?: number,
-}
-
 @Table({tableName: "Doctors"})
 
 export default class Doctor extends Model {

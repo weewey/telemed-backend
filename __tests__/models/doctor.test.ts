@@ -1,9 +1,10 @@
-import Doctor, {DoctorAttributes} from "../../src/models/doctor";
+import Doctor from "../../src/models/doctor";
 import {clinicFactory} from "../factories";
 import {ValidationError} from "sequelize";
 import QueueStatus from "../../src/queue_status";
 import Queue from "../../src/models/queue";
 import {v4 as generateUUID} from "uuid";
+import {DoctorAttributes} from "../../src/services/doctor-service";
 
 describe("Doctor", () => {
     const doctorIdsToBeDeleted: Array<number> = []
