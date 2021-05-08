@@ -6,17 +6,20 @@ import Clinic from "../../src/models/clinic";
 
 describe("Queue", () => {
     let clinicId: number;
+    let latestGeneratedTicketDisplayNumber: number;
     const toBeDeletedQueueIds: number[] = []
     let queueAttributes: Partial<Queue>
 
     beforeAll(async () => {
         const clinic = await clinicFactory.build()
         clinicId = clinic.id
+        latestGeneratedTicketDisplayNumber = 0
         queueAttributes = {
             "clinicId": clinicId,
             "createdAt": new Date(Date.now()),
             "updatedAt": new Date(Date.now()),
             "status": QueueStatus.CLOSED,
+            "latestGeneratedTicketDisplayNumber": latestGeneratedTicketDisplayNumber,
             "startedAt": new Date(Date.now()),
             "closedAt": new Date(Date.now())
         }

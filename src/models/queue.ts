@@ -6,6 +6,10 @@ import Doctor from "./doctor";
 export interface QueueAttributes {
     clinicId: number
     status: string
+    waitingTicketsCount: number
+    waitingTicketsId: Array<number> 
+    closedTicketsId: Array<number> 
+    latestGeneratedTicketDisplayNumber: number
     startedAt?: Date
     closedAt?: Date
 }
@@ -48,6 +52,33 @@ export default class Queue extends Model {
         allowNull: true,
     })
     public closedAt!: Date;
+
+    @Column({
+        type: DataType.INTEGER(),
+        allowNull: false,
+        defaultValue: 0,
+    })
+    public waitingTicketsCount?: number;
+
+    @Column({
+        type: DataType.ARRAY(DataType.INTEGER),
+        allowNull: false,
+        defaultValue: [],
+    })
+    public waitingTicketsId?: Array<number> ;
+
+    @Column({
+        type: DataType.ARRAY(DataType.INTEGER),
+        allowNull: false,
+        defaultValue: [],
+    })
+    public closedTicketsId?: Array<number> ;
+
+    @Column({
+        type: DataType.INTEGER(),
+        allowNull: true,
+    })
+    public latestGeneratedTicketDisplayNumber?: number
 
     @HasMany(() => Doctor)
     public doctors?: Doctor[];
