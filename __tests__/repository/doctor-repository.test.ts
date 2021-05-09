@@ -50,9 +50,11 @@ describe('Doctor Repository', () => {
                         errors: [new ValidationErrorItem("email must be unique",
                             "email", "email")]
                     }))
-                await expect(DoctorRepository.create(doctorAttrs)).rejects.toThrowError(
-                    Errors.UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR.code
-                )
+                try {
+                    await DoctorRepository.create(doctorAttrs);
+                } catch (error) {
+                    expect(error.code).toEqual(Errors.FIELD_ALREADY_EXISTS.code)
+                }
             });
         });
 
@@ -63,9 +65,11 @@ describe('Doctor Repository', () => {
                     new ValidationError( "Validation isEmail on email failed",
                         [new ValidationErrorItem("email must be unique", "email")]
                     ))
-                await expect(DoctorRepository.create(doctorAttrs)).rejects.toThrowError(
-                    Errors.UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR.code
-                )
+                try {
+                    await DoctorRepository.create(doctorAttrs);
+                } catch (error) {
+                    expect(error.code).toEqual(Errors.VALIDATION_ERROR.code)
+                }
             });
         });
 
@@ -74,9 +78,11 @@ describe('Doctor Repository', () => {
                 const doctorAttrs = getDoctorAttrs({email: "123"})
                 jest.spyOn(Doctor, "create").mockRejectedValue(
                     new ForeignKeyConstraintError({message: "clinicId 1 not found", fields: ["clinicId"]}))
-                await expect(DoctorRepository.create(doctorAttrs)).rejects.toThrowError(
-                    Errors.ASSOCIATED_ENTITY_NOT_FOUND.code
-                )
+                try {
+                    await DoctorRepository.create(doctorAttrs);
+                } catch (error) {
+                    expect(error.code).toEqual(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code)
+                }
             });
         });
     });

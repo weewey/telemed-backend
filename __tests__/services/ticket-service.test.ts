@@ -31,13 +31,14 @@ describe("TicketService", () => {
 
         describe('Error scenarios', () => {
             it("should throw 404 NotFound error UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND when there is no associated patient / queue / clinic id", async () => {
-                jest.spyOn(TicketRepository, "create").mockRejectedValue(new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code));
+                jest.spyOn(TicketRepository, "create").mockRejectedValue(new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code, Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.message));
                 await expect(TicketService.create(ticketAttr)).rejects.toThrow(new NotFoundError(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code,
                     Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.message))
             })
 
             it("should throw 404 NotFound error UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL when displayNumber is null", async () => {
-                jest.spyOn(TicketRepository, "create").mockRejectedValue(new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.code));
+                jest.spyOn(TicketRepository, "create").mockRejectedValue(new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.code,
+                    Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.message));
                 await expect(TicketService.create(ticketAttr)).rejects.toThrow(new NotFoundError(Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.code,
                     Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.message))
             })
@@ -46,8 +47,7 @@ describe("TicketService", () => {
             it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE when QueueRepository.create fails, not due to known reasons", async () => {
                 jest.spyOn(TicketRepository, "create").mockRejectedValue(new Error("some DB problem"));
 
-                await expect(TicketService.create(ticketAttr)).rejects.toThrow(new TechnicalError(Errors.UNABLE_TO_CREATE_TICKET.message,
-                    Errors.UNABLE_TO_CREATE_TICKET.code))
+                await expect(TicketService.create(ticketAttr)).rejects.toThrow(new TechnicalError("some DB problem"))
             })
 
         });

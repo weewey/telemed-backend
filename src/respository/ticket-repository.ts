@@ -1,7 +1,10 @@
 import Ticket, {TicketAttributes} from "../models/ticket";
-import {ForeignKeyConstraintError, ValidationErrorItem} from "sequelize";
+import { ForeignKeyConstraintError, ValidationError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import {Errors} from "../errors/error-mappings";
+import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
+import { Logger } from "../logger";
+
 class TicketRepository {
 
     public static async create(ticketAttr: TicketAttributes): Promise<Ticket> {
@@ -10,10 +13,16 @@ class TicketRepository {
             ticket = await Ticket.create(ticketAttr)
         } catch (error) {
             if (error instanceof ForeignKeyConstraintError) {
-                throw new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code);
+                const message = `Unable to create ticket ${error.fields} ${error.message}}`;
+                Logger.error(message)
+
+                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, message);
             }
-            if (error instanceof ValidationErrorItem){
-                throw new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.code);
+            if (error instanceof ValidationError){
+                const { errorFields, errorMessage } = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors)
+                const message = `Unable to create ticket. Fields: [ ${errorFields}], message: [ ${errorMessage}]`;
+                Logger.error(message)
+                throw new RepositoryError(Errors.VALIDATION_ERROR.code, message);
             }
             throw error;
         }

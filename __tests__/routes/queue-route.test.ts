@@ -65,7 +65,7 @@ describe('Queues Route', function () {
 
             describe('when the clinicId is not found in the DB', () => {
                 it("should return NOT_FOUND with the expected body", async () => {
-                    jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code));
+                    jest.spyOn(QueueService, "create").mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.code, Errors.CLINIC_NOT_FOUND.message));
 
                     const response = await request(app).post(queuesPath)
                         .send({clinicId: 2})

@@ -12,7 +12,7 @@ class QueueRepository {
             queue = await Queue.create(queueAttr)
         } catch (error) {
             if (error instanceof ForeignKeyConstraintError) {
-                throw new RepositoryError(Errors.CLINIC_NOT_FOUND.code);
+                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "Queue cannot be created as associated Clinic Id does not exist");
             }
             throw error;
         }
@@ -31,7 +31,7 @@ class QueueRepository {
         const { id, ...updateAttributes } = queueModelAttributes
         const queue = await Queue.findByPk(id);
         if (!queue) {
-            throw new NotFoundError(Errors.QUEUE_NOT_FOUND.message, Errors.QUEUE_NOT_FOUND.code)
+            throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message)
         }
 
         await queue.update(updateAttributes);

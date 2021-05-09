@@ -48,8 +48,8 @@ describe("#Queues Component", () => {
 
           expect(response.body).toMatchObject({
             error: {
-              message: Errors.CLINIC_NOT_FOUND.message,
-              code: Errors.CLINIC_NOT_FOUND.code
+              message: expect.anything(),
+              code: Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code
             }
           })
       });

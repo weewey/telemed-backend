@@ -5,7 +5,6 @@ import RepositoryError from "../../src/errors/repository-error";
 import {Errors} from "../../src/errors/error-mappings";
 import QueueRepository from "../../src/respository/queue-repository";
 
-
 describe("QueueRepository", () => {
 
     const queueAttr: QueueAttributes = {
@@ -31,7 +30,12 @@ describe("QueueRepository", () => {
                 jest.spyOn(Queue, "create").mockRejectedValue(new ForeignKeyConstraintError({}));
 
                 await expect(QueueRepository.create(queueAttr)).rejects.toThrow(RepositoryError);
-                await expect(QueueRepository.create(queueAttr)).rejects.toThrow(Errors.CLINIC_NOT_FOUND.code);
+
+                try {
+                    await QueueRepository.create(queueAttr);
+                } catch (error) {
+                    expect(error.code).toEqual(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code)
+                }
             })
         });
     });

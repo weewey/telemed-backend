@@ -19,12 +19,10 @@ export const Errors = {
     message: `Queue not found.`,
     code: "QDOC-005",
   },
-  UNABLE_TO_CREATE_PATIENT_AS_FIELD_EXISTS: {
-    message: `Unable to create patient as email / auth id / mobile number already exists.`,
+  FIELD_ALREADY_EXISTS: {
     code: "QDOC-006",
   },
-  UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR: {
-    message: `Unable to create doctor due to validation / unique constraint errors`,
+  ASSOCIATED_ENTITY_NOT_PRESENT: {
     code: "QDOC-007",
   },
   UNABLE_TO_CREATE_DOCTOR: {
@@ -47,4 +45,7 @@ export const Errors = {
     message: `Associated entity not found`,
     code: "QDOC-012",
   },
+  VALIDATION_ERROR: {
+    code: "QDOC-013",
+  }
 };

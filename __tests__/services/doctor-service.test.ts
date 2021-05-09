@@ -27,21 +27,21 @@ describe('Doctor Service', () => {
     describe('when DoctorRepository errors', () => {
         it('should throw BusinessError when the error is due to uniqueness/validation', async () => {
             jest.spyOn(DoctorRepository, "create").mockRejectedValue(
-                new RepositoryError(Errors.UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR.code))
+                new RepositoryError(Errors.FIELD_ALREADY_EXISTS.code, "message"))
             const doctorAttrs = getDoctorAttrs()
             await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(BusinessError)
         });
 
         it('should throw NotFoundError when the error is due to associated entity not found', async () => {
             jest.spyOn(DoctorRepository, "create").mockRejectedValue(
-                new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_FOUND.code))
+                new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "not found"))
             const doctorAttrs = getDoctorAttrs()
             await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(NotFoundError)
         });
 
         it('should throw TechnicalError when it encounters other errors', async () => {
             jest.spyOn(DoctorRepository, "create").mockRejectedValue(
-                new RepositoryError("other errors"))
+                new RepositoryError("other error code", "message"))
             const doctorAttrs = getDoctorAttrs()
             await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(TechnicalError)
         });

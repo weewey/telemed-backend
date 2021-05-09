@@ -1,6 +1,12 @@
-
 export default class RepositoryError extends Error {
-  public constructor(message: string) {
-    super(message);
+
+  public readonly code: string;
+
+  public constructor(
+    code: string,
+    message: string,
+  ) {
+    super(message || "");
+    this.code = code;
   }
 }

@@ -4,13 +4,11 @@ import Queue, {QueueAttributes, QueueAttributesWithId} from "../models/queue";
 import QueueStatus from "../queue_status";
 import QueueRepository from "../respository/queue-repository";
 import {Logger} from "../logger";
-import NotFoundError from "../errors/not-found-error";
 import TechnicalError from "../errors/technical-error";
-
+import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 class QueueService {
 
     public static async create(queueAttr: QueueAttributes): Promise<Queue> {
-        let queue;
 
         if (queueAttr.status === QueueStatus.CLOSED) {
             throw new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message, Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code)
@@ -19,15 +17,11 @@ class QueueService {
         await this.validateNoExistingActiveQueues(queueAttr);
 
         try {
-            queue = await QueueRepository.create(queueAttr);
+            return await QueueRepository.create(queueAttr);
         } catch (error) {
             Logger.error(`Error creating queue. ErrorMessage: ${error.message}, Queue attributes: `, queueAttr)
-            if (error.message === Errors.CLINIC_NOT_FOUND.code) {
-                throw new NotFoundError(Errors.CLINIC_NOT_FOUND.message, Errors.CLINIC_NOT_FOUND.code)
-            }
-            throw new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code)
+            throw mapRepositoryErrors(error);
         }
-        return queue;
     }
 
     private static async validateNoExistingActiveQueues(queueAttr: QueueAttributes) {

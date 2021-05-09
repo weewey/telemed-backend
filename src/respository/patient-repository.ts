@@ -1,7 +1,7 @@
 import Patient from "../models/patient";
 import { PatientAttributes } from "../services/patient-service";
 import RepositoryError from "../errors/repository-error";
-import { UniqueConstraintError } from "sequelize";
+import { UniqueConstraintError, ValidationError } from "sequelize";
 import { Logger } from "../logger";
 import { Errors } from "../errors/error-mappings";
 class PatientRepository {
@@ -13,8 +13,15 @@ class PatientRepository {
         } catch (error) {
             if (error instanceof UniqueConstraintError) {
                 const field = error.errors[0].path;
-                Logger.error(`Unable to create patient as ${field} already exists`)
-                throw new RepositoryError(Errors.UNABLE_TO_CREATE_PATIENT_AS_FIELD_EXISTS.code);
+                const errorMessage = `Unable to create patient as ${field} already exists`;
+                Logger.error(errorMessage)
+                throw new RepositoryError(Errors.FIELD_ALREADY_EXISTS.code, errorMessage);
+            }
+            if (error instanceof ValidationError) {
+                const field = error.errors[0].path;
+                const errorMessage = `Unable to create patient. Validation error encountered for [${field}]`;
+                Logger.error(errorMessage);
+                throw new RepositoryError(Errors.VALIDATION_ERROR.code, errorMessage);
             }
             throw error;
         }

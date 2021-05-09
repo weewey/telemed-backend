@@ -1,10 +1,9 @@
 import Ticket, {TicketAttributes} from "../../src/models/ticket";
 import TicketStatus from "../../src/ticket_status";
-import {ForeignKeyConstraintError, ValidationErrorItem} from "sequelize";
+import {ForeignKeyConstraintError, ValidationError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import {Errors} from "../../src/errors/error-mappings";
 import TicketRepository from "../../src/respository/ticket-repository";
-
 
 describe("TicketRepository", () => {
 
@@ -29,20 +28,28 @@ describe("TicketRepository", () => {
         })
 
         describe('Error scenarios', () => {
-            it("should return UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND error when there is no associated foreign key", async () => {
+            it("should return ASSOCIATED_ENTITY_NOT_PRESENT error when there is no associated foreign key", async () => {
                 jest.spyOn(Ticket, "create").mockRejectedValue(new ForeignKeyConstraintError({}));
 
                 await expect(TicketRepository.create(ticketAttr)).rejects.toThrow(RepositoryError);
-                await expect(TicketRepository.create(ticketAttr)).rejects.toThrow(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code);
+                try {
+                    await TicketRepository.create(ticketAttr);
+                } catch (error) {
+                    expect(error.code).toEqual(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code);
+                }
             })
-            it("should return UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL error displayNumber is null", async () => {
-                jest.spyOn(Ticket, "create").mockRejectedValue(new ValidationErrorItem());
+            it("should return VALIDATION_ERROR error when displayNumber is null", async () => {
+                jest.spyOn(Ticket, "create").mockRejectedValue(new ValidationError("error"));
 
                 await expect(TicketRepository.create(ticketAttr)).rejects.toThrow(RepositoryError);
-                await expect(TicketRepository.create(ticketAttr)).rejects.toThrow(Errors.UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL.code);
+                try {
+                    await TicketRepository.create(ticketAttr);
+                } catch (error) {
+                    expect(error.code).toEqual(Errors.VALIDATION_ERROR.code);
+                }
             })
         });
     });
 
-    
+
 })

@@ -35,10 +35,10 @@ describe("QueueService", () => {
 
             it("should throw 404 NotFound error CLINIC_NOT_FOUND when there is no associated clinic id", async () => {
                 jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
-                jest.spyOn(QueueRepository, "create").mockRejectedValue(new RepositoryError(Errors.CLINIC_NOT_FOUND.code));
+                jest.spyOn(QueueRepository, "create").mockRejectedValue(new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "clinic id not found"));
 
-                await expect(QueueService.create(queueAttr)).rejects.toThrow(new NotFoundError(Errors.CLINIC_NOT_FOUND.message,
-                    Errors.CLINIC_NOT_FOUND.code))
+                await expect(QueueService.create(queueAttr)).rejects.toThrow(new NotFoundError(
+                Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "clinic id not found"))
             })
 
             it(`should throw 400 business error UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS and not allow the
@@ -56,8 +56,7 @@ describe("QueueService", () => {
                 jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
                 jest.spyOn(QueueRepository, "create").mockRejectedValue(new Error("some DB problem"));
 
-                await expect(QueueService.create(queueAttr)).rejects.toThrow(new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message,
-                    Errors.UNABLE_TO_CREATE_QUEUE.code))
+                await expect(QueueService.create(queueAttr)).rejects.toThrow(new TechnicalError("some DB problem"))
             })
 
             it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE when QueueService.getQueuesByClinicAndStatus fails, not due to known reasons", async () => {

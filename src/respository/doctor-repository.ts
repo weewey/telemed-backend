@@ -13,14 +13,22 @@ class DoctorRepository {
         try {
             doctor = await Doctor.create(doctorAttributes)
         } catch (error) {
-            if (error instanceof UniqueConstraintError || error instanceof ValidationError) {
+            if (error instanceof UniqueConstraintError) {
                 const {errorFields, errorMessage} = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors)
-                Logger.error(`Unable to create doctor ${errorFields} ${errorMessage}`)
-                throw new RepositoryError(Errors.UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR.code);
+                const message = `Unable to create doctor. Fields: [${errorFields}], message: [${errorMessage}]`;
+                Logger.error(message)
+                throw new RepositoryError(Errors.FIELD_ALREADY_EXISTS.code, message);
+            }
+            if (error instanceof ValidationError) {
+                const {errorFields, errorMessage} = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors)
+                const message = `Unable to create doctor. Fields: [ ${errorFields}], message: [ ${errorMessage}]`;
+                Logger.error(message)
+                throw new RepositoryError(Errors.VALIDATION_ERROR.code, message);
             }
             if (error instanceof ForeignKeyConstraintError) {
-                Logger.error(`Unable to create doctor ${error.fields} ${error.message}}`)
-                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_FOUND.code);
+                const message = `Unable to create doctor ${error.fields} ${error.message}}`;
+                Logger.error(message)
+                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, message);
             }
             throw error;
         }

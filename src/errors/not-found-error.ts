@@ -3,7 +3,7 @@ import { ApiErrorType } from "./api-error-type";
 export default class NotFoundError extends BaseError {
   public readonly code: string;
 
-  public constructor(message: string, code: string, id = "") {
+  public constructor(code: string, message: string, id = "") {
     super(404, ApiErrorType.notFound, message, id);
     this.code = code;
 
