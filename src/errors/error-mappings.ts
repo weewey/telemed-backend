@@ -42,5 +42,9 @@ export const Errors = {
   UNABLE_TO_CREATE_TICKET:{
     message: `Unable to create ticket`,
     code: "QDOC-011"
-  }
+  },
+  ASSOCIATED_ENTITY_NOT_FOUND: {
+    message: `Associated entity not found`,
+    code: "QDOC-012",
+  },
 };
