@@ -30,5 +30,9 @@ export const Errors = {
   UNABLE_TO_CREATE_DOCTOR: {
     message: `Unable to create doctor`,
     code: "QDOC-008",
-  }
+  },
+  ASSOCIATED_ENTITY_NOT_FOUND: {
+    message: `Associated entity not found`,
+    code: "QDOC-009",
+  },
 };
