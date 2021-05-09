@@ -1,6 +1,6 @@
 import {DoctorAttributes} from "../services/doctor-service";
 import Doctor from "../models/doctor";
-import {UniqueConstraintError, ValidationError} from "sequelize";
+import {ForeignKeyConstraintError, UniqueConstraintError, ValidationError} from "sequelize";
 import {Logger} from "../logger";
 import RepositoryError from "../errors/repository-error";
 import {Errors} from "../errors/error-mappings";
@@ -17,6 +17,10 @@ class DoctorRepository {
                 const {errorFields, errorMessage} = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors)
                 Logger.error(`Unable to create doctor ${errorFields} ${errorMessage}`)
                 throw new RepositoryError(Errors.UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR.code);
+            }
+            if (error instanceof ForeignKeyConstraintError) {
+                Logger.error(`Unable to create doctor ${error.fields} ${error.message}}`)
+                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_FOUND.code);
             }
             throw error;
         }

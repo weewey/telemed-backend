@@ -6,6 +6,7 @@ import RepositoryError from "../../src/errors/repository-error";
 import {Errors} from "../../src/errors/error-mappings";
 import BusinessError from "../../src/errors/business-error";
 import TechnicalError from "../../src/errors/technical-error";
+import NotFoundError from "../../src/errors/not-found-error";
 
 describe('Doctor Service', () => {
     const getDoctorAttrs = (overrideAttrs?: Partial<DoctorAttributes>): DoctorAttributes => {
@@ -31,7 +32,14 @@ describe('Doctor Service', () => {
             await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(BusinessError)
         });
 
-        it('should throw TechnicalError when the error is not due to uniqueness/validation', async () => {
+        it('should throw NotFoundError when the error is due to associated entity not found', async () => {
+            jest.spyOn(DoctorRepository, "create").mockRejectedValue(
+                new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_FOUND.code))
+            const doctorAttrs = getDoctorAttrs()
+            await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(NotFoundError)
+        });
+
+        it('should throw TechnicalError when it encounters other errors', async () => {
             jest.spyOn(DoctorRepository, "create").mockRejectedValue(
                 new RepositoryError("other errors"))
             const doctorAttrs = getDoctorAttrs()

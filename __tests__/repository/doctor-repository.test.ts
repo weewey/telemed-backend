@@ -2,7 +2,7 @@ import {DoctorAttributes} from "../../src/services/doctor-service";
 import {v4 as generateUUID} from "uuid";
 import DoctorRepository from "../../src/respository/doctor-repository";
 import Doctor from "../../src/models/doctor";
-import {UniqueConstraintError, ValidationError, ValidationErrorItem} from "sequelize";
+import {ForeignKeyConstraintError, UniqueConstraintError, ValidationError, ValidationErrorItem} from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import {Logger} from "../../src/logger";
 import {Errors} from "../../src/errors/error-mappings";
@@ -65,6 +65,17 @@ describe('Doctor Repository', () => {
                     ))
                 await expect(DoctorRepository.create(doctorAttrs)).rejects.toThrowError(
                     Errors.UNABLE_TO_CREATE_DOCTOR_VALIDATION_OR_UNIQUENESS_ERROR.code
+                )
+            });
+        });
+
+        describe('when it encounters ForeignKeyConstraintError', () => {
+            it('should return repository error with associated entity not found error code', async () => {
+                const doctorAttrs = getDoctorAttrs({email: "123"})
+                jest.spyOn(Doctor, "create").mockRejectedValue(
+                    new ForeignKeyConstraintError({message: "clinicId 1 not found", fields: ["clinicId"]}))
+                await expect(DoctorRepository.create(doctorAttrs)).rejects.toThrowError(
+                    Errors.ASSOCIATED_ENTITY_NOT_FOUND.code
                 )
             });
         });
