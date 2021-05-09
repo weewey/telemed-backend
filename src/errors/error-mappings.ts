@@ -30,5 +30,17 @@ export const Errors = {
   UNABLE_TO_CREATE_DOCTOR: {
     message: `Unable to create doctor`,
     code: "QDOC-008",
+  },
+  UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND:{
+    message: `Unable to create ticket as patient id / queue id / clinic id not found`,
+    code: "QDOC-009"
+  },
+  UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL:{
+    message: `Unable to create ticket as displayNumber is null`,
+    code: "QDOC-010"
+  },
+  UNABLE_TO_CREATE_TICKET:{
+    message: `Unable to create ticket`,
+    code: "QDOC-011"
   }
 };
