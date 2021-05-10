@@ -12,7 +12,7 @@ class QueueRepository {
             queue = await Queue.create(queueAttr)
         } catch (error) {
             if (error instanceof ForeignKeyConstraintError) {
-                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "Queue cannot be created as associated Clinic Id does not exist");
+                throw new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "Queue cannot be created as associated Clinic Id does not exist");
             }
             throw error;
         }

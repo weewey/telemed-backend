@@ -34,7 +34,7 @@ describe('Doctor Service', () => {
 
         it('should throw NotFoundError when the error is due to associated entity not found', async () => {
             jest.spyOn(DoctorRepository, "create").mockRejectedValue(
-                new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "not found"))
+                new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "not found"))
             const doctorAttrs = getDoctorAttrs()
             await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(NotFoundError)
         });

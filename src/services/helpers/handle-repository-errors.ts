@@ -9,7 +9,7 @@ const REPO_BUSINESS_ERRORS = [
 ];
 
 const REPO_NOT_FOUND_ERRORS = [
-    Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code
+    Errors.ENTITY_NOT_FOUND.code
 ];
 
 interface ErrorInterface extends Error {

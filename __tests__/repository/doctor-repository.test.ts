@@ -81,7 +81,7 @@ describe('Doctor Repository', () => {
                 try {
                     await DoctorRepository.create(doctorAttrs);
                 } catch (error) {
-                    expect(error.code).toEqual(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code)
+                    expect(error.code).toEqual(Errors.ENTITY_NOT_FOUND.code)
                 }
             });
         });

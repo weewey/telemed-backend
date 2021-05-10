@@ -22,7 +22,7 @@ export const Errors = {
   FIELD_ALREADY_EXISTS: {
     code: "QDOC-006",
   },
-  ASSOCIATED_ENTITY_NOT_PRESENT: {
+  ENTITY_NOT_FOUND: {
     code: "QDOC-007",
   },
   UNABLE_TO_CREATE_DOCTOR: {
@@ -41,11 +41,7 @@ export const Errors = {
     message: `Unable to create ticket`,
     code: "QDOC-011"
   },
-  ASSOCIATED_ENTITY_NOT_FOUND: {
-    message: `Associated entity not found`,
-    code: "QDOC-012",
-  },
   VALIDATION_ERROR: {
-    code: "QDOC-013",
+    code: "QDOC-012",
   }
 };

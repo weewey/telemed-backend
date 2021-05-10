@@ -28,7 +28,7 @@ class DoctorRepository {
             if (error instanceof ForeignKeyConstraintError) {
                 const message = `Unable to create doctor ${error.fields} ${error.message}}`;
                 Logger.error(message)
-                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, message);
+                throw new RepositoryError(Errors.ENTITY_NOT_FOUND.code, message);
             }
             throw error;
         }

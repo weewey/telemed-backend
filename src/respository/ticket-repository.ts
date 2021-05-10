@@ -16,7 +16,7 @@ class TicketRepository {
                 const message = `Unable to create ticket ${error.fields} ${error.message}}`;
                 Logger.error(message)
 
-                throw new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, message);
+                throw new RepositoryError(Errors.ENTITY_NOT_FOUND.code, message);
             }
             if (error instanceof ValidationError){
                 const { errorFields, errorMessage } = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors)

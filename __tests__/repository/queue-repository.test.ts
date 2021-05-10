@@ -34,7 +34,7 @@ describe("QueueRepository", () => {
                 try {
                     await QueueRepository.create(queueAttr);
                 } catch (error) {
-                    expect(error.code).toEqual(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code)
+                    expect(error.code).toEqual(Errors.ENTITY_NOT_FOUND.code)
                 }
             })
         });

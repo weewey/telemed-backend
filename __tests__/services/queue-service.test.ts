@@ -35,10 +35,10 @@ describe("QueueService", () => {
 
             it("should throw 404 NotFound error CLINIC_NOT_FOUND when there is no associated clinic id", async () => {
                 jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
-                jest.spyOn(QueueRepository, "create").mockRejectedValue(new RepositoryError(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "clinic id not found"));
+                jest.spyOn(QueueRepository, "create").mockRejectedValue(new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "clinic id not found"));
 
                 await expect(QueueService.create(queueAttr)).rejects.toThrow(new NotFoundError(
-                Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code, "clinic id not found"))
+                Errors.ENTITY_NOT_FOUND.code, "clinic id not found"))
             })
 
             it(`should throw 400 business error UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS and not allow the

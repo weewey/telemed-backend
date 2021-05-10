@@ -49,7 +49,7 @@ describe("#Queues Component", () => {
           expect(response.body).toMatchObject({
             error: {
               message: expect.anything(),
-              code: Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code
+              code: Errors.ENTITY_NOT_FOUND.code
             }
           })
       });

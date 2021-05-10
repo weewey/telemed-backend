@@ -35,7 +35,7 @@ describe("TicketRepository", () => {
                 try {
                     await TicketRepository.create(ticketAttr);
                 } catch (error) {
-                    expect(error.code).toEqual(Errors.ASSOCIATED_ENTITY_NOT_PRESENT.code);
+                    expect(error.code).toEqual(Errors.ENTITY_NOT_FOUND.code);
                 }
             })
             it("should return VALIDATION_ERROR error when displayNumber is null", async () => {
