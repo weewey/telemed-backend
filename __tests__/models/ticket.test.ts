@@ -58,11 +58,45 @@ describe("Ticket", () => {
             expect(ticket).toBeDefined()
             ticketIdsToBeDeleted.push(ticket.id)
         })
+
+        it("should auto increment id", async () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const ticket1 = await Ticket.create(getTicketAttrs({displayNumber: 99}))
+            const ticket2 = await Ticket.create(getTicketAttrs({displayNumber: 88}))
+
+            expect(ticket1.id + 1).toEqual(ticket2.id)
+
+            ticketIdsToBeDeleted.push(ticket1.id, ticket2.id)
+        })
     })
     describe("invalid", () => {
         it("should fail when displayNumber is null", async () => {
             await expect(Ticket.create(getTicketAttrs()))
             .rejects.toThrowError("notNull Violation: Ticket.displayNumber cannot be null")
         })
-    })
+
+        describe("when patient id is not found", () => {
+            it("should throw an error", async () => {
+                const ticketAttributesWithPatientNotFound = {...getTicketAttrs(), patientId: 777, displayNumber: 1}
+                await expect(Ticket.create(ticketAttributesWithPatientNotFound))
+                    .rejects.toThrow(`insert or update on table "Tickets" violates foreign key constraint "Tickets_patientId_fkey"`)
+            })
+        })
+
+        describe("when clinic id is not found", () => {
+            it("should throw an error", async () => {
+                const ticketAttributesWithClinicNotFound = {...getTicketAttrs(), clinicId: 888, displayNumber: 1}
+                await expect(Ticket.create(ticketAttributesWithClinicNotFound))
+                    .rejects.toThrow(`insert or update on table "Tickets" violates foreign key constraint "Tickets_clinicId_fkey"`)
+            })
+        })
+
+        describe("when queue id is not found", () => {
+            it("should throw an error", async () => {
+                const ticketAttributesWithQueueNotFound = {...getTicketAttrs(), queueId: 999, displayNumber: 1}
+                await expect(Ticket.create(ticketAttributesWithQueueNotFound))
+                    .rejects.toThrow(`insert or update on table "Tickets" violates foreign key constraint "Tickets_queueId_fkey"`)
+            })
+        })
+    });
 });
