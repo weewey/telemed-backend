@@ -20,9 +20,11 @@ export const Errors = {
     code: "QDOC-005",
   },
   FIELD_ALREADY_EXISTS: {
+    message: `Field already exists.`,
     code: "QDOC-006",
   },
   ENTITY_NOT_FOUND: {
+    message: `Entity not found.`,
     code: "QDOC-007",
   },
   UNABLE_TO_CREATE_DOCTOR: {
