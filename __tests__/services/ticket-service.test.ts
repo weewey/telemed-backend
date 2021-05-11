@@ -30,10 +30,10 @@ describe("TicketService", () => {
         })
 
         describe('Error scenarios', () => {
-            it("should throw 404 NotFound error UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND when there is no associated patient / queue / clinic id", async () => {
-                jest.spyOn(TicketRepository, "create").mockRejectedValue(new RepositoryError(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code, Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.message));
-                await expect(TicketService.create(ticketAttr)).rejects.toThrow(new NotFoundError(Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.code,
-                    Errors.UNABLE_TO_CREATE_TICKET_AS_ID_NOT_FOUND.message))
+            it("should throw 404 NotFound error ENTITY_NOT_FOUND when there is no associated patient / queue / clinic id", async () => {
+                jest.spyOn(TicketRepository, "create").mockRejectedValue(new RepositoryError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message));
+                await expect(TicketService.create(ticketAttr)).rejects.toThrow(new NotFoundError(Errors.ENTITY_NOT_FOUND.code,
+                    Errors.ENTITY_NOT_FOUND.message))
             })
 
             it("should throw 404 NotFound error UNABLE_TO_CREATE_TICKET_AS_DISPLAY_NUM_IS_NULL when displayNumber is null", async () => {
