@@ -1,5 +1,4 @@
 export default class RepositoryError extends Error {
-
   public readonly code: string;
 
   public constructor(

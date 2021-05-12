@@ -8,7 +8,7 @@ export const errorHandler = (
   req: Request,
   res: Response,
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const apiError: ApiError = isTechnicalOrUnknowError(err)
     ? new TechnicalError()

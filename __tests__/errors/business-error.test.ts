@@ -13,12 +13,8 @@ describe("business error", () => {
     const error: BusinessError = new BusinessError("Message", "QDOC-TEST-001");
 
     const propertyDescriptors = Object.getOwnPropertyDescriptors(error);
-    if (propertyDescriptors.code !== null) {
-      const isInvalidParamsWriteable =
+    const isInvalidParamsWriteable =
         propertyDescriptors.code.writable;
-      expect(isInvalidParamsWriteable).toStrictEqual(false);
-    } else {
-      throw new Error("Became Invalid");
-    }
+    expect(isInvalidParamsWriteable).toStrictEqual(false);
   });
 });

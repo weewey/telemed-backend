@@ -31,7 +31,6 @@
     "src/**/*",
     "src/**/*.json",
     "__tests__/**/*",
-    "__contract_tests__/**/*"
   ],
   "exclude": [
     "node_modules",

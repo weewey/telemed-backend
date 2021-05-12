@@ -3,5 +3,5 @@ export enum ApiErrorType {
   technical = "technical",
   authorization = "authorization",
   business = "business",
-  notFound = "notFound"
+  notFound = "notFound",
 }

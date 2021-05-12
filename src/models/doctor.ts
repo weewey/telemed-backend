@@ -1,77 +1,87 @@
-import {BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, Table, Unique, UpdatedAt} from 'sequelize-typescript'
+import {
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+  Unique,
+  UpdatedAt,
+} from "sequelize-typescript";
+// eslint-disable-next-line import/no-cycle
 import Clinic from "./clinic";
+// eslint-disable-next-line import/no-cycle
 import Queue from "./queue";
 
-@Table({tableName: "Doctors"})
+@Table({ tableName: "Doctors" })
 
 export default class Doctor extends Model {
+  @Column({ allowNull: false, primaryKey: true, type: DataType.INTEGER, autoIncrement: true })
+  public id!: number;
 
-    @Column({allowNull: false, primaryKey: true, type: DataType.INTEGER, autoIncrement: true})
-    public id!: number;
+  @Column({
+    type: DataType.CHAR,
+    allowNull: false,
+    validate: { is: /^[A-Z ]+$/i, len: [ 1, 50 ] },
+  })
+  public firstName!: string;
 
-    @Column({
-        type: DataType.CHAR,
-        allowNull: false,
-        validate: {is: /^[A-Z ]+$/i, len: [1, 50]}
-    })
-    public firstName!: string;
+  @Column({
+    type: DataType.CHAR,
+    allowNull: false,
+    validate: { is: /^[A-Z ]+$/i, len: [ 1, 50 ] },
+  })
+  public lastName!: string;
 
-    @Column({
-        type: DataType.CHAR,
-        allowNull: false,
-        validate: {is: /^[A-Z ]+$/i, len: [1, 50]},
-    })
-    public lastName!: string;
+  @Unique
+  @Column({
+    type: DataType.CHAR,
+    allowNull: false,
+    validate: { isEmail: true },
+  })
+  public email!: string;
 
-    @Unique
-    @Column({
-        type: DataType.CHAR,
-        allowNull: false,
-        validate: {isEmail: true}
-    })
-    public email!: string;
+  @Unique
+  @Column({
+    type: DataType.CHAR,
+    allowNull: false,
+  })
+  public authId!: string;
 
-    @Unique
-    @Column({
-        type: DataType.CHAR,
-        allowNull: false,
-    })
-    public authId!: string;
+  @Unique
+  @Column({
+    type: DataType.CHAR,
+    allowNull: false,
+  })
+  public mobileNumber!: string;
 
-    @Unique
-    @Column({
-        type: DataType.CHAR,
-        allowNull: false
-    })
-    public mobileNumber!: string;
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+  })
+  public onDuty!: boolean;
 
-    @Column({
-        type: DataType.BOOLEAN,
-        allowNull: false
-    })
-    public onDuty!: boolean;
+  @ForeignKey(() => Queue)
+  @Column({
+    allowNull: true,
+    type: DataType.INTEGER,
+  })
+  public queueId?: number;
 
-    @ForeignKey(() => Queue)
-    @Column({
-        allowNull: true,
-        type: DataType.INTEGER,
-    })
-    public queueId?: number;
+  @BelongsTo(() => Queue)
+  public queue?: Queue;
 
-    @BelongsTo(() => Queue)
-    public queue?: Queue;
+  @ForeignKey(() => Clinic)
+  @Column({
+    allowNull: true,
+    type: DataType.INTEGER,
+  })
+  public clinicId?: number;
 
-    @ForeignKey(() => Clinic)
-    @Column({
-        allowNull: true,
-        type: DataType.INTEGER
-    })
-    public clinicId?: number;
+  @CreatedAt
+  public createdAt!: Date;
 
-    @CreatedAt
-    public createdAt!: Date;
-
-    @UpdatedAt
-    public updatedAt!: Date;
-
+  @UpdatedAt
+  public updatedAt!: Date;
 }

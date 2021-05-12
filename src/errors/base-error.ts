@@ -12,7 +12,7 @@ export default class BaseError extends Error {
     status: number,
     type: ApiErrorType,
     message: string | undefined,
-    id = ""
+    id = "",
   ) {
     super(message || "");
     this.id = id || generateUUID();
@@ -20,18 +20,18 @@ export default class BaseError extends Error {
     this.status = status;
     Object.setPrototypeOf(this, new.target.prototype);
     Object.defineProperty(this, "id", {
-      writable: false
+      writable: false,
     });
     Object.defineProperty(this, "message", {
       enumerable: true,
-      writable: false
+      writable: false,
     });
     Object.defineProperty(this, "status", {
       enumerable: false,
-      writable: false
+      writable: false,
     });
     Object.defineProperty(this, "type", {
-      writable: false
+      writable: false,
     });
   }
 }

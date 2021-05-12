@@ -13,8 +13,8 @@ describe("NotFound error", () => {
     const error: NotFoundError = new NotFoundError("Message", "QDOC-TEST-001");
 
     const propertyDescriptors = Object.getOwnPropertyDescriptors(error);
-      const isInvalidParamsWriteable =
+    const isInvalidParamsWriteable =
         propertyDescriptors.code.writable;
-      expect(isInvalidParamsWriteable).toStrictEqual(false);
+    expect(isInvalidParamsWriteable).toStrictEqual(false);
   });
 });

@@ -8,7 +8,7 @@ export default class NotFoundError extends BaseError {
     this.code = code;
 
     Object.defineProperty(this, "code", {
-      writable: false
+      writable: false,
     });
   }
 }

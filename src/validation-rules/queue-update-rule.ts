@@ -6,23 +6,25 @@ const QUEUE_ID = "queueId";
 const STATUS = "status";
 
 const queueIdRule: ValidationChain[] = [
-    check(QUEUE_ID)
+  check(QUEUE_ID)
     .exists()
     .withMessage("Queue Id is required.")
     .bail()
     .isNumeric()
     .withMessage("Queue Id must contain only numbers.")
-    .toInt()
-]
+    .toInt(),
+];
 
 const queueStatusRule: ValidationChain[] = [
-    body(STATUS)
+  body(STATUS)
     .toUpperCase()
     .custom(value => [ QueueStatus.ACTIVE, QueueStatus.CLOSED, QueueStatus.INACTIVE ].includes(value))
-    .withMessage(`Status should contain only either ${QueueStatus.ACTIVE} / ${QueueStatus.CLOSED} / ${QueueStatus.INACTIVE}`)
-]
+    .withMessage(
+      `Status should contain only either ${QueueStatus.ACTIVE} / ${QueueStatus.CLOSED} / ${QueueStatus.INACTIVE}`,
+    ),
+];
 
 export const queueUpdateRules = [
-    ...queueIdRule,
-    ...queueStatusRule
-  ];
+  ...queueIdRule,
+  ...queueStatusRule,
+];

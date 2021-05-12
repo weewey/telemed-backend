@@ -9,7 +9,7 @@ export default class BusinessError extends BaseError {
     this.code = code;
 
     Object.defineProperty(this, "code", {
-      writable: false
+      writable: false,
     });
   }
 }

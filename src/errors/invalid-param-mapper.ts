@@ -1,7 +1,7 @@
 import { InvalidParam } from "./invalid-param";
 
 const fromValidateJSError = (
-  validateJSErrors: ValidateJsErrorFormat
+  validateJSErrors: ValidateJsErrorFormat,
 ): InvalidParam[] => {
   const invalidParams: InvalidParam[] = [];
 
@@ -17,7 +17,7 @@ const fromValidateJSError = (
 };
 
 const toValidateJSError = (
-  invalidParams: InvalidParam[]
+  invalidParams: InvalidParam[],
 ): { [key: string]: string[] } => {
   const validateJSErrors: { [keys: string]: string[] } = {};
 
@@ -31,14 +31,14 @@ const toValidateJSError = (
 };
 
 const fromExpressValidatorFormat = (
-  errors: ExpressValidatorErrors
+  errors: ExpressValidatorErrors,
 ): InvalidParam[] => {
   return errors.map(error => {
     return { name: error.param, reason: error.msg };
   });
 };
 const toExpressValidatorFormat = (
-  invalidParms: InvalidParam[]
+  invalidParms: InvalidParam[],
 ): ExpressValidatorErrors => {
   return invalidParms.map(invalidParam => {
     return { param: invalidParam.name, msg: invalidParam.reason };
@@ -49,7 +49,7 @@ export const invalidParamMapper = {
   fromValidateJSError,
   toValidateJSError,
   fromExpressValidatorFormat,
-  toExpressValidatorFormat
+  toExpressValidatorFormat,
 };
 
 export type ValidateJsErrorFormat = { [key: string]: string[] | undefined };

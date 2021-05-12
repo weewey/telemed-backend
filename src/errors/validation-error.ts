@@ -2,7 +2,7 @@ import BaseError from "./base-error";
 import {
   ValidateJsErrorFormat,
   invalidParamMapper,
-  ExpressValidatorErrors
+  ExpressValidatorErrors,
 } from "./invalid-param-mapper";
 import { ApiErrorType } from "./api-error-type";
 import { InvalidParam } from "./invalid-param";
@@ -20,7 +20,7 @@ export default class ValidationError extends BaseError {
     Object.defineProperty(this, "invalidParams", { writable: false });
     Object.defineProperty(this, "message", {
       enumerable: false,
-      writable: false
+      writable: false,
     });
   }
 
@@ -28,13 +28,13 @@ export default class ValidationError extends BaseError {
     {
       validateJsErrors,
       invalidParams,
-      expressValidatorErrors
+      expressValidatorErrors,
     }: {
       validateJsErrors?: ValidateJsErrorFormat;
       invalidParams?: InvalidParam[];
       expressValidatorErrors?: ExpressValidatorErrors;
     },
-    id = ""
+    id = "",
   ): ValidationError {
     if (validateJsErrors) {
       return ValidationError.fromValidateJs(validateJsErrors, id);
@@ -45,7 +45,7 @@ export default class ValidationError extends BaseError {
     if (expressValidatorErrors) {
       return ValidationError.fromExpressValidatorErrors(
         expressValidatorErrors,
-        id
+        id,
       );
     }
 
@@ -54,28 +54,28 @@ export default class ValidationError extends BaseError {
 
   private static fromValidateJs(
     input: ValidateJsErrorFormat,
-    id = ""
+    id = "",
   ): ValidationError {
     return new ValidationError(
       invalidParamMapper.fromValidateJSError(input),
-      id
+      id,
     );
   }
 
   private static fromInvalidParam(
     invalidParams: InvalidParam[],
-    id = ""
+    id = "",
   ): ValidationError {
     return new ValidationError(invalidParams, id);
   }
 
   private static fromExpressValidatorErrors(
     errors: ExpressValidatorErrors,
-    id = ""
+    id = "",
   ): ValidationError {
     return new ValidationError(
       invalidParamMapper.fromExpressValidatorFormat(errors),
-      id
+      id,
     );
   }
 
@@ -92,7 +92,7 @@ export default class ValidationError extends BaseError {
     if (errorsWithMultipleReasons.length > 0) {
       Logger.error("ValidationError instance has multiple reasons", {
         validationError: this,
-        errorsWithMultipleReasons
+        errorsWithMultipleReasons,
       });
     }
   }

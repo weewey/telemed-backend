@@ -3,19 +3,19 @@ import { Logger } from "../../src/logger";
 import { ApiErrorType } from "../../src/errors/api-error-type";
 
 jest.mock("../../src/logger", () => ({
-  error: jest.fn()
+  error: jest.fn(),
 }));
 
 describe("validation error", () => {
   const validationSample = {
     id: "fake-uuid",
     invalidParams: [ { name: "error", reason: "reason" } ],
-    type: "validation"
+    type: "validation",
   };
   it("should create a new validation error from invalid params", () => {
     const error: ValidationError = ValidationError.from(
       { invalidParams: validationSample.invalidParams },
-      validationSample.id
+      validationSample.id,
     );
     expect(error.message).toBe("");
     expect(error.status).toBe(400);
@@ -25,7 +25,7 @@ describe("validation error", () => {
 
   it("should create a new validation error from Express validator errors", () => {
     const error: ValidationError = ValidationError.from({
-      expressValidatorErrors: [ { param: "nric", msg: "Invalid NRIC" } ]
+      expressValidatorErrors: [ { param: "nric", msg: "Invalid NRIC" } ],
     });
     expect(error.message).toBe("");
     expect(error.status).toBe(400);
@@ -33,13 +33,13 @@ describe("validation error", () => {
     expect(error.invalidParams).toStrictEqual([
       {
         name: "nric",
-        reason: "Invalid NRIC"
-      }
+        reason: "Invalid NRIC",
+      },
     ]);
   });
   it("should create a new validation error from validate js error outputs", () => {
     const error: ValidationError = ValidationError.from({
-      validateJsErrors: { error: [ "reason" ] }
+      validateJsErrors: { error: [ "reason" ] },
     });
     expect(error.message).toBe("");
     expect(error.status).toBe(400);
@@ -55,7 +55,7 @@ describe("validation error", () => {
   it("should be able to convert invalidParams back to its original format", () => {
     const error: ValidationError = ValidationError.from(
       { invalidParams: validationSample.invalidParams },
-      validationSample.id
+      validationSample.id,
     );
     expect(error.invalidParams).toStrictEqual(validationSample.invalidParams);
   });
@@ -63,7 +63,7 @@ describe("validation error", () => {
   it("should not serialize message when converting to json", () => {
     const error: ValidationError = ValidationError.from(
       { invalidParams: validationSample.invalidParams },
-      validationSample.id
+      validationSample.id,
     );
     expect(JSON.parse(JSON.stringify(error))).not.toContain("message");
   });
@@ -71,7 +71,7 @@ describe("validation error", () => {
   it("should not be able to modify invalidParams or message", () => {
     const error: ValidationError = ValidationError.from(
       { invalidParams: validationSample.invalidParams },
-      validationSample.id
+      validationSample.id,
     );
 
     const propertyDescriptors = Object.getOwnPropertyDescriptors(error);
@@ -79,26 +79,25 @@ describe("validation error", () => {
     expect(propertyDescriptors.message.writable).toStrictEqual(false);
   });
 
-
   // Todo need to mock Logger propery, current getting undefined
   it.skip("should log if there are errors with multiple reasons", () => {
     const validationError = ValidationError.from({
-      validateJsErrors: { nric: [ "Invalid", "Missing" ] }
+      validateJsErrors: { nric: [ "Invalid", "Missing" ] },
     });
     expect(Logger.error).toHaveBeenCalledWith(
       "ValidationError instance has multiple reasons",
       {
         validationError,
         errorsWithMultipleReasons: [
-          { name: "nric", reasons: [ "Invalid", "Missing" ] }
-        ]
-      }
+          { name: "nric", reasons: [ "Invalid", "Missing" ] },
+        ],
+      },
     );
   });
 });
 
 describe("ValidationError.from", () => {
-  it("should return validation error with empty arguments ", () => {
+  it("should return validation error with empty arguments", () => {
     const error = ValidationError.from({});
     expect(error.invalidParams).toBeInstanceOf(Array);
     expect(error.invalidParams).toHaveLength(0);

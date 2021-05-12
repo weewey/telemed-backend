@@ -1,6 +1,6 @@
 import {
   invalidParamMapper,
-  ExpressValidatorErrors
+  ExpressValidatorErrors,
 } from "../../src/errors/invalid-param-mapper";
 import { InvalidParam } from "../../src/errors/invalid-param";
 
@@ -11,18 +11,18 @@ describe("Invalid Param Mapper", () => {
       const invalidParams = [ { name: "error", reason: "reason" } ];
 
       expect(
-        invalidParamMapper.fromValidateJSError(validateJSErrors)
+        invalidParamMapper.fromValidateJSError(validateJSErrors),
       ).toStrictEqual(invalidParams);
     });
 
     it("should map an empty value to invalidParams with empty values", () => {
       const validateJSErrors = { nric: undefined, mobileNumber: [ "Invalid" ] };
       const invalidParams: InvalidParam[] = [
-        { name: "mobileNumber", reason: "Invalid" }
+        { name: "mobileNumber", reason: "Invalid" },
       ];
 
       expect(
-        invalidParamMapper.fromValidateJSError(validateJSErrors)
+        invalidParamMapper.fromValidateJSError(validateJSErrors),
       ).toStrictEqual(invalidParams);
     });
   });
@@ -33,19 +33,19 @@ describe("Invalid Param Mapper", () => {
       const validateJSErrors = { error: [ "reason" ] };
 
       expect(invalidParamMapper.toValidateJSError(invalidParams)).toStrictEqual(
-        validateJSErrors
+        validateJSErrors,
       );
     });
     it("should merge multiple invalidParams to ValidateJS", () => {
       const emptyInvalidParams: InvalidParam[] = [
         { name: "mobileNumber", reason: "Not starting with 8 or 9" },
-        { name: "mobileNumber", reason: "Not 8 characters" }
+        { name: "mobileNumber", reason: "Not 8 characters" },
       ];
       const emptyValidateJSErrors = {
-        mobileNumber: [ "Not starting with 8 or 9", "Not 8 characters" ]
+        mobileNumber: [ "Not starting with 8 or 9", "Not 8 characters" ],
       };
       expect(
-        invalidParamMapper.toValidateJSError(emptyInvalidParams)
+        invalidParamMapper.toValidateJSError(emptyInvalidParams),
       ).toStrictEqual(emptyValidateJSErrors);
     });
   });
@@ -54,17 +54,17 @@ describe("Invalid Param Mapper", () => {
     it("should map EspressValidator to invalid Params", () => {
       const errors: ExpressValidatorErrors = [
         { msg: "Invalid Nric", param: "nric" },
-        { msg: "Invalid Mobile Number", param: "mobileNumber" }
+        { msg: "Invalid Mobile Number", param: "mobileNumber" },
       ];
       const invalidParams: InvalidParam[] = [
         { name: "nric", reason: "Invalid Nric" },
         {
           name: "mobileNumber",
-          reason: "Invalid Mobile Number"
-        }
+          reason: "Invalid Mobile Number",
+        },
       ];
       expect(
-        invalidParamMapper.fromExpressValidatorFormat(errors)
+        invalidParamMapper.fromExpressValidatorFormat(errors),
       ).toStrictEqual(invalidParams);
     });
   });
@@ -74,15 +74,15 @@ describe("Invalid Param Mapper", () => {
         { name: "nric", reason: "Invalid Nric" },
         {
           name: "mobileNumber",
-          reason: "Invalid Mobile Number"
-        }
+          reason: "Invalid Mobile Number",
+        },
       ];
       const errors: ExpressValidatorErrors = [
         { msg: "Invalid Nric", param: "nric" },
-        { msg: "Invalid Mobile Number", param: "mobileNumber" }
+        { msg: "Invalid Mobile Number", param: "mobileNumber" },
       ];
       expect(
-        invalidParamMapper.toExpressValidatorFormat(invalidParams)
+        invalidParamMapper.toExpressValidatorFormat(invalidParams),
       ).toStrictEqual(errors);
     });
   });
