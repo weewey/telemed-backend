@@ -57,7 +57,7 @@ describe("QueueRepository", () => {
     });
   });
 
-  describe("#get", () => {
+  describe("#getByClinicIdAndStatus", () => {
     const mockQueue = { id: 1, status: QueueStatus.ACTIVE, clinicId: 1 } as Queue;
 
     describe("when status is passed in", () => {
@@ -91,6 +91,20 @@ describe("QueueRepository", () => {
           },
         );
       });
+    });
+  });
+
+  describe("#getById", () => {
+    const queueId = 1;
+    const mockQueue = { id: queueId, status: QueueStatus.ACTIVE, clinicId: 1 } as Queue;
+
+    it("should call Queue#findByPk with the right params", async () => {
+      const spy = jest.spyOn(Queue, "findByPk").mockResolvedValue(mockQueue);
+
+      await QueueRepository.getById(queueId);
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toBeCalledWith(queueId);
     });
   });
 });
