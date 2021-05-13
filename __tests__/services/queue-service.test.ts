@@ -16,61 +16,75 @@ describe("QueueService", () => {
       clinicId: 1,
       status: QueueStatus.INACTIVE,
     };
+    const mockQueue = { id: 1 } as Queue;
 
     it("should create and return a queue", async () => {
-      const mockQueue = { id: 1 } as Queue;
+      jest.spyOn(QueueService, "getQueuesByClinicAndStatus").mockResolvedValueOnce([]);
       jest.spyOn(QueueRepository, "create").mockResolvedValue(
         mockQueue,
       );
       const queueResult = await QueueService.create(queueAttr);
-
       expect(queueResult).toEqual(mockQueue);
     });
 
     describe("Error scenarios", () => {
-      it("should throw 400 business error QUEUE_CREATION_NO_CLOSED_STATUS when status in request is Closed",
-        async () => {
-          await expect(QueueService.create({ ...queueAttr, status: QueueStatus.CLOSED })).rejects.toThrow(
-            new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message,
-              Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code),
-          );
+      describe("when the status in the create queue request is CLOSED", () => {
+        it("should throw 400 business error QUEUE_CREATION_NO_CLOSED_STATUS", async () => {
+          await expect(QueueService.create({ ...queueAttr, status: QueueStatus.CLOSED }))
+            .rejects
+            .toThrow(
+              new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message,
+                Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code),
+            );
         });
-
-      it("should throw 404 NotFound error CLINIC_NOT_FOUND when there is no associated clinic id", async () => {
-        jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
-        jest.spyOn(QueueRepository, "create")
-          .mockRejectedValue(new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "clinic id not found"));
-
-        await expect(QueueService.create(queueAttr)).rejects.toThrow(new NotFoundError(
-          Errors.ENTITY_NOT_FOUND.code, "clinic id not found",
-        ));
       });
 
-      it(`should throw 400 business error UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS and not allow the
-                    same clinic to create a new queue`, async () => {
-        const mockActiveQueue = { id: 1, status: QueueStatus.ACTIVE, clinicId: 1 } as Queue;
-        jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([ mockActiveQueue ]);
+      describe("when there is no associated clinic", () => {
+        beforeEach(() => {
+          jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
+          jest.spyOn(QueueRepository, "create")
+            .mockRejectedValue(new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "clinic id not found"));
+        });
 
-        await expect(QueueService.create(queueAttr)).rejects.toThrow(
-          new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message,
-            Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code),
-        );
+        it("should throw NotFound error CLINIC_NOT_FOUND", async () => {
+          await expect(QueueService.create(queueAttr)).rejects.toThrow(new NotFoundError(
+            Errors.ENTITY_NOT_FOUND.code, "clinic id not found",
+          ));
+        });
+      });
+
+      describe("when there is already an existing active queue for the clinic", () => {
+        beforeEach(() => {
+          const mockActiveQueue = { id: 1, status: QueueStatus.ACTIVE, clinicId: 1 } as Queue;
+          jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([ mockActiveQueue ]);
+        });
+        it("should throw business error UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS", async () => {
+          await expect(QueueService.create(queueAttr))
+            .rejects
+            .toThrow(
+              new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message,
+                Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code),
+            );
+        });
       });
 
       describe("when QueueRepository.create fails, not due to known reasons", () => {
+        beforeEach(() => {
+          jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
+          jest.spyOn(QueueRepository, "create").mockRejectedValueOnce(new Error("some DB problem"));
+        });
         it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE", async () => {
-          jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
-          jest.spyOn(QueueRepository, "create").mockRejectedValue(new Error("some DB problem"));
-
           await expect(QueueService.create(queueAttr)).rejects.toThrow(new TechnicalError("some DB problem"));
         });
       });
 
-      describe("when QueueService.getQueuesByClinicAndStatus fails, not due to known reasons", () => {
-        it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE", async () => {
+      describe("when QueueService.getQueuesByClinicAndStatus fails, due to unknown reasons", () => {
+        beforeEach(() => {
           jest.spyOn(QueueRepository, "getByClinicIdAndStatus")
-            .mockRejectedValue(new Error("some problem getting queue"));
+            .mockRejectedValueOnce(new Error("some problem getting queue"));
+        });
 
+        it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE", async () => {
           await expect(QueueService.create(queueAttr)).rejects
             .toThrow(new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message,
               Errors.UNABLE_TO_CREATE_QUEUE.code));
@@ -87,7 +101,7 @@ describe("QueueService", () => {
     };
 
     it("should update if there is an existing queue given queue id", async () => {
-      jest.spyOn(QueueRepository, "update").mockResolvedValue();
+      jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
       await QueueService.update(queueAttr);
 
       expect(QueueRepository.update).toHaveBeenCalledTimes(1);
@@ -100,7 +114,7 @@ describe("QueueService", () => {
     const queueStatus = QueueStatus.ACTIVE;
 
     it("should call QueueRespository#getByClinicIdAndStatus", async () => {
-      jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValue([]);
+      jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
       await QueueService.getQueuesByClinicAndStatus(clinicId, queueStatus);
 
       expect(QueueRepository.getByClinicIdAndStatus).toHaveBeenCalledTimes(1);
@@ -113,14 +127,14 @@ describe("QueueService", () => {
     const mockQueue = { id: queueId } as Queue;
 
     it("should call queueRepository.getById", async () => {
-      const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValue(mockQueue);
+      const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValueOnce(mockQueue);
       await QueueService.getQueueById(queueId);
       expect(spy).toHaveBeenCalledWith(queueId);
     });
 
     describe("when queue is not found", () => {
       beforeEach(() => {
-        jest.spyOn(QueueRepository, "getById").mockResolvedValue(null);
+        jest.spyOn(QueueRepository, "getById").mockResolvedValueOnce(null);
       });
 
       it("should throw NotFoundError", async () => {
@@ -133,18 +147,18 @@ describe("QueueService", () => {
 
   describe("fetchAllQueues", () => {
     it("should call QueueRepository.findAll", async () => {
-      const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValue([]);
+      const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValueOnce([]);
       await QueueService.fetchAllQueues();
       expect(spy).toBeCalledTimes(1);
     });
 
     it("should return technical error if QueueRepository errors", async () => {
-      jest.spyOn(QueueRepository, "findAll").mockRejectedValue(new Error("test"));
+      jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
       await expect(QueueService.fetchAllQueues()).rejects.toThrowError(TechnicalError);
     });
 
     it("should return expected error message if QueueRepository errors", async () => {
-      jest.spyOn(QueueRepository, "findAll").mockRejectedValue(new Error("test"));
+      jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
       await expect(QueueService.fetchAllQueues()).rejects.toThrowError("Failed to fetch all queues: test");
     });
   });
