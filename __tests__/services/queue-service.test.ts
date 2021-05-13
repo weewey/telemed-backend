@@ -107,4 +107,13 @@ describe("QueueService", () => {
       expect(QueueRepository.getByClinicIdAndStatus).toHaveBeenCalledWith(clinicId, queueStatus);
     });
   });
+
+  describe("getQueueById", () => {
+    it("should call queueRepository.getById", async () => {
+      const queueId = 1;
+      const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValue(null);
+      await QueueService.getQueueById(queueId);
+      expect(spy).toHaveBeenCalledWith(queueId);
+    });
+  });
 });

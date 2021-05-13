@@ -47,13 +47,9 @@ class QueueService {
     await QueueRepository.update(queueModelAttributes);
   }
 
-  // async getClinicById(id: string): Promise<Clinic | null> {
-  //     return await Clinic.findByPk(id)
-  // }
-  //
-  // async getClinics(): Promise<Clinic[]> {
-  //     return await Clinic.findAll();
-  // }
+  public static async getQueueById(queueId: number): Promise<Queue | null> {
+    return QueueRepository.getById(queueId);
+  }
 }
 
 export default QueueService;
