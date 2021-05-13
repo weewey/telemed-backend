@@ -12,6 +12,7 @@ describe("TicketRepository", () => {
     displayNumber: 1,
     status: TicketStatus.WAITING,
     clinicId: 1,
+    queueId: 1,
   };
 
   beforeEach(() => {
@@ -20,11 +21,10 @@ describe("TicketRepository", () => {
 
   describe("#create", () => {
     it("should call Ticket#create", async () => {
-      jest.spyOn(Ticket, "create").mockResolvedValue();
+      const spy = jest.spyOn(Ticket, "create").mockResolvedValue();
       await TicketRepository.create(ticketAttr);
 
-      expect(Ticket.create).toHaveBeenCalledTimes(1);
-      expect(Ticket.create).toBeCalledWith(ticketAttr);
+      expect(spy).toBeCalledWith(ticketAttr, expect.anything());
     });
 
     describe("Error scenarios", () => {

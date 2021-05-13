@@ -20,6 +20,10 @@ class QueueRepository {
     return queue;
   }
 
+  public static async findAll(): Promise<Queue[]> {
+    return Queue.findAll();
+  }
+
   // TODO: make queue status not optional
   public static async getByClinicIdAndStatus(clinicId: number, status?: QueueStatus): Promise<Queue[]> {
     return Queue.findAll({

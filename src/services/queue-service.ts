@@ -62,6 +62,14 @@ class QueueService {
       throw new TechnicalError(e.message);
     }
   }
+
+  public static async fetchAllQueues(): Promise<Queue[]> {
+    try {
+      return await QueueRepository.findAll();
+    } catch (e) {
+      throw new TechnicalError(`Failed to fetch all queues: ${e.message}`);
+    }
+  }
 }
 
 export default QueueService;

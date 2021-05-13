@@ -29,3 +29,9 @@ queueRoute.put("/:queueId",
     await QueueService.update(updateAttributes);
     res.status(StatusCodes.NO_CONTENT).send();
   }));
+
+queueRoute.get("/",
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const queues = await QueueService.fetchAllQueues();
+    res.status(StatusCodes.OK).json(queues);
+  }));

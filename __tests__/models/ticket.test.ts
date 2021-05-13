@@ -19,7 +19,7 @@ describe("Ticket", () => {
       queueId,
       clinicId,
       ...overrideAttrs,
-    };
+    } as TicketAttributes;
   };
 
   beforeEach(async () => {

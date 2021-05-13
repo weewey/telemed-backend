@@ -9,8 +9,8 @@ export interface QueueAttributes {
   clinicId: number
   status: string
   latestGeneratedTicketDisplayNumber?: number
-  waitingTicketsCount: number,
-  waitingTicketsId: Array<number>
+  waitingTicketsCount?: number,
+  waitingTicketsId?: Array<number>
   startedAt?: Date
   closedAt?: Date
 }

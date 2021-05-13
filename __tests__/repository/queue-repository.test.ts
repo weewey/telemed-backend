@@ -10,7 +10,7 @@ describe("QueueRepository", () => {
   const queueAttr: QueueAttributes = {
     clinicId: 1,
     status: QueueStatus.INACTIVE,
-  };
+  } as QueueAttributes;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -36,6 +36,14 @@ describe("QueueRepository", () => {
             code: Errors.ENTITY_NOT_FOUND.code,
           }));
       });
+    });
+  });
+
+  describe("#fetchAll", () => {
+    it("should call Queue.findAll", async () => {
+      const spy = jest.spyOn(Queue, "findAll").mockResolvedValue([]);
+      await QueueRepository.findAll();
+      expect(spy).toBeCalledTimes(1);
     });
   });
 

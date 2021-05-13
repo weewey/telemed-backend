@@ -130,4 +130,22 @@ describe("QueueService", () => {
       });
     });
   });
+
+  describe("fetchAllQueues", () => {
+    it("should call QueueRepository.findAll", async () => {
+      const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValue([]);
+      await QueueService.fetchAllQueues();
+      expect(spy).toBeCalledTimes(1);
+    });
+
+    it("should return technical error if QueueRepository errors", async () => {
+      jest.spyOn(QueueRepository, "findAll").mockRejectedValue(new Error("test"));
+      await expect(QueueService.fetchAllQueues()).rejects.toThrowError(TechnicalError);
+    });
+
+    it("should return expected error message if QueueRepository errors", async () => {
+      jest.spyOn(QueueRepository, "findAll").mockRejectedValue(new Error("test"));
+      await expect(QueueService.fetchAllQueues()).rejects.toThrowError("Failed to fetch all queues: test");
+    });
+  });
 });

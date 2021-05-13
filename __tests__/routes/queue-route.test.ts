@@ -176,4 +176,24 @@ describe("Queues Route", () => {
         });
     });
   });
+
+  describe("GET /queues", () => {
+    describe("success scenarios", () => {
+      it("should call QueueService.fetchAll", async () => {
+        const spy = jest.spyOn(QueueService, "fetchAllQueues").mockResolvedValue([]);
+        await request(app)
+          .get(queuesPath)
+          .expect(StatusCodes.OK);
+        expect(spy).toBeCalledTimes(1);
+      });
+
+      it("should return the queues", async () => {
+        const mockQueue = { id: 1 } as Queue;
+        jest.spyOn(QueueService, "fetchAllQueues").mockResolvedValue([ mockQueue ]);
+        await request(app)
+          .get(queuesPath)
+          .expect(StatusCodes.OK, [ mockQueue ]);
+      });
+    });
+  });
 });
