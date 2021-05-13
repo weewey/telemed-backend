@@ -1,15 +1,15 @@
 import Ticket, { TicketAttributes } from "../models/ticket";
-import { ForeignKeyConstraintError, ValidationError } from "sequelize";
+import { ForeignKeyConstraintError, Transaction, ValidationError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
 import { Logger } from "../logger";
 
 class TicketRepository {
-  public static async create(ticketAttr: TicketAttributes): Promise<Ticket> {
+  public static async create(ticketAttr: TicketAttributes, transaction?: Transaction): Promise<Ticket> {
     let ticket: Ticket;
     try {
-      ticket = await Ticket.create(ticketAttr);
+      ticket = await Ticket.create(ticketAttr, transaction ? { transaction } : {});
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {
         const message = `Unable to create ticket ${error.fields} ${error.message}}`;

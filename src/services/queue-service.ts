@@ -6,6 +6,7 @@ import QueueRepository from "../respository/queue-repository";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
+import NotFoundError from "../errors/not-found-error";
 
 class QueueService {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -24,7 +25,7 @@ class QueueService {
     }
   }
 
-  private static async validateNoExistingActiveQueues(queueAttr: QueueAttributes) {
+  private static async validateNoExistingActiveQueues(queueAttr: QueueAttributes): Promise<void> {
     const existingActiveQueues = await QueueService.getQueuesByClinicAndStatus(queueAttr.clinicId, QueueStatus.ACTIVE);
     if (existingActiveQueues.length > 0) {
       Logger.error("Error creating queue. ErrorMessage: existing active " +
@@ -47,8 +48,19 @@ class QueueService {
     await QueueRepository.update(queueModelAttributes);
   }
 
-  public static async getQueueById(queueId: number): Promise<Queue | null> {
-    return QueueRepository.getById(queueId);
+  public static async getQueueById(queueId: number): Promise<Queue> {
+    try {
+      const queue = await QueueRepository.getById(queueId);
+      if (queue === null) {
+        throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
+      }
+      return queue;
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        throw e;
+      }
+      throw new TechnicalError(e.message);
+    }
   }
 }
 

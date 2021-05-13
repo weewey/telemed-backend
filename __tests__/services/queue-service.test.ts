@@ -18,7 +18,7 @@ describe("QueueService", () => {
     };
 
     it("should create and return a queue", async () => {
-      const mockQueue = { id: 1 } as any;
+      const mockQueue = { id: 1 } as Queue;
       jest.spyOn(QueueRepository, "create").mockResolvedValue(
         mockQueue,
       );
@@ -109,11 +109,25 @@ describe("QueueService", () => {
   });
 
   describe("getQueueById", () => {
+    const queueId = 1;
+    const mockQueue = { id: queueId } as Queue;
+
     it("should call queueRepository.getById", async () => {
-      const queueId = 1;
-      const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValue(null);
+      const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValue(mockQueue);
       await QueueService.getQueueById(queueId);
       expect(spy).toHaveBeenCalledWith(queueId);
+    });
+
+    describe("when queue is not found", () => {
+      beforeEach(() => {
+        jest.spyOn(QueueRepository, "getById").mockResolvedValue(null);
+      });
+
+      it("should throw NotFoundError", async () => {
+        await expect(QueueService.getQueueById(queueId))
+          .rejects
+          .toThrowError(NotFoundError);
+      });
     });
   });
 });

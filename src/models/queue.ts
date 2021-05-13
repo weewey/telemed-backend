@@ -9,6 +9,8 @@ export interface QueueAttributes {
   clinicId: number
   status: string
   latestGeneratedTicketDisplayNumber?: number
+  waitingTicketsCount: number,
+  waitingTicketsId: Array<number>
   startedAt?: Date
   closedAt?: Date
 }
@@ -43,40 +45,40 @@ export default class Queue extends Model {
     type: DataType.DATE(),
     allowNull: true,
   })
-  public startedAt!: Date;
+  public startedAt?: Date;
 
   @Column({
     type: DataType.DATE(),
     allowNull: true,
   })
-  public closedAt!: Date;
+  public closedAt?: Date;
 
   @Column({
     type: DataType.INTEGER(),
     allowNull: false,
     defaultValue: 0,
   })
-  public waitingTicketsCount?: number;
+  public waitingTicketsCount!: number;
 
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
     allowNull: false,
     defaultValue: [],
   })
-  public waitingTicketsId?: Array<number> ;
+  public waitingTicketsId!: Array<number> ;
 
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
     allowNull: false,
     defaultValue: [],
   })
-  public closedTicketsId?: Array<number> ;
+  public closedTicketsId!: Array<number> ;
 
   @Column({
     type: DataType.INTEGER(),
-    allowNull: true,
+    defaultValue: 0,
   })
-  public latestGeneratedTicketDisplayNumber?: number;
+  public latestGeneratedTicketDisplayNumber!: number;
 
   @HasMany(() => Doctor)
   public doctors?: Doctor[];

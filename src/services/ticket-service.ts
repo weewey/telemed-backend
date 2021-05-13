@@ -1,16 +1,85 @@
 import Ticket, { TicketAttributes } from "../models/ticket";
 import TicketRepository from "../respository/ticket-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
+import QueueService from "./queue-service";
+import Queue from "../models/queue";
+import QueueStatus from "../queue_status";
+import BusinessError from "../errors/business-error";
+import { Errors } from "../errors/error-mappings";
+import TicketStatus from "../ticket_status";
+import { sequelize } from "../utils/db-connection";
+import { Transaction } from "sequelize";
+import TechnicalError from "../errors/technical-error";
+import { Logger } from "../logger";
+
+export type CreateTicketRequest = {
+  patientId: number,
+  queueId: number,
+  clinicId: number
+};
+
 class TicketService {
-  public static async create(ticketAttributes: TicketAttributes): Promise<Ticket> {
-    return this.createTicket(ticketAttributes);
+  public static async create(createTicketRequest: CreateTicketRequest): Promise<Ticket> {
+    const queue = await QueueService.getQueueById(createTicketRequest.queueId);
+    this.validateActiveQueue(queue);
+    const ticketAttr = this.generateTicketAttr(createTicketRequest, queue);
+    return this.createTicketAndUpdateQueueInTransaction(ticketAttr, queue);
   }
 
-  private static async createTicket(ticketAttributes: TicketAttributes): Promise<Ticket> {
+  private static validateActiveQueue(queue: Queue): void {
+    if (queue.status !== QueueStatus.ACTIVE) {
+      throw new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE.message,
+        Errors.UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE.code);
+    }
+  }
+
+  private static generateTicketAttr(createTicketRequest: CreateTicketRequest,
+    { latestGeneratedTicketDisplayNumber }: Queue): TicketAttributes {
+    const ticketDisplayNumber = latestGeneratedTicketDisplayNumber + 1;
+    return {
+      displayNumber: ticketDisplayNumber,
+      status: TicketStatus.WAITING,
+      ...createTicketRequest,
+    };
+  }
+
+  private static async createTicket(ticketAttributes: TicketAttributes,
+    transaction: Transaction): Promise<Ticket> {
     try {
-      return await TicketRepository.create(ticketAttributes);
+      return await TicketRepository.create(ticketAttributes, transaction);
     } catch (e) {
       throw mapRepositoryErrors(e);
+    }
+  }
+
+  private static async updateQueueWithLatestTicketInfo(ticketAttr: TicketAttributes,
+    queue: Queue, transaction: Transaction): Promise<void> {
+    try {
+      await queue.update({
+        latestGeneratedTicketDisplayNumber: ticketAttr.displayNumber,
+        waitingTicketsCount: queue.waitingTicketsCount + 1,
+      }, { transaction });
+    } catch (e) {
+      throw new TechnicalError(`Failed to update queueId: ${queue.id} ${e.message}`);
+    }
+  }
+
+  private static async createTicketAndUpdateQueueInTransaction(
+    ticketAttr: TicketAttributes, queue: Queue,
+  ): Promise<Ticket> {
+    try {
+      return await sequelize.transaction(
+        async (transaction) => {
+          const ticket = await this.createTicket(ticketAttr, transaction);
+
+          await this.updateQueueWithLatestTicketInfo(ticketAttr, queue, transaction);
+
+          return ticket;
+        },
+      );
+    } catch (e) {
+      Logger.error(`Error when creating queue ticket: ${e.message}`);
+      throw e;
     }
   }
 }

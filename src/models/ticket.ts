@@ -5,11 +5,11 @@ import Patient from "./patient";
 import TicketStatus from "../ticket_status";
 
 export interface TicketAttributes {
-  patientId?: number,
-  status?: string,
-  queueId?: number,
-  displayNumber?: number,
-  clinicId?: number,
+  patientId: number,
+  status: string,
+  queueId: number,
+  displayNumber: number,
+  clinicId: number,
 }
 
 @Table({ tableName: "Tickets" })

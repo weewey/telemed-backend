@@ -1,5 +1,8 @@
 import { Factory } from "rosie";
 import Clinic from "../../src/models/clinic";
+import Queue from "../../src/models/queue";
+import { randomInt } from "crypto";
+import QueueStatus from "../../src/queue_status";
 
 interface BuildWrapperResult<T> {
   build: (props?: any) => Promise<T>;
@@ -28,3 +31,17 @@ const clinic = Factory.define<Clinic>("clinic", Clinic)
   .attr("updatedAt", () => new Date(Date.now()));
 
 export const clinicFactory = buildWrapper<Clinic>(clinic);
+
+const queue = Factory.define<Queue>("queue", Queue)
+  .attr("clinicId", () => randomInt(1, 1000))
+  .attr("status", () => QueueStatus.INACTIVE)
+  .attr("latestGeneratedTicketDisplayNumber", () => 0)
+  .attr("waitingTicketsCount", () => 0)
+  .attr("waitingTicketsId", () => [])
+  .attr("closedTicketsId", () => [])
+  .attr("startedAt", () => new Date(Date.now()))
+  .attr("closedAt", () => new Date(Date.now()))
+  .attr("createdAt", () => new Date(Date.now()))
+  .attr("updatedAt", () => new Date(Date.now()));
+
+export const queueFactory = buildWrapper<Queue>(queue);

@@ -46,4 +46,8 @@ export const Errors = {
   VALIDATION_ERROR: {
     code: "QDOC-012",
   },
+  UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE: {
+    message: "Unable to create queue as queue is inactive",
+    code: "QDOC-013",
+  },
 };
