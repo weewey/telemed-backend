@@ -52,12 +52,13 @@ class TicketService {
     }
   }
 
-  private static async updateQueueWithLatestTicketInfo(ticketAttr: TicketAttributes,
+  private static async updateQueueWithLatestTicketInfo(ticket: Ticket,
     queue: Queue, transaction: Transaction): Promise<void> {
     try {
       await queue.update({
-        latestGeneratedTicketDisplayNumber: ticketAttr.displayNumber,
+        latestGeneratedTicketDisplayNumber: ticket.displayNumber,
         waitingTicketsCount: queue.waitingTicketsCount + 1,
+        waitingTicketsId: queue.waitingTicketsId.concat(ticket.id),
       }, { transaction });
     } catch (e) {
       throw new TechnicalError(`Failed to update queueId: ${queue.id} ${e.message}`);
@@ -72,7 +73,7 @@ class TicketService {
         async (transaction) => {
           const ticket = await this.createTicket(ticketAttr, transaction);
 
-          await this.updateQueueWithLatestTicketInfo(ticketAttr, queue, transaction);
+          await this.updateQueueWithLatestTicketInfo(ticket, queue, transaction);
 
           return ticket;
         },
