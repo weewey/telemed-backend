@@ -13,9 +13,15 @@ doctorRoute.post("/",
   validateRequest(doctorCreateRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, onDuty, email, authId, mobileNumber, queueId, clinicId } = req.body;
-    const doctorAttrs = { firstName, lastName, onDuty, email, authId, mobileNumber, queueId, clinicId };
 
-    const doctor = await DoctorService.create(doctorAttrs);
+    const doctor = await DoctorService.create({ firstName,
+      lastName,
+      onDuty,
+      email,
+      authId,
+      mobileNumber,
+      queueId,
+      clinicId });
 
     res.status(StatusCodes.CREATED).json(doctor);
   }));
