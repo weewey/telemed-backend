@@ -5,6 +5,7 @@ import QueueService from "../../src/services/queue-service";
 import Ticket from "../../src/models/ticket";
 import TicketStatus from "../../src/ticket_status";
 import { StatusCodes } from "http-status-codes";
+import { Logger } from "../../src/logger";
 
 describe("Tickets Route", () => {
   const clinicId = 1;
@@ -37,33 +38,29 @@ describe("Tickets Route", () => {
       });
 
       it("calls TicketService #create with the expected params", async () => {
-        jest.spyOn(TicketService, "create").mockResolvedValue(ticket);
-        const expectedTicketAttr = { clinicId, displayNumber: 2, patientId, queueId, status: TicketStatus.WAITING };
+        const ticketServiceSpy = jest.spyOn(TicketService, "create").mockResolvedValue(ticket);
+        const expectedTicketAttr = { clinicId, patientId, queueId };
 
         await request(app).post(ticketsPath)
           .send({ patientId, queueId, clinicId });
 
-        expect(QueueService.getQueuesByClinicAndStatus).toHaveBeenCalledTimes(1);
-        expect(TicketService.create).toHaveBeenCalledTimes(1);
-        expect(TicketService.create).toHaveBeenCalledWith(expectedTicketAttr);
+        expect(ticketServiceSpy).toHaveBeenCalledTimes(1);
+        expect(ticketServiceSpy).toHaveBeenCalledWith(expectedTicketAttr);
       });
     });
 
     describe("Error scenarios", () => {
-      it("should return 400 if queue not found", async () => {
-        jest.spyOn(QueueService, "getQueuesByClinicAndStatus")
-          .mockResolvedValue([ { id: 2, latestGeneratedTicketDisplayNumber: displayNumber } as any ]);
-        jest.spyOn(TicketService, "create").mockResolvedValue(ticket);
-        await request(app).post(ticketsPath)
-          .send({ patientId, queueId, clinicId })
-          .expect(StatusCodes.BAD_REQUEST);
+      beforeEach(() => {
+        jest.spyOn(Logger, "error").mockImplementation(() => {});
       });
 
-      it("should return 400 if displayNumber not found", async () => {
-        jest.spyOn(QueueService, "getQueuesByClinicAndStatus").mockResolvedValue([ { id: queueId } as any ]);
-        jest.spyOn(TicketService, "create").mockResolvedValue(ticket);
+      it.each([
+        [ "patientId is missing", { clinicId, queueId } ],
+        [ "clinicId is missing", { queueId, patientId } ],
+        [ "queueId is missing", { patientId, clinicId } ],
+      ])("should return bad request when (%s) from request body", async (testName: string, reqParams: any) => {
         await request(app).post(ticketsPath)
-          .send({ patientId, queueId, clinicId })
+          .send(reqParams)
           .expect(StatusCodes.BAD_REQUEST);
       });
     });
