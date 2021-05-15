@@ -49,8 +49,9 @@ class QueueService {
 
     await QueueRepository.update(
       { ...queueModelAttributes,
-        ...((status === QueueStatus.ACTIVE) && { startedAt: new Date() }),
-        ...((status === QueueStatus.CLOSED) && { closedAt: new Date() }) },
+        ...((status === QueueStatus.ACTIVE) && { startedAt: new Date(), closedAt: null }),
+        ...((status === QueueStatus.CLOSED) && { closedAt: new Date() }),
+        ...((status === QueueStatus.INACTIVE) && { closedAt: null }) },
     );
   }
 

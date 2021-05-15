@@ -94,47 +94,24 @@ describe("QueueService", () => {
   });
 
   describe("#update", () => {
-    const queueAttr: QueueAttributesWithId = {
-      id: 333,
-      clinicId: 1,
-      status: QueueStatus.INACTIVE,
-    };
+    it.each([
+      [ QueueStatus.ACTIVE, { startedAt: expect.any(Date), closedAt: null } ],
+      [ QueueStatus.CLOSED, { closedAt: expect.any(Date) } ],
+      [ QueueStatus.INACTIVE, { closedAt: null } ],
+    ])("status is %s: should update successfully, including the correct values for startedAt and closedAt",
+      async (status, fields) => {
+        const queueAttrActive: QueueAttributesWithId = {
+          id: 333,
+          clinicId: 1,
+          status,
+        };
 
-    it("should update if there is an existing queue given queue id", async () => {
-      jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
-      await QueueService.update(queueAttr);
+        jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
+        await QueueService.update(queueAttrActive);
 
-      expect(QueueRepository.update).toHaveBeenCalledTimes(1);
-      expect(QueueRepository.update).toHaveBeenCalledWith(queueAttr);
-    });
-
-    it("should update including startedAt as current date if status is ACTIVE", async () => {
-      const queueAttrActive: QueueAttributesWithId = {
-        id: 333,
-        clinicId: 1,
-        status: QueueStatus.ACTIVE,
-      };
-
-      jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
-      await QueueService.update(queueAttrActive);
-
-      expect(QueueRepository.update).toHaveBeenCalledTimes(1);
-      expect(QueueRepository.update).toHaveBeenCalledWith({ ...queueAttrActive, startedAt: expect.any(Date) });
-    });
-  });
-
-  it("should update including closedAt as current date if status is CLOSED", async () => {
-    const queueAttrActive: QueueAttributesWithId = {
-      id: 333,
-      clinicId: 1,
-      status: QueueStatus.CLOSED,
-    };
-
-    jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
-    await QueueService.update(queueAttrActive);
-
-    expect(QueueRepository.update).toHaveBeenCalledTimes(1);
-    expect(QueueRepository.update).toHaveBeenCalledWith({ ...queueAttrActive, closedAt: expect.any(Date) });
+        expect(QueueRepository.update).toHaveBeenCalledTimes(1);
+        expect(QueueRepository.update).toHaveBeenCalledWith({ ...queueAttrActive, ...fields });
+      });
   });
 });
 

@@ -12,7 +12,7 @@ export interface QueueAttributes {
   waitingTicketsCount?: number,
   waitingTicketsId?: Array<number>
   startedAt?: Date
-  closedAt?: Date
+  closedAt?: Date | null
 }
 
 export interface QueueAttributesWithId extends QueueAttributes {
