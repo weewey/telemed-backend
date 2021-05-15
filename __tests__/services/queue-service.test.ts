@@ -33,8 +33,8 @@ describe("QueueService", () => {
           await expect(QueueService.create({ ...queueAttr, status: QueueStatus.CLOSED }))
             .rejects
             .toThrow(
-              new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message,
-                Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code),
+              new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code,
+                Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message),
             );
         });
       });
@@ -62,8 +62,8 @@ describe("QueueService", () => {
           await expect(QueueService.create(queueAttr))
             .rejects
             .toThrow(
-              new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message,
-                Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code),
+              new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code,
+                Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message),
             );
         });
       });

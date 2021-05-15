@@ -84,8 +84,8 @@ describe("Queues Route", () => {
       describe("when the queue is not created due to DB error", () => {
         it("should return BAD_REQUEST with the expected body", async () => {
           jest.spyOn(QueueService, "create")
-            .mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.message,
-              Errors.UNABLE_TO_CREATE_QUEUE.code));
+            .mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.code,
+              Errors.UNABLE_TO_CREATE_QUEUE.message));
           const response = await request(app).post(queuesPath)
             .send({ clinicId: 2 })
             .expect(StatusCodes.BAD_REQUEST);

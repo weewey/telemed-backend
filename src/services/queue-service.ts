@@ -11,8 +11,8 @@ import NotFoundError from "../errors/not-found-error";
 class QueueService {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
     if (queueAttr.status === QueueStatus.CLOSED) {
-      throw new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message,
-        Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code);
+      throw new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code,
+        Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message);
     }
 
     await this.validateNoExistingActiveQueues(queueAttr);
@@ -30,8 +30,8 @@ class QueueService {
     if (existingActiveQueues.length > 0) {
       Logger.error("Error creating queue. ErrorMessage: existing active " +
           "queue exists for clinic, Queue attributes: ", queueAttr);
-      throw new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message,
-        Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code);
+      throw new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code,
+        Errors.UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message);
     }
   }
 

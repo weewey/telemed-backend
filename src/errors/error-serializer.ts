@@ -5,7 +5,7 @@ import { ApiErrorType } from "./api-error-type";
 
 export const deserializeError = (json: ApiErrorResponse): ApiError => {
   if (json.type === ApiErrorType.business) {
-    return new BusinessError(json.message, json.code, json.id);
+    return new BusinessError(json.code, json.message, json.id);
   }
 
   const technicalErrorJson = json as TechnicalErrorResponse;

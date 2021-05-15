@@ -28,8 +28,8 @@ class TicketService {
 
   private static validateActiveQueue(queue: Queue): void {
     if (queue.status !== QueueStatus.ACTIVE) {
-      throw new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE.message,
-        Errors.UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE.code);
+      throw new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE.code,
+        Errors.UNABLE_TO_CREATE_QUEUE_AS_QUEUE_IS_INACTIVE.message);
     }
   }
 
