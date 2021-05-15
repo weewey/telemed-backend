@@ -1,7 +1,8 @@
 import Patient from "../../src/models/patient";
 import PatientRepository, { PatientAttributes } from "../../src/respository/patient-repository";
-import { UniqueConstraintError, ValidationErrorItem } from "sequelize";
+import { UniqueConstraintError, ValidationErrorItem, ValidationError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
+import { Errors } from "../../src/errors/error-mappings";
 
 describe("PatientRepository", () => {
   const patientAttributes: PatientAttributes = {
@@ -31,6 +32,20 @@ describe("PatientRepository", () => {
       }));
 
       await expect(PatientRepository.create).rejects.toThrow(RepositoryError);
+      await expect(PatientRepository.create).rejects.toMatchObject(
+        expect.objectContaining({ code: Errors.FIELD_ALREADY_EXISTS.code }),
+      );
+    });
+
+    it("should throw repository error when faced with DB validation error during create", async () => {
+      jest.spyOn(Patient, "create").mockRejectedValue(
+        new ValidationError("validation error", [ new ValidationErrorItem() ]),
+      );
+
+      await expect(PatientRepository.create).rejects.toThrow(RepositoryError);
+      await expect(PatientRepository.create).rejects.toMatchObject(
+        expect.objectContaining({ code: Errors.VALIDATION_ERROR.code }),
+      );
     });
 
     it("should throw error as is when DB throws non-unique constraint error", async () => {

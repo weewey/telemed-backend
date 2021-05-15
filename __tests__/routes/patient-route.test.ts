@@ -20,12 +20,18 @@ describe("Patients Route", () => {
 
   describe("POST /", () => {
     describe("Successful scenarios", () => {
-      it.skip("should return 201 with the expected body", async () => {
+      it("should return 201 with the expected body", async () => {
         jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
-        await request(app).post(patientBaseUrl)
+
+        const response = await request(app).post(patientBaseUrl)
           .send(patient)
-          .expect(StatusCodes.CREATED)
-          .expect(patient);
+          .expect(StatusCodes.CREATED);
+
+        expect(response.body).toMatchObject({ authId: "route-auth-Id",
+          email: "email-route@gmail.com",
+          firstName: "firstName",
+          lastName: "lastName-route",
+          mobileNumber: "91110002" });
       });
     });
 
