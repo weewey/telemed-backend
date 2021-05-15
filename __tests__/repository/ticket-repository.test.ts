@@ -1,6 +1,6 @@
 import Ticket, { TicketAttributes } from "../../src/models/ticket";
 import TicketStatus from "../../src/ticket_status";
-import { ForeignKeyConstraintError, ValidationError } from "sequelize";
+import { ForeignKeyConstraintError, Op, ValidationError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import TicketRepository from "../../src/respository/ticket-repository";
@@ -56,6 +56,18 @@ describe("TicketRepository", () => {
       const spy = jest.spyOn(Ticket, "findAll").mockResolvedValue([]);
       await TicketRepository.findByPatientIdAndStatus(patientId, TicketStatus.SERVING);
       expect(spy).toBeCalledWith({ where: { patientId, status: TicketStatus.SERVING } });
+    });
+  });
+
+  describe("findPatientActiveTicket", () => {
+    const patientId = 1;
+    it("should call Ticket.findAll with the right params", async () => {
+      const spy = jest.spyOn(Ticket, "findAll").mockResolvedValue([]);
+      await TicketRepository.findPatientActiveTickets(patientId);
+      expect(spy).toBeCalledWith({ "where": { "patientId": 1,
+        [Op.not]: {
+          "status": "CLOSED",
+        } } });
     });
   });
 });

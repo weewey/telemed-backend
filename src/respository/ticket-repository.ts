@@ -1,5 +1,5 @@
 import Ticket, { TicketAttributes } from "../models/ticket";
-import { ForeignKeyConstraintError, Transaction, ValidationError } from "sequelize";
+import { ForeignKeyConstraintError, Op, Transaction, ValidationError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
@@ -32,6 +32,13 @@ class TicketRepository {
   public static async findByPatientIdAndStatus(patientId: number,
     status: TicketStatus): Promise<Ticket[]> {
     return Ticket.findAll({ where: { patientId, status } });
+  }
+
+  public static async findPatientActiveTickets(patientId: number): Promise<Ticket[]> {
+    return Ticket.findAll({ where: {
+      patientId,
+      [Op.not]: { status: TicketStatus.CLOSED },
+    } });
   }
 }
 
