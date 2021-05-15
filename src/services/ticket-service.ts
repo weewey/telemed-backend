@@ -22,6 +22,7 @@ class TicketService {
   public static async create(createTicketRequest: CreateTicketRequest): Promise<Ticket> {
     const queue = await QueueService.getQueueById(createTicketRequest.queueId);
     this.validateActiveQueue(queue);
+    await this.validatePatientDoesNotHaveActiveTicket(createTicketRequest.patientId);
     const ticketAttr = this.generateTicketAttr(createTicketRequest, queue);
     return this.createTicketAndUpdateQueueInTransaction(ticketAttr, queue);
   }
@@ -81,6 +82,23 @@ class TicketService {
     } catch (e) {
       Logger.error(`Error when creating queue ticket: ${e.message}`);
       throw e;
+    }
+  }
+
+  private static async validatePatientDoesNotHaveActiveTicket(patientId: number) : Promise<void> {
+    let tickets: Ticket [];
+    try {
+      tickets = await TicketRepository.findPatientActiveTickets(patientId);
+    } catch (e) {
+      const errorMessage = `Error when fetching patient's active tickets: ${e.message}`;
+      Logger.error(errorMessage);
+      throw new TechnicalError(errorMessage);
+    }
+    if (tickets.length > 0) {
+      throw new BusinessError(
+        Errors.UNABLE_TO_CREATE_TICKET_AS_PATIENT_ALREADY_HAS_AN_ACTIVE_TICKET.code,
+        Errors.UNABLE_TO_CREATE_TICKET_AS_PATIENT_ALREADY_HAS_AN_ACTIVE_TICKET.message,
+      );
     }
   }
 }

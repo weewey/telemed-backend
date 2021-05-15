@@ -39,6 +39,7 @@ describe("TicketService", () => {
         createTicketSpy = jest.spyOn(TicketRepository, "create").mockResolvedValue(mockTicket);
         jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockActiveQueue);
         jest.spyOn(mockActiveQueue, "update").mockResolvedValue(mockActiveQueue);
+        jest.spyOn(TicketRepository, "findPatientActiveTickets").mockResolvedValue([]);
       });
 
       it("should call TicketRepository.create with the expected attributes", async () => {
@@ -98,9 +99,49 @@ describe("TicketService", () => {
         beforeEach(() => {
           jest.spyOn(TicketRepository, "create").mockResolvedValue(mockTicket);
           jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockActiveQueue);
+          jest.spyOn(TicketRepository, "findPatientActiveTickets").mockResolvedValueOnce([]);
         });
         it("should bubble the error up", async () => {
-          jest.spyOn(mockActiveQueue, "update").mockRejectedValue(new TechnicalError("failed"));
+          jest.spyOn(mockActiveQueue, "update")
+            .mockRejectedValue(new TechnicalError("failed"));
+          await expect(TicketService.create(createTicketReq))
+            .rejects
+            .toThrowError(TechnicalError);
+        });
+      });
+
+      describe("when patient already has an ACTIVE ticket", () => {
+        beforeEach(() => {
+          const mockQueue = { id: 1, status: QueueStatus.ACTIVE } as Queue;
+          const mockActiveTicket = { status: TicketStatus.SERVING } as Ticket;
+          jest.spyOn(QueueService, "getQueueById").mockResolvedValueOnce(mockQueue);
+          jest.spyOn(TicketRepository, "findPatientActiveTickets").mockResolvedValueOnce([ mockActiveTicket ]);
+        });
+
+        it("should return a business error", async () => {
+          await expect(TicketService.create(createTicketReq))
+            .rejects
+            .toThrowError(BusinessError);
+        });
+
+        it("should return the expected errorCode and errorMessage", async () => {
+          await expect(TicketService.create(createTicketReq))
+            .rejects
+            .toMatchObject({
+              code: Errors.UNABLE_TO_CREATE_TICKET_AS_PATIENT_ALREADY_HAS_AN_ACTIVE_TICKET.code,
+              message: Errors.UNABLE_TO_CREATE_TICKET_AS_PATIENT_ALREADY_HAS_AN_ACTIVE_TICKET.message,
+            });
+        });
+      });
+
+      describe("when TicketRepository.findPatientActiveTickets errors", () => {
+        beforeEach(() => {
+          const mockQueue = { id: 1, status: QueueStatus.ACTIVE } as Queue;
+          jest.spyOn(QueueService, "getQueueById").mockResolvedValueOnce(mockQueue);
+          jest.spyOn(TicketRepository, "findPatientActiveTickets").mockRejectedValueOnce(new Error("random error"));
+        });
+
+        it("should return a Technical Error", async () => {
           await expect(TicketService.create(createTicketReq))
             .rejects
             .toThrowError(TechnicalError);

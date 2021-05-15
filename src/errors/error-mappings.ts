@@ -50,4 +50,8 @@ export const Errors = {
     message: "Unable to create queue as queue is inactive",
     code: "QDOC-013",
   },
+  UNABLE_TO_CREATE_TICKET_AS_PATIENT_ALREADY_HAS_AN_ACTIVE_TICKET: {
+    message: "Unable to create ticket as patient already has an active ticket",
+    code: "QDOC-014",
+  },
 };
