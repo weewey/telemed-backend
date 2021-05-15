@@ -196,4 +196,51 @@ describe("Queues Route", () => {
       });
     });
   });
+
+  describe("GET /queues/:queueId", () => {
+    describe("Successful scenario", () => {
+      const queueId = 1337;
+      const QUEUES_GET_PATH = `${queuesPath}/${queueId}`;
+      const mockQueue = { id: queueId } as Queue;
+      it("should call QueueService.getQueueById", async () => {
+        const spy = jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockQueue);
+        await request(app)
+          .get(QUEUES_GET_PATH)
+          .expect(StatusCodes.OK);
+        expect(spy).toBeCalledTimes(1);
+        expect(QueueService.getQueueById).toHaveBeenCalledWith(queueId);
+      });
+      it("should return the queue", async () => {
+        jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockQueue);
+        await request(app)
+          .get(QUEUES_GET_PATH)
+          .expect(StatusCodes.OK, mockQueue);
+      });
+      it("should return the queue if queue is a numeric string", async () => {
+        const queueIdString = "1337";
+        jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockQueue);
+        await request(app)
+          .get(`${queuesPath}/${queueIdString}`)
+          .expect(StatusCodes.OK, mockQueue);
+      });
+    });
+    describe("Error Scenarios", () => {
+      const queueIdCanOnlyContainNumbers = "Queue Id must contain only numbers.";
+      it.each([
+        [ "1234abcd", queueIdCanOnlyContainNumbers ],
+        [ "notanumber", queueIdCanOnlyContainNumbers ],
+      ])("should return 400 when queueId in params has incorrect format (%s)", async (queueId, errorReason) => {
+        const QUEUES_GET_PATH = `${queuesPath}/${queueId}`;
+        const response = await request(app).get(QUEUES_GET_PATH)
+          .expect(StatusCodes.BAD_REQUEST);
+
+        expect(response.body).toMatchObject({
+          error: {
+            id: expect.anything(),
+            invalidParams: [ { name: "queueId", reason: errorReason } ],
+          },
+        });
+      });
+    });
+  });
 });

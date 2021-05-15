@@ -5,7 +5,7 @@ import QueueStatus from "../queue_status";
 const QUEUE_ID = "queueId";
 const STATUS = "status";
 
-const queueIdRule: ValidationChain[] = [
+export const queueIdRule: ValidationChain[] = [
   check(QUEUE_ID)
     .exists()
     .withMessage("Queue Id is required.")

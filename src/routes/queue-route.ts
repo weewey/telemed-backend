@@ -4,7 +4,7 @@ import QueueService from "../services/queue-service";
 import QueueStatus from "../queue_status";
 import { StatusCodes } from "http-status-codes";
 import { validateRequest } from "./validate-request";
-import { queueUpdateRules } from "../validation-rules/queue-update-rule";
+import { queueIdRule, queueUpdateRules } from "../validation-rules/queue-update-rule";
 import { queueCreateRules } from "../validation-rules/queue-create-rule";
 
 export const queueRoute = Router();
@@ -34,4 +34,12 @@ queueRoute.get("/",
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const queues = await QueueService.fetchAllQueues();
     res.status(StatusCodes.OK).json(queues);
+  }));
+
+queueRoute.get("/:queueId",
+  validateRequest(queueIdRule),
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.queueId;
+    const queue = await QueueService.getQueueById(Number(id));
+    res.status(StatusCodes.OK).json(queue);
   }));
