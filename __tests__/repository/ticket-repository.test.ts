@@ -49,4 +49,13 @@ describe("TicketRepository", () => {
       });
     });
   });
+
+  describe("findByPatientIdAndStatus", () => {
+    const patientId = 1;
+    it("should call findAll with the right params", async () => {
+      const spy = jest.spyOn(Ticket, "findAll").mockResolvedValue([]);
+      await TicketRepository.findByPatientIdAndStatus(patientId, TicketStatus.SERVING);
+      expect(spy).toBeCalledWith({ where: { patientId, status: TicketStatus.SERVING } });
+    });
+  });
 });

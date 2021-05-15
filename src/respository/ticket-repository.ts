@@ -4,6 +4,7 @@ import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
 import { Logger } from "../logger";
+import TicketStatus from "../ticket_status";
 
 class TicketRepository {
   public static async create(ticketAttr: TicketAttributes, transaction?: Transaction): Promise<Ticket> {
@@ -26,6 +27,11 @@ class TicketRepository {
       throw error;
     }
     return ticket;
+  }
+
+  public static async findByPatientIdAndStatus(patientId: number,
+    status: TicketStatus): Promise<Ticket[]> {
+    return Ticket.findAll({ where: { patientId, status } });
   }
 }
 
