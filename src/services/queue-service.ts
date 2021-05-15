@@ -45,7 +45,13 @@ class QueueService {
   }
 
   public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<void> {
-    await QueueRepository.update(queueModelAttributes);
+    const { status } = queueModelAttributes;
+
+    await QueueRepository.update(
+      { ...queueModelAttributes,
+        ...((status === QueueStatus.ACTIVE) && { startedAt: new Date() }),
+        ...((status === QueueStatus.CLOSED) && { closedAt: new Date() }) },
+    );
   }
 
   public static async getQueueById(queueId: number): Promise<Queue> {
