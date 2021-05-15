@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import request from "supertest";
-import { destroyPatientByField } from "../helpers/patient-helpers";
+import { destroyPatientsByIds } from "../helpers/patient-helpers";
 import app from "../../src/app";
 import { Errors } from "../../src/errors/error-mappings";
 import { PatientAttributes } from "../../src/respository/patient-repository";
@@ -15,11 +15,10 @@ describe("#Patient Component", () => {
     authId: "Patient-component-authId",
     mobileNumber: "910481234",
   };
-  const patientNameForErrorCases = "PatientComponentFirstNameError";
 
   const patientAttributes = (overrides?: Partial<PatientAttributes>): PatientAttributes => {
     const patient = {
-      firstName: patientNameForErrorCases,
+      firstName: generateRandomString(8),
       lastName: generateRandomString(8),
       email: `${generateRandomString(8)}@gmail.com`,
       authId: generateRandomString(8),
@@ -29,9 +28,10 @@ describe("#Patient Component", () => {
   };
 
   describe("#POST /patients", () => {
-    afterEach(async () => {
-      await destroyPatientByField({ firstName: defaultPatient.firstName });
-      await destroyPatientByField({ firstName: patientNameForErrorCases });
+    const patientIdsToDestroy: number[] = [];
+
+    afterAll(async () => {
+      await destroyPatientsByIds(patientIdsToDestroy);
     });
 
     it("should create Patient successfully", async () => {
@@ -48,6 +48,7 @@ describe("#Patient Component", () => {
         authId: defaultPatient.authId,
         mobileNumber: defaultPatient.mobileNumber,
       }));
+      patientIdsToDestroy.push(response.body.id);
     });
 
     describe("Error Scenarios", () => {
@@ -69,6 +70,8 @@ describe("#Patient Component", () => {
             code: Errors.FIELD_ALREADY_EXISTS.code,
           },
         });
+
+        patientIdsToDestroy.push(response.body.id);
       });
     });
   });
