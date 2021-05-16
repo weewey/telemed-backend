@@ -167,4 +167,13 @@ describe("fetchAllQueues", () => {
     jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
     await expect(QueueService.fetchAllQueues()).rejects.toThrowError("Failed to fetch all queues: test");
   });
+
+  describe("when clinicId is passed in", () => {
+    it("should call QueueRepository.findAll with the right params", async () => {
+      const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValueOnce([]);
+      const findAllParams = { clinicId: 1 };
+      await QueueService.fetchAllQueues(findAllParams);
+      expect(spy).toBeCalledWith(findAllParams);
+    });
+  });
 });

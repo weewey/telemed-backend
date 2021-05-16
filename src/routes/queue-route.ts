@@ -6,6 +6,7 @@ import { StatusCodes } from "http-status-codes";
 import { validateRequest } from "./validate-request";
 import { queueIdRule, queueUpdateRules } from "../validation-rules/queue-update-rule";
 import { queueCreateRules } from "../validation-rules/queue-create-rule";
+import { getAllQueuesRule } from "../validation-rules/queue-get-rule";
 
 export const queueRoute = Router();
 
@@ -31,8 +32,11 @@ queueRoute.put("/:queueId",
   }));
 
 queueRoute.get("/",
+  validateRequest(getAllQueuesRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const queues = await QueueService.fetchAllQueues();
+    const { clinicId } = req.query;
+    const findAllQueuesParams = clinicId ? { clinicId: Number(clinicId) } : undefined;
+    const queues = await QueueService.fetchAllQueues(findAllQueuesParams);
     res.status(StatusCodes.OK).json(queues);
   }));
 

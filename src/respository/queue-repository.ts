@@ -5,7 +5,7 @@ import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
 
-interface FindAllQueueAttributes {
+export interface FindAllQueueAttributes {
   clinicId: number
 }
 

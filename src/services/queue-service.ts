@@ -2,7 +2,7 @@ import BusinessError from "../errors/business-error";
 import { Errors } from "../errors/error-mappings";
 import Queue, { QueueAttributes, QueueAttributesWithId } from "../models/queue";
 import QueueStatus from "../queue_status";
-import QueueRepository from "../respository/queue-repository";
+import QueueRepository, { FindAllQueueAttributes } from "../respository/queue-repository";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
@@ -70,9 +70,9 @@ class QueueService {
     }
   }
 
-  public static async fetchAllQueues(): Promise<Queue[]> {
+  public static async fetchAllQueues(findAllQueuesAttributes?: FindAllQueueAttributes): Promise<Queue[]> {
     try {
-      return await QueueRepository.findAll();
+      return await QueueRepository.findAll(findAllQueuesAttributes);
     } catch (e) {
       throw new TechnicalError(`Failed to fetch all queues: ${e.message}`);
     }

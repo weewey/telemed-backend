@@ -7,11 +7,16 @@ import BusinessError from "../../src/errors/business-error";
 import { Errors } from "../../src/errors/error-mappings";
 import { StatusCodes } from "http-status-codes";
 import NotFoundError from "../../src/errors/not-found-error";
+import { Logger } from "../../src/logger";
 
 describe("Queues Route", () => {
   const queuesPath = "/api/v1/queues";
   const clinicId = 1;
   const queue = { id: 1, clinicId, status: QueueStatus.INACTIVE } as Queue;
+
+  beforeAll(() => {
+    jest.spyOn(Logger, "error").mockImplementation(() => {});
+  });
 
   beforeEach(jest.clearAllMocks);
 
@@ -197,6 +202,34 @@ describe("Queues Route", () => {
         await request(app)
           .get(queuesPath)
           .expect(StatusCodes.OK, [ mockQueue ]);
+      });
+
+      describe("when the clinicId query param is passed in", () => {
+        it("should call fetchAllQueues with the clinicId", async () => {
+          const mockQueue = { id: 1 } as Queue;
+          const spy = jest.spyOn(QueueService, "fetchAllQueues").mockResolvedValue([ mockQueue ]);
+          await request(app)
+            .get(`${queuesPath}?clinicId=1`)
+            .expect(StatusCodes.OK, [ mockQueue ]);
+          expect(spy).toBeCalledWith({ clinicId: 1 });
+        });
+      });
+    });
+
+    describe("error scenarios", () => {
+      describe("when the clinicId is not numeric", () => {
+        it("should return badRequest", async () => {
+          const response = await request(app)
+            .get(`${queuesPath}?clinicId=asd`).expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body).toMatchObject({
+            error: {
+              id: expect.anything(),
+              invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" } ],
+              type: "validation",
+            },
+          });
+        });
       });
     });
   });
