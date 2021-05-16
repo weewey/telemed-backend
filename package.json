@@ -8,6 +8,7 @@
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all",
     "db:delete-seed": "sequelize db:seed:undo:all",
+    "prod": "rm -rf ./dist/* && tsc -p ./tsconfig.prod.json && node ./dist/server.js",
     "test": "npm run lint && TZ='Asia/Singapore' ./node_modules/.bin/jest --detectOpenHandles --coverage --forceExit ",
     "lint": "tsc --noEmit && eslint --ext .js,.jsx,.ts,.tsx 'src/' '__tests__/'",
     "lint:fix": "npm run lint -- --fix",
