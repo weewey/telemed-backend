@@ -41,6 +41,9 @@ const baseConfig = mergeConfigs(currentConfig, environmentConfig);
 
 module.exports = {
   local: baseConfig,
+  staging: {
+    ...baseConfig,
+  },
   test: {
     ...baseConfig,
     logging: false,
