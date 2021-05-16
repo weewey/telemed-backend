@@ -1,0 +1,15 @@
+name: build
+
+on:
+  workflow_run:
+    workflows: [ "tests" ]
+    types: [ completed ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Echo "foobar"
+        run: echo "foobar"
