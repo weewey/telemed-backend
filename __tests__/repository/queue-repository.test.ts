@@ -39,11 +39,19 @@ describe("QueueRepository", () => {
     });
   });
 
-  describe("#fetchAll", () => {
+  describe("#findAll", () => {
+    const spy = jest.spyOn(Queue, "findAll").mockResolvedValue([]);
+
     it("should call Queue.findAll", async () => {
-      const spy = jest.spyOn(Queue, "findAll").mockResolvedValue([]);
       await QueueRepository.findAll();
       expect(spy).toBeCalledTimes(1);
+    });
+
+    describe("when clinicId is passed in", () => {
+      it("should call findAll with the right params", async () => {
+        await QueueRepository.findAll({ clinicId: 1 });
+        expect(spy).toBeCalledWith({ where: { clinicId: 1 } });
+      });
     });
   });
 

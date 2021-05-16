@@ -5,6 +5,10 @@ import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
 
+interface FindAllQueueAttributes {
+  clinicId: number
+}
+
 class QueueRepository {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
     let queue: Queue;
@@ -20,7 +24,11 @@ class QueueRepository {
     return queue;
   }
 
-  public static async findAll(): Promise<Queue[]> {
+  public static async findAll(findAllQueueAttributes?: FindAllQueueAttributes): Promise<Queue[]> {
+    if (findAllQueueAttributes) {
+      return Queue.findAll({ where: { ...findAllQueueAttributes } });
+    }
+
     return Queue.findAll();
   }
 
