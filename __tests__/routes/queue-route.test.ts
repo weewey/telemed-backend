@@ -58,6 +58,7 @@ describe("Queues Route", () => {
           expect(response.body).toEqual({ error: {
             id: expect.anything(),
             invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" } ],
+            type: "validation",
           } });
         });
       });
@@ -76,6 +77,7 @@ describe("Queues Route", () => {
               message: "Clinic not found.",
               id: expect.anything(),
               code: "QDOC-002",
+              type: "notFound",
             },
           });
         });
@@ -95,6 +97,7 @@ describe("Queues Route", () => {
               message: "Unable to create queue.",
               id: expect.anything(),
               code: "QDOC-003",
+              type: "business",
             },
           });
         });
@@ -150,6 +153,7 @@ describe("Queues Route", () => {
           error: {
             id: expect.anything(),
             invalidParams: [ { name: "queueId", reason: errorReason } ],
+            type: "validation",
           },
         });
       });
@@ -238,6 +242,7 @@ describe("Queues Route", () => {
           error: {
             id: expect.anything(),
             invalidParams: [ { name: "queueId", reason: errorReason } ],
+            type: "validation",
           },
         });
       });
