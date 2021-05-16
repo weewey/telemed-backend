@@ -52,11 +52,5 @@ module.exports = {
   },
   prod: {
     ...baseConfig,
-    ...{
-      ssl: true,
-      dialectOptions: {
-        ssl: true,
-      },
-    },
   },
 };
