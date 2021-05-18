@@ -13,7 +13,6 @@ provider "google" {
   credentials = file(var.gcp_auth_file)
 }
 
-
 resource "google_cloud_run_service" "qdoc" {
   name = "qdoc-${var.environment}"
   location = var.region
@@ -21,6 +20,7 @@ resource "google_cloud_run_service" "qdoc" {
   metadata {
     annotations = {
       "run.googleapis.com/client-name" = "terraform"
+      "run.googleapis.com/cloudsql-instances" = var.cloud_sql_instance_name
     }
   }
 

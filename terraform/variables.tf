@@ -20,3 +20,5 @@ variable "db_host" {}
 variable "db_database" {}
 
 variable "db_password" {}
+
+variable "cloud_sql_instance_name" {}

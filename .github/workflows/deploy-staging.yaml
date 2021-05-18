@@ -12,19 +12,21 @@ jobs:
   build:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    container: docker://hashicorp/terraform:0.15.3
     env:
       STAGING_GCP_PROJECT_ID: ${{ secrets.STAGING_GCP_PROJECT_ID }}
       GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
       TF_VAR_db_user: ${{ secrets.STAGING_DB_USER }}
       TF_VAR_db_password: ${{ secrets.STAGING_DB_PASSWORD }}
       TF_VAR_db_host: ${{ secrets.STAGING_DB_HOST }}
-      SERVICE_ACCOUNT_KEY_FILE_PATH: "./terraform/creds/keys.json"
+      TF_VAR_cloud_sql_instance_name: "qdoc-postgres-staging"
+      SERVICE_ACCOUNT_KEY_FILE_PATH: "terraform/creds/keys.json"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install jq
-        run: apt install jq
-      - name: Copy service account json
+        run: apk add jq
+      - name: Copy Service Account to File
         run: echo $GCP_SERVICE_ACCOUNT_JSON | jq . > $SERVICE_ACCOUNT_KEY_FILE_PATH
       - name: Terraform Init
         run: terraform -chdir="terraform" init
