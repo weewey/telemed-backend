@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "qdoc_terraform_staging"
+    bucket = "qdoc_terraform_qdoc_staging"
     prefix = "staging_tf"
     credentials = "creds/keys.json"
   }
