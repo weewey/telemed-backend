@@ -21,4 +21,4 @@ jobs:
       - name: Docker tag
         run: docker tag qdoc asia.gcr.io/"$STAGING_GCP_PROJECT_ID"/qdoc
       - name: Push to GCR
-        run: docker push
+        run: docker push asia.gcr.io/"$STAGING_GCP_PROJECT_ID"/qdoc
