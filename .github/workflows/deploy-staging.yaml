@@ -30,6 +30,8 @@ jobs:
         run: apk add jq
       - name: Copy Service Account to File
         run: echo $GCP_SERVICE_ACCOUNT_JSON | jq . > $SERVICE_ACCOUNT_KEY_FILE_PATH
+      - name: List file at creds
+        run: ls terraform/creds
       - name: Terraform Init
         run: terraform -chdir="terraform" init
       - name: Terraform Plan
