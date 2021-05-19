@@ -5,7 +5,7 @@ import { PatientAttributes } from "../../src/respository/patient-repository";
 
 describe("Patient", () => {
   const firstName = "patientModelTest";
-  const getPatientDetails = (overrideDetails?: Partial<PatientAttributes>) => {
+  const getPatientDetails = (overrideDetails?: Partial<PatientAttributes>): PatientAttributes => {
     return {
       firstName: "patientModelTest",
       lastName: "patientLastName",

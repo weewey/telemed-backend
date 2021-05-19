@@ -22,6 +22,7 @@ describe("Queues Route", () => {
 
   describe("POST /queues", () => {
     describe("Successful scenarios", () => {
+      // eslint-disable-next-line jest/expect-expect
       it("should return 201 with the expected body", async () => {
         jest.spyOn(QueueService, "create").mockResolvedValue(queue);
         await request(app).post(queuesPath)
@@ -114,6 +115,8 @@ describe("Queues Route", () => {
     describe("Successful scenarios", () => {
       const queueId = 4560956;
       const QUEUES_PUT_PATH = `${queuesPath}/${queueId}`;
+
+      // eslint-disable-next-line jest/expect-expect
       it("should return 204 with the expected body", async () => {
         jest.spyOn(QueueService, "update").mockResolvedValue();
         await request(app).put(QUEUES_PUT_PATH)
@@ -196,6 +199,7 @@ describe("Queues Route", () => {
         expect(spy).toBeCalledTimes(1);
       });
 
+      // eslint-disable-next-line jest/expect-expect
       it("should return the queues", async () => {
         const mockQueue = { id: 1 } as Queue;
         jest.spyOn(QueueService, "fetchAllQueues").mockResolvedValue([ mockQueue ]);
@@ -247,12 +251,16 @@ describe("Queues Route", () => {
         expect(spy).toBeCalledTimes(1);
         expect(QueueService.getQueueById).toHaveBeenCalledWith(queueId);
       });
+
+      // eslint-disable-next-line jest/expect-expect
       it("should return the queue", async () => {
         jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockQueue);
         await request(app)
           .get(QUEUES_GET_PATH)
           .expect(StatusCodes.OK, mockQueue);
       });
+
+      // eslint-disable-next-line jest/expect-expect
       it("should return the queue if queue is a numeric string", async () => {
         const queueIdString = "1337";
         jest.spyOn(QueueService, "getQueueById").mockResolvedValue(mockQueue);

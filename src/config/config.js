@@ -29,6 +29,7 @@ const environmentConfig = {
 };
 const currentConfig = defaultConfig;
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const mergeConfigs = (config, overriderConfig) => {
   const finalConfig = {};
   Object.keys(config).forEach((property) => {

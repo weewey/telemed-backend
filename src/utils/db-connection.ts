@@ -19,6 +19,7 @@ export const initDB = async (): Promise<void> => {
   await sequelize.authenticate()
     .then(() => {
       Logger.info("DB Connection has been established successfully");
+      return true;
     })
     .catch((err) => {
       Logger.error("Unable to connect to the database:", err);

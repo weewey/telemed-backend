@@ -27,6 +27,7 @@ describe("Tickets Route", () => {
 
   describe("POST /tickets", () => {
     describe("Successful scenarios", () => {
+      // eslint-disable-next-line jest/expect-expect
       it("should return 201 with the expected body", async () => {
         jest.spyOn(QueueService, "getQueuesByClinicAndStatus")
           .mockResolvedValue([ { id: queueId, latestGeneratedTicketDisplayNumber: displayNumber } as any ]);
