@@ -4,10 +4,10 @@ ENV NODE_ENV=production
 
 WORKDIR /qdoc
 
-COPY package.json /qdoc
+COPY package.json .
 
 RUN npm install
 
-ADD . /qdoc
+ADD . .
 
 CMD ["npm", "run", "prod"]
