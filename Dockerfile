@@ -1,13 +1,21 @@
 FROM node:15.12.0
 
-ENV NODE_ENV=production
+USER root
+
+ENV NODE_ENV=build
 
 WORKDIR /qdoc
 
-COPY package.json .
+COPY package*.json tsconfig*.json ./
 
 RUN npm install
 
-ADD . .
+RUN npm install --only=dev
+
+COPY . .
+
+EXPOSE 3000
+
+ENV NODE_ENV=production
 
 CMD ["npm", "run", "prod"]
