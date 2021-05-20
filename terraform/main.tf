@@ -32,14 +32,14 @@ resource "google_secret_manager_secret" "qdoc_staging_db_password" {
 resource "google_secret_manager_secret_version" "qdoc_staging_db_password_data" {
   provider = google-beta
 
-  secret      = google_secret_manager_secret.qdoc_staging_db_password.secret_id
+  secret      = google_secret_manager_secret.qdoc_staging_db_password.name
   secret_data = var.db_password
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
   provider =google-beta
 
-  secret_id  = google_secret_manager_secret.qdoc_staging_db_password.secret_id
+  secret_id  = google_secret_manager_secret.qdoc_staging_db_password.id
   role       = "roles/secretmanager.secretAccessor"
   member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
   depends_on = [google_secret_manager_secret.qdoc_staging_db_password]
