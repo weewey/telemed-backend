@@ -14,7 +14,7 @@ provider "google" {
 }
 
 resource "google_secret_manager_secret" "qdoc_staging_db_password" {
-  provider = google
+  provider = google-beta
 
   secret_id = "qdoc_staging_db_password"
   replication {
@@ -23,14 +23,14 @@ resource "google_secret_manager_secret" "qdoc_staging_db_password" {
 }
 
 resource "google_secret_manager_secret_version" "qdoc_staging_db_password_data" {
-  provider = google
+  provider = google-beta
 
   secret      = google_secret_manager_secret.qdoc_staging_db_password.secret_id
   secret_data = var.db_database
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
-  provider = google
+  provider = google-beta
 
   secret_id  = google_secret_manager_secret.qdoc_staging_db_password.secret_id
   role       = "roles/secretmanager.secretAccessor"
@@ -39,6 +39,8 @@ resource "google_secret_manager_secret_iam_member" "secret-access" {
 }
 
 resource "google_cloud_run_service" "qdoc" {
+  provider = google-beta
+
   name     = "qdoc-${var.environment}"
   location = var.region
 
