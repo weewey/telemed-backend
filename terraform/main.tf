@@ -20,7 +20,7 @@ resource "google_cloud_run_service" "qdoc" {
   metadata {
     annotations = {
       "run.googleapis.com/client-name" = "terraform"
-      "run.googleapis.com/cloudsql-instances" = var.cloud_sql_instance_name
+      "run.googleapis.com/cloudsql-instances" = "qdoc-309515:asia-southeast1:qdoc-postgres-staging"
     }
   }
 
