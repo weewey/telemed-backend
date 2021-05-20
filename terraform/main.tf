@@ -13,46 +13,11 @@ provider "google" {
   credentials = file(var.gcp_auth_file)
 }
 
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.gcp_auth_file)
-}
-
-resource "google_secret_manager_secret" "qdoc_staging_db_password" {
-  provider = google-beta
-
-  secret_id = "qdoc_staging_db_password"
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "qdoc_staging_db_password_data" {
-  provider = google-beta
-
-  secret      = google_secret_manager_secret.qdoc_staging_db_password.name
-  secret_data = var.db_password
-}
-
-resource "google_secret_manager_secret_iam_member" "secret-access" {
-  provider = google-beta
-
-  secret_id  = google_secret_manager_secret.qdoc_staging_db_password.id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  depends_on = [google_secret_manager_secret.qdoc_staging_db_password]
-}
-
 resource "google_cloud_run_service" "qdoc" {
-  provider = google-beta
-
   name     = "qdoc-${var.environment}"
   location = var.region
 
   autogenerate_revision_name = true
-  depends_on                 = [google_secret_manager_secret_version.qdoc_staging_db_password_data]
 
   template {
     metadata {
@@ -75,17 +40,12 @@ resource "google_cloud_run_service" "qdoc" {
           value = var.db_host
         }
         env {
-          name = "DB_DATABASE"
+          name  = "DB_DATABASE"
           value = var.db_database
         }
         env {
           name  = "DB_PASSWORD"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.qdoc_staging_db_password.secret_id
-              key  = "1"
-            }
-          }
+          value = var.db_password
         }
         env {
           name  = "DB_USER"
@@ -109,8 +69,6 @@ data "google_iam_policy" "noauth" {
 }
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
-  provider = google-beta
-
   location = google_cloud_run_service.qdoc.location
   project  = google_cloud_run_service.qdoc.project
   service  = google_cloud_run_service.qdoc.name
