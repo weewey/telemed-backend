@@ -44,6 +44,14 @@ resource "google_cloud_run_service" "qdoc" {
           name = "DB_PASSWORD"
           value = var.db_password
         }
+        env {
+          name = "DB_USER"
+          value = var.db_user
+        }
+        env {
+          name = "API_PORT"
+          value = 8080
+        }
       }
     }
   }
