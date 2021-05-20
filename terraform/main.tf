@@ -6,6 +6,13 @@ terraform {
   }
 }
 
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+  credentials = file(var.gcp_auth_file)
+}
+
 provider "google-beta" {
   project     = var.project_id
   region      = var.region
@@ -14,7 +21,7 @@ provider "google-beta" {
 }
 
 resource "google_secret_manager_secret" "qdoc_staging_db_password" {
-  provider = "google-beta"
+  provider = google-beta
 
   secret_id = "qdoc_staging_db_password"
   replication {
@@ -23,14 +30,14 @@ resource "google_secret_manager_secret" "qdoc_staging_db_password" {
 }
 
 resource "google_secret_manager_secret_version" "qdoc_staging_db_password_data" {
-  provider = "google-beta"
+  provider = google-beta
 
   secret      = google_secret_manager_secret.qdoc_staging_db_password.secret_id
   secret_data = var.db_password
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
-  provider ="google-beta"
+  provider =google-beta
 
   secret_id  = google_secret_manager_secret.qdoc_staging_db_password.secret_id
   role       = "roles/secretmanager.secretAccessor"
@@ -39,7 +46,7 @@ resource "google_secret_manager_secret_iam_member" "secret-access" {
 }
 
 resource "google_cloud_run_service" "qdoc" {
-  provider ="google-beta"
+  provider =google-beta
 
   name     = "qdoc-${var.environment}"
   location = var.region
@@ -102,7 +109,7 @@ data "google_iam_policy" "noauth" {
 }
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
-  provider = "google-beta"
+  provider = google-beta
 
   location = google_cloud_run_service.qdoc.location
   project  = google_cloud_run_service.qdoc.project
