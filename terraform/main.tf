@@ -80,8 +80,8 @@ resource "google_cloud_run_service" "qdoc" {
         }
         env {
           name  = "DB_PASSWORD"
-          value_from = {
-            secret_key_ref = {
+          value_from {
+            secret_key_ref {
               name = google_secret_manager_secret.qdoc_staging_db_password.secret_id
               key  = "1"
             }
