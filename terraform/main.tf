@@ -30,7 +30,7 @@ resource "google_cloud_run_service" "qdoc" {
 
     spec {
       containers {
-        image = "asia.gcr.io/${var.project_id}/qdoc"
+        image = "asia.gcr.io/${var.project_id}/qdoc:latest"
         env {
           name  = "NODE_ENV"
           value = var.environment
