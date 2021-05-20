@@ -18,4 +18,6 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["npm", "run", "prod"]
+RUN chmod +x ./scripts/start_server.sh
+
+CMD ["./scripts/start_server.sh"]
