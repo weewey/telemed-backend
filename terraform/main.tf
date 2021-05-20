@@ -41,7 +41,7 @@ resource "google_secret_manager_secret_iam_member" "secret-access" {
 
   secret_id  = google_secret_manager_secret.qdoc_staging_db_password.secret_id
   role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${var.project_id}-compute@developer.gserviceaccount.com"
+  member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
   depends_on = [google_secret_manager_secret.qdoc_staging_db_password]
 }
 
