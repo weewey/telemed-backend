@@ -37,7 +37,7 @@ resource "google_secret_manager_secret_version" "qdoc_staging_db_password_data" 
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
-  provider =google-beta
+  provider = google-beta
 
   secret_id  = google_secret_manager_secret.qdoc_staging_db_password.id
   role       = "roles/secretmanager.secretAccessor"
@@ -46,7 +46,7 @@ resource "google_secret_manager_secret_iam_member" "secret-access" {
 }
 
 resource "google_cloud_run_service" "qdoc" {
-  provider =google-beta
+  provider = google-beta
 
   name     = "qdoc-${var.environment}"
   location = var.region
@@ -76,12 +76,7 @@ resource "google_cloud_run_service" "qdoc" {
         }
         env {
           name = "DB_DATABASE"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.qdoc_staging_db_password.secret_id
-              key  = "1"
-            }
-          }
+          value = var.db_password
         }
         env {
           name  = "DB_PASSWORD"
