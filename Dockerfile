@@ -14,7 +14,7 @@ RUN npm install --only=dev
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 8080
 
 ENV NODE_ENV=production
 
