@@ -1,5 +1,5 @@
 variable "environment" {
-  default = "staging"
+  default     = "staging"
   description = "Environment tag for resource group"
 }
 

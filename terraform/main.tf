@@ -1,55 +1,58 @@
 terraform {
   backend "gcs" {
-    bucket = "qdoc_staging_app_terraform_backend"
-    prefix = "staging_tf"
+    bucket      = "qdoc_staging_app_terraform_backend"
+    prefix      = "staging_tf"
     credentials = "creds/keys.json"
   }
 }
 
 provider "google" {
-  project = var.project_id
-  region = var.region
-  zone = var.zone
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
   credentials = file(var.gcp_auth_file)
 }
 
 resource "google_cloud_run_service" "qdoc" {
-  name = "qdoc-${var.environment}"
+  name     = "qdoc-${var.environment}"
   location = var.region
 
-  metadata {
-    annotations = {
-      "run.googleapis.com/client-name" = "terraform"
-      "run.googleapis.com/cloudsql-instances" = "qdoc-309515:asia-southeast1:qdoc-postgres-staging"
-    }
-  }
+  autogenerate_revision_name = true
 
   template {
+    metadata {
+      annotations = {
+        "autoscaling.knative.dev/maxScale"      = "1000"
+        "run.googleapis.com/client-name"        = "terraform"
+        "run.googleapis.com/cloudsql-instances" = "qdoc-309515:asia-southeast1:qdoc-postgres-staging"
+      }
+    }
+
     spec {
       containers {
         image = "asia.gcr.io/${var.project_id}/qdoc"
         env {
-          name = "NODE_ENV"
+          name  = "NODE_ENV"
           value = var.environment
         }
         env {
-          name = "DB_HOST"
+          name  = "DB_HOST"
           value = var.db_host
         }
         env {
-          name = "DB_DATABASE"
+          name  = "DB_DATABASE"
           value = var.db_database
         }
         env {
-          name = "DB_PASSWORD"
+          name  = "DB_PASSWORD"
           value = var.db_password
         }
         env {
-          name = "DB_USER"
+          name  = "DB_USER"
           value = var.db_user
         }
         env {
-          name = "API_PORT"
+          name  = "API_PORT"
           value = 8080
         }
       }
@@ -61,14 +64,14 @@ data "google_iam_policy" "noauth" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "allUsers"]
+    "allUsers"]
   }
 }
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
   location = google_cloud_run_service.qdoc.location
-  project = google_cloud_run_service.qdoc.project
-  service = google_cloud_run_service.qdoc.name
+  project  = google_cloud_run_service.qdoc.project
+  service  = google_cloud_run_service.qdoc.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
 }
