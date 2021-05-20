@@ -26,7 +26,7 @@ resource "google_secret_manager_secret_version" "qdoc_staging_db_password_data" 
   provider = google-beta
 
   secret      = google_secret_manager_secret.qdoc_staging_db_password.secret_id
-  secret_data = var.db_database
+  secret_data = var.db_password
 }
 
 resource "google_secret_manager_secret_iam_member" "secret-access" {
