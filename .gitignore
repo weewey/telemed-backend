@@ -70,3 +70,5 @@ web_modules/
 .envrc
 
 test-report.html
+
+dist
