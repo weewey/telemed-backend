@@ -24,3 +24,5 @@ variable "db_password" {}
 variable "cloud_sql_instance_name" {}
 
 variable "db_user" {}
+
+variable "docker_image_tag" {}
