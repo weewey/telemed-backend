@@ -59,21 +59,21 @@ describe("#Queues Component", () => {
     let queueId: number;
     let clinicId: number;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const clinicCreated = await createClinic();
       clinicId = clinicCreated.id;
 
       const queueCreated = await createQueue(clinicId);
       queueId = queueCreated.id;
     });
-    afterAll(async () => {
+    afterEach(async () => {
       await destroyQueueById(queueId);
       await destroyClinicById(clinicId);
     });
     it("should update existing queue successfully", async () => {
       await request(app)
         .put(`${QUEUES_PATH}/${queueId}`)
-        .send({ status: QueueStatus.ACTIVE })
+        .send({ clinicId, status: QueueStatus.ACTIVE })
         .expect(StatusCodes.NO_CONTENT);
 
       const updatedQueue = await getQueueById(queueId);
@@ -81,11 +81,11 @@ describe("#Queues Component", () => {
       expect(updatedQueue?.status).toEqual(QueueStatus.ACTIVE);
     });
 
-    it("should throw error if existing queue does not exist", async () => {
+    it("should throw 404 error if existing queue does not exist", async () => {
       const queueIdThatDoesNotExist = 98942809;
       const response = await request(app)
         .put(`${QUEUES_PATH}/${queueIdThatDoesNotExist}`)
-        .send({ status: QueueStatus.ACTIVE })
+        .send({ clinicId, status: QueueStatus.INACTIVE })
         .expect(StatusCodes.NOT_FOUND);
 
       expect(response.body).toMatchObject({
@@ -94,6 +94,21 @@ describe("#Queues Component", () => {
           code: Errors.QUEUE_NOT_FOUND.code,
         },
       });
+    });
+
+    it("should throw 400 error if existing active queue exists", async () => {
+      // setup to update queue with ACTIVE status
+      await request(app).put(`${QUEUES_PATH}/${queueId}`)
+        .send({ clinicId, status: QueueStatus.ACTIVE });
+
+      const response = await request(app).put(`${QUEUES_PATH}/${queueId}`)
+        .send({ clinicId, status: QueueStatus.ACTIVE });
+
+      expect(response.body).toMatchObject(
+        { error: { code: Errors.UNABLE_TO_CREATE_OR_UPDATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code,
+          message: Errors.UNABLE_TO_CREATE_OR_UPDATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.message,
+          type: "business" } },
+      );
     });
   });
 
