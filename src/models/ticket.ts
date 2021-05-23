@@ -12,6 +12,10 @@ export interface TicketAttributes {
   clinicId: number,
 }
 
+export interface TicketAttributesWithId extends TicketAttributes {
+  id: number
+}
+
 @Table({ tableName: "Tickets" })
 
 export default class Ticket extends Model {

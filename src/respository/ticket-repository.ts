@@ -1,10 +1,11 @@
-import Ticket, { TicketAttributes } from "../models/ticket";
+import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/ticket";
 import { ForeignKeyConstraintError, Op, Transaction, ValidationError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
 import { Logger } from "../logger";
 import TicketStatus from "../ticket_status";
+import NotFoundError from "../errors/not-found-error";
 
 class TicketRepository {
   public static async create(ticketAttr: TicketAttributes, transaction?: Transaction): Promise<Ticket> {
@@ -39,6 +40,15 @@ class TicketRepository {
       patientId,
       [Op.not]: { status: TicketStatus.CLOSED },
     } });
+  }
+
+  public static async update(ticketModelAttributes: Partial<TicketAttributesWithId>): Promise<void> {
+    const { id, ...updateAttributes } = ticketModelAttributes;
+    const ticket = await Ticket.findByPk(id);
+    if (!ticket) {
+      throw new NotFoundError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message);
+    }
+    await ticket.update(updateAttributes);
   }
 }
 

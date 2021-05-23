@@ -8,7 +8,7 @@ import { Errors } from "../../src/errors/error-mappings";
 import { queueFactory } from "../factories";
 import TicketRepository from "../../src/respository/ticket-repository";
 import TicketStatus from "../../src/ticket_status";
-import Ticket from "../../src/models/ticket";
+import Ticket, { TicketAttributesWithId } from "../../src/models/ticket";
 import TechnicalError from "../../src/errors/technical-error";
 
 describe("TicketService", () => {
@@ -148,5 +148,25 @@ describe("TicketService", () => {
         });
       });
     });
+  });
+
+  describe("#update", () => {
+    it.each([
+      [ TicketStatus.WAITING, { updatedAt: expect.any(Date) } ],
+      [ TicketStatus.CLOSED, { updatedAt: expect.any(Date) } ],
+      [ TicketStatus.SERVING, { updatedAt: expect.any(Date) } ],
+    ])("status is %s: should update successfully, including the correct values for updatedAt",
+      async (status, fields) => {
+        const ticketAttrActive: Partial<TicketAttributesWithId> = {
+          id: 333,
+          status,
+        };
+
+        jest.spyOn(TicketRepository, "update").mockResolvedValueOnce();
+        await TicketService.update(ticketAttrActive);
+
+        expect(TicketRepository.update).toHaveBeenCalledTimes(1);
+        expect(TicketRepository.update).toHaveBeenCalledWith({ ...ticketAttrActive, ...fields });
+      });
   });
 });

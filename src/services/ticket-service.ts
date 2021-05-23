@@ -1,4 +1,4 @@
-import Ticket, { TicketAttributes } from "../models/ticket";
+import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/ticket";
 import TicketRepository from "../respository/ticket-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import QueueService from "./queue-service";
@@ -100,6 +100,17 @@ class TicketService {
         Errors.UNABLE_TO_CREATE_TICKET_AS_PATIENT_ALREADY_HAS_AN_ACTIVE_TICKET.message,
       );
     }
+  }
+
+  public static async update(ticketModelAttributes: Partial<TicketAttributesWithId>): Promise<void> {
+    const { status } = ticketModelAttributes;
+
+    await TicketRepository.update(
+      { ...ticketModelAttributes,
+        ...((status === TicketStatus.WAITING) && { updatedAt: new Date() }),
+        ...((status === TicketStatus.CLOSED) && { updatedAt: new Date() }),
+        ...((status === TicketStatus.SERVING) && { updatedAt: new Date() }) },
+    );
   }
 }
 

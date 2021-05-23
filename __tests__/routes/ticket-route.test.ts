@@ -66,4 +66,81 @@ describe("Tickets Route", () => {
       });
     });
   });
+  describe("PUT /tickets", () => {
+    describe("Successful scenarios", () => {
+      const ticketId = 123456;
+      const TICKET_PUT_PATH = `${ticketsPath}/${ticketId}`;
+
+      // eslint-disable-next-line jest/expect-expect
+      it("should return 204 with the expected body", async () => {
+        jest.spyOn(TicketService, "update").mockResolvedValue();
+        await request(app).put(TICKET_PUT_PATH)
+          .send({ status: TicketStatus.SERVING })
+          .expect(StatusCodes.NO_CONTENT)
+          .expect("");
+      });
+
+      it.each([
+        [ 123, "SERVING" ],
+        [ 1234567, "WAITING" ],
+        [ 123456789, "CLOSED" ],
+        [ 123, "serving" ],
+        [ 4, "waiting" ],
+        [ 9324, "Closed" ],
+      ])("should call TicketService#update with the expected params for ticketId (%s) and status (%s)",
+        async (ticketIdNo, status) => {
+          jest.spyOn(TicketService, "update").mockResolvedValue();
+          const expectedTicketAttr = { status: status.toUpperCase() };
+
+          await request(app).put(`${ticketsPath}/${ticketIdNo}`)
+            .send({ status });
+
+          expect(TicketService.update).toHaveBeenCalledTimes(1);
+          expect(TicketService.update).toHaveBeenCalledWith(expectedTicketAttr);
+        });
+    });
+
+    describe("Error scenarios", () => {
+      const TicketIdCanOnlyContainNumbers = "Ticket Id must contain only numbers.";
+      it.each([
+        [ "234ggs24", TicketIdCanOnlyContainNumbers ],
+        [ "abcfd", TicketIdCanOnlyContainNumbers ],
+      ])("should return 400 when queueId in params has incorrect format (%s)", async (ticketId, errorReason) => {
+        const TICKETS_PUT_PATH = `${ticketsPath}/${ticketId}`;
+        jest.spyOn(TicketService, "update").mockResolvedValue();
+        const response = await request(app).put(TICKETS_PUT_PATH)
+          .send({ status: TicketStatus.SERVING })
+          .expect(StatusCodes.BAD_REQUEST);
+
+        expect(response.body).toMatchObject({
+          error: {
+            id: expect.anything(),
+            invalidParams: [ { name: "ticketId", reason: errorReason } ],
+            type: "validation",
+          },
+        });
+      });
+
+      const statusNotAllowed = "Status should contain only either WAITING / SERVING / CLOSED";
+      it.each([
+        [ "status", statusNotAllowed ],
+        [ "OPEN", statusNotAllowed ],
+        [ "STARTED", statusNotAllowed ],
+      ])("should return 400 when status in ticket params is not supported (%s)",
+        async (status, errorReason) => {
+          const TICKETS_PUT_PATH = `${ticketsPath}/${123}`;
+          jest.spyOn(TicketService, "update").mockResolvedValue();
+          const response = await request(app).put(TICKETS_PUT_PATH)
+            .send({ status })
+            .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body).toMatchObject({
+            error: {
+              id: expect.anything(),
+              invalidParams: [ { name: "status", reason: errorReason } ],
+            },
+          });
+        });
+    });
+  });
 });

@@ -4,6 +4,7 @@ import { ForeignKeyConstraintError, Op, ValidationError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import TicketRepository from "../../src/respository/ticket-repository";
+import NotFoundError from "../../src/errors/not-found-error";
 import objectContaining = jasmine.objectContaining;
 
 describe("TicketRepository", () => {
@@ -68,6 +69,31 @@ describe("TicketRepository", () => {
         [Op.not]: {
           "status": "CLOSED",
         } } });
+    });
+  });
+
+  describe("#update", () => {
+    const ticketModelAttributes = {
+      id: 1111,
+      status: TicketStatus.CLOSED,
+    };
+    const { id, ...updateAttributes } = ticketModelAttributes;
+    it("should call Ticket#update", async () => {
+      const ticket = new Ticket();
+      jest.spyOn(Ticket, "findByPk").mockResolvedValue(ticket);
+      jest.spyOn(ticket, "update").mockResolvedValue({} as Ticket);
+      await TicketRepository.update(ticketModelAttributes);
+
+      expect(ticket.update).toHaveBeenCalledTimes(1);
+      expect(ticket.update).toHaveBeenCalledWith(updateAttributes);
+    });
+    it("should return Not Found Error if id not found", async () => {
+      jest.spyOn(Ticket, "findByPk").mockResolvedValue(null);
+      await expect(TicketRepository.update(ticketModelAttributes)).rejects.toThrow(NotFoundError);
+      await expect(TicketRepository.update(ticketModelAttributes)).rejects
+        .toMatchObject(objectContaining({
+          code: Errors.ENTITY_NOT_FOUND.code,
+        }));
     });
   });
 });
