@@ -26,7 +26,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       ], { transaction: t });
-      const clinic = await queryInterface.sequelize.query("SELECT id FROM \"Clinics\" limit 1;");
+      const clinic = await queryInterface.sequelize.query("SELECT id FROM \"Clinics\" limit 1;", { transaction: t });
       await queryInterface.bulkInsert("Queues", [ {
         clinicId: clinic[0][0].id,
         status: "INACTIVE",
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.bulkDelete("Clinics", null, {});
     await queryInterface.bulkDelete("Queues", null, {});
+    await queryInterface.bulkDelete("Clinics", null, {});
   },
 };

@@ -38,7 +38,7 @@ class QueueService {
     try {
       return await QueueRepository.getByClinicIdAndStatus(clinicId, queueStatus);
     } catch (error) {
-      Logger.error(`Error creating queue. Unable to getQueuesByClinicAndStatus. ErrorMessage: ${error.message}`);
+      Logger.error(`Unable to getQueuesByClinicAndStatus. ErrorMessage: ${error.message}`);
       throw new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message, Errors.UNABLE_TO_CREATE_QUEUE.code);
     }
   }
