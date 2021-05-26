@@ -1,11 +1,11 @@
 import { UniqueConstraintError, ValidationError } from "sequelize";
 import { v4 as generateUUID } from "uuid";
-import { StaffAttributes } from "../../src/respository/staff-repository";
-import Staff from "../../src/models/staff";
+import { ClinicStaffsAttributes } from "../../src/respository/clinic-staffs-repository";
+import ClinicStaffs from "../../src/models/clinic-staffs";
 
-describe("Staff", () => {
-  const staffIdsToBeDeleted: Array<number> = [];
-  const getStaffAttrs = (overrideAttrs?: Partial<StaffAttributes>): StaffAttributes => {
+describe("ClinicStaffs", () => {
+  const clinicStaffsIdsToBeDeleted: Array<number> = [];
+  const getClinicStaffsAttrs = (overrideAttrs?: Partial<ClinicStaffsAttributes>): ClinicStaffsAttributes => {
     return {
       authId: generateUUID(),
       email: `${generateUUID()}@gmail.com`,
@@ -17,32 +17,32 @@ describe("Staff", () => {
   };
 
   afterAll(async () => {
-    await Staff.destroy({ where: { id: staffIdsToBeDeleted } });
+    await ClinicStaffs.destroy({ where: { id: clinicStaffsIdsToBeDeleted } });
   });
 
   describe("valid", () => {
     it("should create when it has all valid attributes", async () => {
-      const staff = await Staff.create(getStaffAttrs());
+      const staff = await ClinicStaffs.create(getClinicStaffsAttrs());
       expect(staff).toBeDefined();
 
-      staffIdsToBeDeleted.push(staff.id);
+      clinicStaffsIdsToBeDeleted.push(staff.id);
     });
   });
 
   describe("when invalid", () => {
     it("should return an error when the email is not valid", async () => {
-      await expect(Staff.create(getStaffAttrs({ email: "email" }))).rejects
+      await expect(ClinicStaffs.create(getClinicStaffsAttrs({ email: "email" }))).rejects
         .toThrowError(ValidationError);
     });
 
     it("should return an error when the firstName is not valid", async () => {
-      await expect(Staff.create(getStaffAttrs({ firstName: "1234" }))).rejects
+      await expect(ClinicStaffs.create(getClinicStaffsAttrs({ firstName: "1234" }))).rejects
         .toThrowError(ValidationError);
     });
 
     it("should return an error when the firstName is above 50 characters", async () => {
-      await expect(Staff.create(
-        getStaffAttrs({
+      await expect(ClinicStaffs.create(
+        getClinicStaffsAttrs({
           firstName:
           "Lorem ipsum dolor sit ameta consectetuer adipiscing",
         }),
@@ -51,14 +51,14 @@ describe("Staff", () => {
     });
 
     it("should return an error when the lastName is above 50 characters", async () => {
-      await expect(Staff.create(
-        getStaffAttrs({ firstName: "Lorem ipsum dolor sit ameta consectetuer adipiscing" }),
+      await expect(ClinicStaffs.create(
+        getClinicStaffsAttrs({ firstName: "Lorem ipsum dolor sit ameta consectetuer adipiscing" }),
       )).rejects
         .toThrowError(ValidationError);
     });
 
     it("should return an error when the lastName is not valid", async () => {
-      await expect(Staff.create(getStaffAttrs({ lastName: "1234" }))).rejects
+      await expect(ClinicStaffs.create(getClinicStaffsAttrs({ lastName: "1234" }))).rejects
         .toThrowError(ValidationError);
     });
 
@@ -68,22 +68,22 @@ describe("Staff", () => {
       const mobileNumber = "123456";
 
       beforeAll(async () => {
-        const staff = await Staff.create(getStaffAttrs({ email, authId, mobileNumber }));
+        const clinicStaffs = await ClinicStaffs.create(getClinicStaffsAttrs({ email, authId, mobileNumber }));
 
-        staffIdsToBeDeleted.push(staff.id);
+        clinicStaffsIdsToBeDeleted.push(clinicStaffs.id);
       });
       it("should return UniqueConstraintError when email is not unique", async () => {
-        await expect(Staff.create(getStaffAttrs({ email })))
+        await expect(ClinicStaffs.create(getClinicStaffsAttrs({ email })))
           .rejects.toThrowError(UniqueConstraintError);
       });
 
       it("should return UniqueConstraintError when authId is not unique", async () => {
-        await expect(Staff.create(getStaffAttrs({ authId })))
+        await expect(ClinicStaffs.create(getClinicStaffsAttrs({ authId })))
           .rejects.toThrowError(UniqueConstraintError);
       });
 
       it("should return UniqueConstraintError when mobileNumber is not unique", async () => {
-        await expect(Staff.create(getStaffAttrs({ mobileNumber })))
+        await expect(ClinicStaffs.create(getClinicStaffsAttrs({ mobileNumber })))
           .rejects.toThrowError(UniqueConstraintError);
       });
     });

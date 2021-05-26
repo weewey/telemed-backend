@@ -12,9 +12,9 @@ import {
 import Clinic from "./clinic";
 // eslint-disable-next-line import/no-cycle
 
-@Table({ tableName: "Staffs" })
+@Table({ tableName: "ClinicStaffs" })
 
-export default class Staffs extends Model {
+export default class ClinicStaffs extends Model {
   @Column({ allowNull: false, primaryKey: true, type: DataType.INTEGER, autoIncrement: true })
   public id!: number;
 

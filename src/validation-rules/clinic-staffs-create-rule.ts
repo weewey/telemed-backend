@@ -13,7 +13,7 @@ const authIdRule: ValidationChain =
       .withMessage("authId must be present")
       .bail();
 
-export const staffCreateRule = [
+export const clinicStaffsCreateRule = [
   ...nameRules([ FIRST_NAME, LAST_NAME ]),
   emailRule(EMAIL), authIdRule,
 ];

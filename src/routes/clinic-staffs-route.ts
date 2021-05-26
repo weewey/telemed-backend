@@ -1,20 +1,20 @@
 import express, { Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 import { StatusCodes } from "http-status-codes";
-import StaffService from "../services/staff-service";
+import ClinicStaffsService from "../services/clinic-staffs-service";
 import { validateRequest } from "./validate-request";
-import { staffCreateRule } from "../validation-rules/staff-create-rule";
+import { clinicStaffsCreateRule } from "../validation-rules/clinic-staffs-create-rule";
 
-export const staffRoute = Router();
+export const clinicStaffsRoute = Router();
 
-staffRoute.use(express.json());
+clinicStaffsRoute.use(express.json());
 
-staffRoute.post("/",
-  validateRequest(staffCreateRule),
+clinicStaffsRoute.post("/",
+  validateRequest(clinicStaffsCreateRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, email, authId, mobileNumber, clinicId } = req.body;
 
-    const staff = await StaffService.create({ firstName,
+    const staff = await ClinicStaffsService.create({ firstName,
       lastName,
       email,
       authId,
