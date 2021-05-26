@@ -51,7 +51,7 @@ npm test
 
 - seed db
 ```shell
-npm run dev
+npm run db:seed
 ```
 
 
