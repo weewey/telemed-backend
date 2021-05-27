@@ -1,8 +1,6 @@
 # qdoc
 
-[![tests](https://github.com/qdoctech/qdoc/actions/workflows/tests-ci.yaml/badge.svg?branch=main)](https://github.com/qdoctech/qdoc/actions/workflows/tests-ci.yaml)
-[![build](https://github.com/qdoctech/qdoc/actions/workflows/build-ci.yaml/badge.svg?branch=main)](https://github.com/qdoctech/qdoc/actions/workflows/build-ci.yaml)
-[![deploy-staging](https://github.com/qdoctech/qdoc/actions/workflows/deploy-staging.yaml/badge.svg?branch=main)](https://github.com/qdoctech/qdoc/actions/workflows/deploy-staging.yaml)
+[![Staging CI](https://github.com/qdoctech/qdoc/actions/workflows/staging-ci.yml/badge.svg?branch=main)](https://github.com/qdoctech/qdoc/actions/workflows/staging-ci.yml)
 
 ## Requirements
 - node v15.12.0
