@@ -32,9 +32,14 @@ npm i
 npx husky install
 ```
 
-- start docker
+- start docker (without firebase run this if you already have firebase running in docker)
 ```shell
 docker-compose up -d
+```
+
+-- start docker with firebase
+```shell
+docker-compose -f docker-compose-with-firebase.yml up -d
 ```
 
 - init db

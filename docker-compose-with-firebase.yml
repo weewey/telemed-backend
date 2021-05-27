@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=qdoc
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+
+  firebase:
+    image: andreysenov/firebase-tools
+    volumes:
+      - "./firebase:/home/node"
+    ports:
+      - "9099:9099"
+      - "4577:4577"
+    command: [ "firebase", "emulators:start" ]
