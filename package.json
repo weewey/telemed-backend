@@ -1,7 +1,7 @@
 {
   "name": "qdoc",
   "version": "1.0.0",
-  "description": "",
+  "description": "qdoc",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "db:setup": "sequelize db:drop; sequelize db:create && sequelize db:migrate",
