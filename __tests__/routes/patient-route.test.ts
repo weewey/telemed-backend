@@ -5,14 +5,17 @@ import { StatusCodes } from "http-status-codes";
 import app from "../../src/app";
 import { omit } from "lodash";
 import { PatientAttributes } from "../../src/respository/patient-repository";
+import AuthService from "../../src/services/auth-service";
+import { Role } from "../../src/clients/auth-client";
 
 describe("Patients Route", () => {
   const patientBaseUrl = "/api/v1/patients";
+  const authId = "route-auth-Id";
   const patient: PatientAttributes = {
     firstName: "firstName",
     lastName: "lastName-route",
     email: "email-route@gmail.com",
-    authId: "route-auth-Id",
+    authId,
     mobileNumber: "91110002",
   };
 
@@ -20,18 +23,45 @@ describe("Patients Route", () => {
 
   describe("POST /", () => {
     describe("Successful scenarios", () => {
-      it("should return 201 with the expected body", async () => {
-        jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+      let authServiceSpy: jest.SpyInstance;
+      let patientServiceSpy: jest.SpyInstance;
+      beforeEach(() => {
+        authServiceSpy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
+        patientServiceSpy = jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+      });
 
+      it("should return 201 with the expected body", async () => {
         const response = await request(app).post(patientBaseUrl)
           .send(patient)
           .expect(StatusCodes.CREATED);
 
-        expect(response.body).toMatchObject({ authId: "route-auth-Id",
+        expect(response.body).toMatchObject({ authId,
           email: "email-route@gmail.com",
           firstName: "firstName",
           lastName: "lastName-route",
           mobileNumber: "91110002" });
+      });
+
+      it("should call patientService.create with the right params", async () => {
+        await request(app).post(patientBaseUrl)
+          .send(patient)
+          .expect(StatusCodes.CREATED);
+
+        expect(patientServiceSpy).toBeCalledWith({
+          "authId": authId,
+          "email": "email-route@gmail.com",
+          "firstName": "firstName",
+          "lastName": "lastName-route",
+          "mobileNumber": "91110002",
+        });
+      });
+
+      it("should call authClient.setPermissions with the right params", async () => {
+        await request(app).post(patientBaseUrl)
+          .send(patient)
+          .expect(StatusCodes.CREATED);
+
+        expect(authServiceSpy).toBeCalledWith(authId, Role.Patient);
       });
     });
 
