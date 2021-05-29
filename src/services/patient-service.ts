@@ -3,9 +3,17 @@ import PatientRepository, { PatientAttributes } from "../respository/patient-rep
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
+import AuthService from "./auth-service";
+import { Role } from "../clients/auth-client";
 
 class PatientService {
   public static async create(patientAttributes: PatientAttributes): Promise<Patient> {
+    const patient = this.createInRepo(patientAttributes);
+    await AuthService.setPermissions(patientAttributes.authId, Role.Patient);
+    return patient;
+  }
+
+  private static async createInRepo(patientAttributes: PatientAttributes): Promise<Patient> {
     try {
       return await PatientRepository.create(patientAttributes);
     } catch (error) {

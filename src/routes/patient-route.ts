@@ -4,8 +4,6 @@ import PatientService from "../services/patient-service";
 import { StatusCodes } from "http-status-codes";
 import { validateRequest } from "./validate-request";
 import { patientCreateRules } from "../validation-rules/patient-create-rule";
-import AuthService from "../services/auth-service";
-import { Role } from "../clients/auth-client";
 
 export const patientRoute = Router();
 
@@ -18,7 +16,6 @@ patientRoute.post("/",
     const patientAttributes = { firstName, lastName, email, authId, mobileNumber };
 
     const patient = await PatientService.create(patientAttributes);
-    await AuthService.setPermissions(authId, Role.Patient);
 
     res.status(StatusCodes.CREATED).json(patient);
   }));

@@ -5,8 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import app from "../../src/app";
 import { omit } from "lodash";
 import { PatientAttributes } from "../../src/respository/patient-repository";
-import AuthService from "../../src/services/auth-service";
-import { Role } from "../../src/clients/auth-client";
+import { Logger } from "../../src/logger";
 
 describe("Patients Route", () => {
   const patientBaseUrl = "/api/v1/patients";
@@ -19,14 +18,15 @@ describe("Patients Route", () => {
     mobileNumber: "91110002",
   };
 
-  beforeEach(jest.clearAllMocks);
+  beforeEach(() => {
+    jest.spyOn(Logger, "error").mockImplementation(() => {});
+    jest.clearAllMocks();
+  });
 
   describe("POST /", () => {
     describe("Successful scenarios", () => {
-      let authServiceSpy: jest.SpyInstance;
       let patientServiceSpy: jest.SpyInstance;
       beforeEach(() => {
-        authServiceSpy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
         patientServiceSpy = jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
       });
 
@@ -54,14 +54,6 @@ describe("Patients Route", () => {
           "lastName": "lastName-route",
           "mobileNumber": "91110002",
         });
-      });
-
-      it("should call authClient.setPermissions with the right params", async () => {
-        await request(app).post(patientBaseUrl)
-          .send(patient)
-          .expect(StatusCodes.CREATED);
-
-        expect(authServiceSpy).toBeCalledWith(authId, Role.Patient);
       });
     });
 
