@@ -17,3 +17,5 @@ export class AuthClient {
     await this.firebaseAuthAdmin.setCustomUserClaims(authId, { role });
   }
 }
+
+export const authClient = new AuthClient();

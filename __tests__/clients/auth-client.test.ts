@@ -1,10 +1,8 @@
 import { AuthClient, Role } from "../../src/clients/auth-client";
 import * as admin from "firebase-admin";
 
-jest.mock("firebase-admin");
-
 describe("AuthClient", () => {
-  describe("setRole", () => {
+  describe("#setPermissions", () => {
     let authClient: AuthClient;
     const authId = "authId";
     const mockFirebaseAuthAdmin = { setCustomUserClaims:
