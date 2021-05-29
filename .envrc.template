@@ -3,6 +3,7 @@ export DB_PASSWORD=password
 export DB_HOST=localhost
 export DB_DATABASE=qdoc
 export FIREBASE_CONFIG='{"apiKey": "","authDomain": "","projectId": "","storageBucket": "","messagingSenderId": "","appId": "","measurementId": ""}'
+export FIREBASE_AUTH_EMULATOR_HOST="localhost:9098"
 
 // NOTE
 // REACT_APP_FIREBASE_CONFIG => get from qdoc.kdbx, ensure that the object {} is wrapped with SINGLE quotes e.g. '{}'

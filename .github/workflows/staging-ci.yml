@@ -13,6 +13,7 @@ jobs:
       DB_HOSTNAME: localhost
       DB_DATABASE: qdoc_ci
       NODE_ENV: ci
+      FIREBASE_CONFIG: ${{ secrets.STAGING_FIREBASE_CONFIG }}
     services:
       postgres:
         image: postgres
@@ -27,6 +28,11 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      firebase:
+        image: weewey/firebase-auth-ci
+        ports:
+          - 9098:9098
+
     strategy:
       matrix:
         node-version: [ 15.x ]

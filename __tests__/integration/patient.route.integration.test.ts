@@ -5,8 +5,11 @@ import app from "../../src/app";
 import { Errors } from "../../src/errors/error-mappings";
 import { PatientAttributes } from "../../src/respository/patient-repository";
 import { generateRandomString } from "../helpers/common-helpers";
+import * as admin from "firebase-admin";
 
 describe("#Patient Component", () => {
+  const firebaseAuthAdmin = admin.initializeApp(undefined, "integration-test").auth();
+
   const PATIENT_PATH = "/api/v1/patients";
   const defaultPatient = {
     firstName: "PatientComponentFirstName",
@@ -26,6 +29,14 @@ describe("#Patient Component", () => {
     };
     return { ...patient, ...overrides };
   };
+
+  beforeAll(async () => {
+    await firebaseAuthAdmin.createUser({ uid: defaultPatient.authId });
+  });
+
+  afterAll(async () => {
+    await firebaseAuthAdmin.deleteUser(defaultPatient.authId);
+  });
 
   describe("#POST /patients", () => {
     const patientIdsToDestroy: number[] = [];

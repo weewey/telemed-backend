@@ -72,3 +72,5 @@ web_modules/
 test-report.html
 
 dist
+
+firebase/.config

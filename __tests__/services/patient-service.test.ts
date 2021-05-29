@@ -4,22 +4,40 @@ import TechnicalError from "../../src/errors/technical-error";
 import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import PatientService from "../../src/services/patient-service";
+import AuthService from "../../src/services/auth-service";
+import { Role } from "../../src/clients/auth-client";
 
 describe("Patient service", () => {
   describe("#create", () => {
+    const authId = "service-auth-Id";
     const patientAttributes: PatientAttributes = {
       firstName: "firstName",
       lastName: "lastName-service",
       email: "email-service@gmail.com",
-      authId: "service-auth-Id",
+      authId,
       mobileNumber: "91110001",
     };
+
+    beforeEach(() => {
+      jest.spyOn(patientRepository, "create").mockResolvedValue({ authId } as Patient);
+      jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
+    });
+
+    afterEach(jest.restoreAllMocks);
+
     it("should call patient repository #create", async () => {
-      jest.spyOn(patientRepository, "create").mockResolvedValue({} as Patient);
       await PatientService.create(patientAttributes);
 
       expect(patientRepository.create).toHaveBeenCalledTimes(1);
       expect(patientRepository.create).toHaveBeenCalledWith(patientAttributes);
+    });
+
+    it("should call AuthService.setPermissions", async () => {
+      await PatientService.create(patientAttributes);
+
+      expect(AuthService.setPermissions).toHaveBeenCalledTimes(1);
+      expect(AuthService.setPermissions).toHaveBeenCalledWith(patientAttributes.authId,
+        Role.Patient);
     });
 
     describe("Error scenarios", () => {
@@ -50,24 +68,37 @@ describe("Patient service", () => {
             message: "field validation error" },
         );
       });
-    });
-  });
 
-  describe("#destroy", () => {
-    const mockPatient = { id: 1, destroy: () => {} } as Patient;
+      describe("when AuthService.setPermissions errors", () => {
+        let spy: jest.SpyInstance;
+        const mockPatient = { id: 1, destroy: () => {} } as Patient;
 
-    it("should call patient.destroy", async () => {
-      const patientSpy = jest.spyOn(mockPatient, "destroy").mockResolvedValue(undefined);
-      await PatientService.delete(mockPatient);
-      expect(patientSpy).toBeCalled();
-    });
+        beforeEach(() => {
+          jest.spyOn(patientRepository, "create").mockResolvedValue(mockPatient);
+          jest.spyOn(AuthService, "setPermissions").mockRejectedValue(new Error("test"));
+          spy = jest.spyOn(mockPatient, "destroy").mockResolvedValue(undefined);
+        });
 
-    describe("when destroy returns an error", () => {
-      it("should throw TechnicalError", async () => {
-        jest.spyOn(mockPatient, "destroy").mockRejectedValue(new Error("test"));
-        await expect(PatientService.delete(mockPatient))
-          .rejects
-          .toEqual(new TechnicalError("Error deleting patient record: 1. test"));
+        it("should call patient.destroy", async () => {
+          await expect(PatientService.create(patientAttributes)).rejects.toThrowError(Error);
+          expect(spy).toBeCalled();
+        });
+
+        it("should bubble the error from AuthService.setPermissions", async () => {
+          await expect(PatientService.create(patientAttributes))
+            .rejects
+            .toThrowError(new Error("test"));
+        });
+
+        describe("when patient.destroy errors", () => {
+          it("should throw TechnicalError", async () => {
+            spy = jest.spyOn(mockPatient, "destroy").mockRejectedValue(new Error("cannot delete"));
+            await expect(PatientService.create(patientAttributes))
+              .rejects
+              .toThrowError(new TechnicalError("Error deleting patient " +
+                  "after failure to setPermissions on AuthService. PatientId: 1 cannot delete"));
+          });
+        });
       });
     });
   });

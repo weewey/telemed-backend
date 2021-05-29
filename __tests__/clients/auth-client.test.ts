@@ -6,6 +6,7 @@ describe("AuthClient", () => {
     let authClient: AuthClient;
     const authId = "authId";
     const mockFirebaseAuthAdmin = { setCustomUserClaims:
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (uid, customUserClaims) => {} } as admin.auth.Auth;
     const mockFirebaseAdmin = { auth: () => mockFirebaseAuthAdmin } as admin.app.App;
     const userPermissions = { role: Role.Patient, clinicId: 1 };

@@ -8,8 +8,8 @@ import { Role } from "../clients/auth-client";
 
 class PatientService {
   public static async create(patientAttributes: PatientAttributes): Promise<Patient> {
-    const patient = this.createInRepo(patientAttributes);
-    await AuthService.setPermissions(patientAttributes.authId, Role.Patient);
+    const patient = await this.createInRepo(patientAttributes);
+    await this.setPermissions(patient);
     return patient;
   }
 
@@ -21,11 +21,21 @@ class PatientService {
     }
   }
 
-  public static async delete(patient: Patient): Promise<void> {
+  private static async setPermissions(patient: Patient): Promise<void> {
+    try {
+      await AuthService.setPermissions(patient.authId, Role.Patient);
+    } catch (e) {
+      await this.deleteAppendErrorMessagePrefix(patient,
+        `Error deleting patient after failure to setPermissions on AuthService. PatientId: ${patient.id}`);
+      throw e;
+    }
+  }
+
+  private static async deleteAppendErrorMessagePrefix(patient: Patient, errorMessagePrefix = ""): Promise<void> {
     try {
       return await patient.destroy();
     } catch (error) {
-      const errorMessage = `Error deleting patient record: ${patient.id}. ${error.message}`;
+      const errorMessage = `${errorMessagePrefix} ${error.message}`;
       Logger.error(errorMessage);
       throw new TechnicalError(errorMessage);
     }
