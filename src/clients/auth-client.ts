@@ -6,6 +6,11 @@ export enum Role {
   ClinicStaff = "CLINIC-STAFF",
 }
 
+export interface UserPermissions {
+  role: Role,
+  clinicId?: number
+}
+
 export class AuthClient {
   private firebaseAuthAdmin: admin.auth.Auth;
 
@@ -13,8 +18,8 @@ export class AuthClient {
     this.firebaseAuthAdmin = admin.initializeApp().auth();
   }
 
-  public async setRole(authId: string, role: Role): Promise<void> {
-    await this.firebaseAuthAdmin.setCustomUserClaims(authId, { role });
+  public async setPermissions(authId: string, permissions: UserPermissions): Promise<void> {
+    await this.firebaseAuthAdmin.setCustomUserClaims(authId, { ...permissions });
   }
 }
 

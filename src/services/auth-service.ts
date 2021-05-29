@@ -3,9 +3,10 @@ import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 
 export default class AuthService {
-  public static async setRole(authId: string, role: Role): Promise<void> {
+  public static async setPermissions(authId: string, role: Role, clinicId?: number): Promise<void> {
+    const userPermissions = clinicId ? { role, clinicId } : { role };
     try {
-      await authClient.setRole(authId, role);
+      await authClient.setPermissions(authId, userPermissions);
     } catch (e) {
       const errorMessage = `Failed to set role: ${role} on authId: ${authId} in Firebase. ${e.message}`;
       Logger.error(errorMessage);
