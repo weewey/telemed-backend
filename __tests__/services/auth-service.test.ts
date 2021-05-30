@@ -20,6 +20,12 @@ describe("AuthService", () => {
         await AuthService.setPermissions(authId, role);
         expect(spy).toBeCalledWith(authId, { role });
       });
+
+      it("should call authClient.setPermissions with no clinicId when clinicId is undefined", async () => {
+        const spy = jest.spyOn(authClient, "setPermissions").mockResolvedValue(undefined);
+        await AuthService.setPermissions(authId, role, undefined);
+        expect(spy).toBeCalledWith(authId, { role });
+      });
     });
 
     describe("when it errors", () => {

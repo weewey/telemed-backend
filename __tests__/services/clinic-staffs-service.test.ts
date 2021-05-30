@@ -7,9 +7,11 @@ import { Errors } from "../../src/errors/error-mappings";
 import BusinessError from "../../src/errors/business-error";
 import TechnicalError from "../../src/errors/technical-error";
 import NotFoundError from "../../src/errors/not-found-error";
+import AuthService from "../../src/services/auth-service";
+import { Role } from "../../src/clients/auth-client";
 
 describe("ClinicStaffs Service", () => {
-  const getClinicStaffsAttrs = (overrideAttrs?: Partial<ClinicStaffsAttributes>): ClinicStaffsAttributes => {
+  const getClinicStaffAttrs = (overrideAttrs?: Partial<ClinicStaffsAttributes>): ClinicStaffsAttributes => {
     return {
       authId: generateUUID(),
       email: `${generateUUID()}@gmail.com`,
@@ -21,10 +23,23 @@ describe("ClinicStaffs Service", () => {
   };
 
   it("should call ClinicStaffsRepository.create with the right params", async () => {
-    const spy = jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue({} as ClinicStaffs);
-    const clinicStaffsAttrs = getClinicStaffsAttrs();
+    const clinicStaffsAttrs = getClinicStaffAttrs();
+    const spy = jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue(
+      { authId: clinicStaffsAttrs.authId } as ClinicStaffs,
+    );
+    jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await ClinicStaffsService.create(clinicStaffsAttrs);
     expect(spy).toBeCalledWith(clinicStaffsAttrs);
+  });
+
+  it("should call AuthService.setPermissions with the right params", async () => {
+    const clinicStaffAttrs = getClinicStaffAttrs();
+    jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue(
+      { authId: clinicStaffAttrs.authId } as ClinicStaffs,
+    );
+    const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
+    await ClinicStaffsService.create(clinicStaffAttrs);
+    expect(spy).toBeCalledWith(clinicStaffAttrs.authId, Role.ClinicStaff, undefined);
   });
 
   describe("when ClinicStaffsRepository errors", () => {
@@ -32,7 +47,7 @@ describe("ClinicStaffs Service", () => {
       jest.spyOn(ClinicStaffsRepository, "create").mockRejectedValue(
         new RepositoryError(Errors.FIELD_ALREADY_EXISTS.code, "message"),
       );
-      const clinicStaffsAttrs = getClinicStaffsAttrs();
+      const clinicStaffsAttrs = getClinicStaffAttrs();
       await expect(ClinicStaffsService.create(clinicStaffsAttrs)).rejects.toThrowError(BusinessError);
     });
 
@@ -40,7 +55,7 @@ describe("ClinicStaffs Service", () => {
       jest.spyOn(ClinicStaffsRepository, "create").mockRejectedValue(
         new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "not found"),
       );
-      const clinicStaffsAttrs = getClinicStaffsAttrs();
+      const clinicStaffsAttrs = getClinicStaffAttrs();
       await expect(ClinicStaffsService.create(clinicStaffsAttrs)).rejects.toThrowError(NotFoundError);
     });
 
@@ -48,8 +63,38 @@ describe("ClinicStaffs Service", () => {
       jest.spyOn(ClinicStaffsRepository, "create").mockRejectedValue(
         new RepositoryError("other error code", "message"),
       );
-      const clinicStaffsAttrs = getClinicStaffsAttrs();
+      const clinicStaffsAttrs = getClinicStaffAttrs();
       await expect(ClinicStaffsService.create(clinicStaffsAttrs)).rejects.toThrowError(TechnicalError);
+    });
+  });
+
+  describe("when AuthService.setPermissions errors", () => {
+    const clinicStaffAttrs = getClinicStaffAttrs();
+    const mockClinicStaff = { authId: clinicStaffAttrs.authId,
+      id: 1,
+      destroy: () => {} } as ClinicStaffs;
+
+    beforeEach(() => {
+      jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue(mockClinicStaff);
+      jest.spyOn(AuthService, "setPermissions").mockRejectedValue(new Error("test"));
+    });
+
+    it("should call clinicStaff.destroy", async () => {
+      const spy = jest.spyOn(mockClinicStaff, "destroy")
+        .mockResolvedValue(undefined);
+      await expect(ClinicStaffsService.create(clinicStaffAttrs)).rejects.toThrowError(Error);
+      expect(spy).toBeCalled();
+    });
+
+    describe("when destroy clinicStaff errors", () => {
+      it("should throw TechnicalError", async () => {
+        jest.spyOn(mockClinicStaff, "destroy")
+          .mockRejectedValue(new TechnicalError("test"));
+        await expect(ClinicStaffsService.create(clinicStaffAttrs))
+          .rejects
+          .toEqual(new TechnicalError("Error deleting clinicStaff after failure to setPermissions " +
+              "on AuthService. ClinicStaff: 1 test"));
+      });
     });
   });
 });
