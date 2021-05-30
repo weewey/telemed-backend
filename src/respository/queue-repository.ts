@@ -6,7 +6,8 @@ import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
 
 export interface FindAllQueueAttributes {
-  clinicId: number
+  clinicId: number,
+  status?: string
 }
 
 class QueueRepository {

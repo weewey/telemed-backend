@@ -1,0 +1,15 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Retrieve author information as Git sees it while commiting
+AUTHORINFO=$(git var GIT_AUTHOR_IDENT) || exit 1
+NAME=$(printf '%s\n\n' "${AUTHORINFO}" | sed -n 's/^\(.*\) <.*$/\1/p')
+EMAIL=$(printf '%s\n\n' "${AUTHORINFO}" | sed -n 's/^.* <\(.*\)> .*$/\1/p')
+
+# If we're trying to commit to repo with not allowed email
+if [[ $EMAIL == *"thoughtworks"* ]]; then
+    printf "NAME: %s\n" "${NAME}"
+    printf "EMAIL: %s\n" "${EMAIL}"
+    echo "\nOh, please stop. I cannot allow you to commit with your current email: ${EMAIL}\n"
+    exit 1;
+fi

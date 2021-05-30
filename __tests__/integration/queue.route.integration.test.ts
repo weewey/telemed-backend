@@ -121,12 +121,13 @@ describe("#Queues Component", () => {
   describe("#GET /queues", () => {
     let queueId: number;
     let clinicId: number;
+    let queueCreated: Queue;
 
     beforeAll(async () => {
       const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
 
-      const queueCreated = await createQueue(clinicId);
+      queueCreated = await createQueue(clinicId);
       queueId = queueCreated.id;
     });
 
@@ -153,6 +154,25 @@ describe("#Queues Component", () => {
         const queueClinicIds = response.body.map((queue: Queue) => queue.clinicId);
         const uniqClinicIds = [ ...new Set(queueClinicIds) ];
         expect(uniqClinicIds).toEqual([ clinicId ]);
+      });
+    });
+
+    describe("when requesting with clinicId and status query params", () => {
+      it("should get all queues for clinicId and status successfully", async () => {
+        const response = await request(app)
+          .get(`${QUEUES_PATH}?clinicId=${clinicId}&status=INACTIVE`)
+          .expect(StatusCodes.OK);
+
+        // one queue created with INACTIVE status
+        expect(response.body.length).toEqual(1);
+      });
+
+      it("should return empty array if there is no queue with associated status", async () => {
+        const response = await request(app)
+          .get(`${QUEUES_PATH}?clinicId=${clinicId}&status=ACTIVE`)
+          .expect(StatusCodes.OK);
+
+        expect(response.body).toEqual([]);
       });
     });
   });

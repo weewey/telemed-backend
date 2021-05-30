@@ -218,6 +218,22 @@ describe("Queues Route", () => {
           expect(spy).toBeCalledWith({ clinicId: 1 });
         });
       });
+
+      describe("when the status query param is passed in", () => {
+        it.each([
+          [ "ACTIVE" ],
+          [ "actiVE" ],
+          [ "closed" ],
+          [ "INactive" ],
+        ])("should call fetchAllQueues with the associated status (%s)", async (status) => {
+          const mockQueue = { id: 1 } as Queue;
+          const spy = jest.spyOn(QueueService, "fetchAllQueues").mockResolvedValue([ mockQueue ]);
+          await request(app)
+            .get(`${queuesPath}?status=${status}`)
+            .expect(StatusCodes.OK, [ mockQueue ]);
+          expect(spy).toBeCalledWith({ status: status.toUpperCase() });
+        });
+      });
     });
 
     describe("error scenarios", () => {
@@ -230,6 +246,26 @@ describe("Queues Route", () => {
             error: {
               id: expect.anything(),
               invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" } ],
+              type: "validation",
+            },
+          });
+        });
+      });
+
+      describe("when the status is not one of the allowed queue status", () => {
+        it.each([
+          [ "activeee" ],
+          [ "started" ],
+          [ "closing" ],
+        ])("should return badRequest is status is (%s)", async (status) => {
+          const response = await request(app)
+            .get(`${queuesPath}?status=${status}`).expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body).toMatchObject({
+            error: {
+              id: expect.anything(),
+              invalidParams: [ { name: "status",
+                reason: "Status should contain only either ACTIVE / CLOSED / INACTIVE" } ],
               type: "validation",
             },
           });

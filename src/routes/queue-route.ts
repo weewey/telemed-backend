@@ -7,6 +7,7 @@ import { validateRequest } from "./validate-request";
 import { queueIdRule, queueUpdateRules } from "../validation-rules/queue-update-rule";
 import { queueCreateRules } from "../validation-rules/queue-create-rule";
 import { getAllQueuesRule } from "../validation-rules/queue-get-rule";
+import { FindAllQueueAttributes } from "../respository/queue-repository";
 
 export const queueRoute = Router();
 
@@ -34,8 +35,12 @@ queueRoute.put("/:queueId",
 queueRoute.get("/",
   validateRequest(getAllQueuesRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { clinicId } = req.query;
-    const findAllQueuesParams = clinicId ? { clinicId: Number(clinicId) } : undefined;
+    const { clinicId, status } = req.query;
+    const findAllQueuesParams = {
+      ...(clinicId && { clinicId: Number(clinicId) }),
+      ...(status && { status }),
+    } as FindAllQueueAttributes;
+
     const queues = await QueueService.fetchAllQueues(findAllQueuesParams);
     res.status(StatusCodes.OK).json(queues);
   }));

@@ -1,7 +1,9 @@
 import { ValidationChain } from "express-validator/src/chain/validation-chain";
 import { query } from "express-validator";
+import QueueStatus from "../queue_status";
 
 const CLINIC_ID = "clinicId";
+const STATUS = "status";
 
 const clinicIdQueryParamsRule: ValidationChain[] = [
   query(CLINIC_ID)
@@ -11,6 +13,16 @@ const clinicIdQueryParamsRule: ValidationChain[] = [
     .toInt(),
 ];
 
+const statusQueryParamsRule: ValidationChain[] = [
+  query(STATUS)
+    .optional()
+    .toUpperCase()
+    .custom(value => [ QueueStatus.ACTIVE, QueueStatus.CLOSED, QueueStatus.INACTIVE ].includes(value))
+    .withMessage(
+      `Status should contain only either ${QueueStatus.ACTIVE} / ${QueueStatus.CLOSED} / ${QueueStatus.INACTIVE}`,
+    ),
+];
+
 export const getAllQueuesRule = [
-  ...clinicIdQueryParamsRule,
+  ...clinicIdQueryParamsRule, ...statusQueryParamsRule,
 ];
