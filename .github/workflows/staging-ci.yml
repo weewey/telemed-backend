@@ -14,7 +14,7 @@ jobs:
       DB_DATABASE: qdoc_ci
       NODE_ENV: ci
       FIREBASE_CONFIG: ${{ secrets.STAGING_FIREBASE_CONFIG }}
-      FIREBASE_AUTH_EMULATOR_HOST: 'http://firebase:9098'
+      FIREBASE_AUTH_EMULATOR_HOST: 'localhost:9098'
     services:
       postgres:
         image: postgres
