@@ -7,6 +7,8 @@ import { Errors } from "../../src/errors/error-mappings";
 import BusinessError from "../../src/errors/business-error";
 import TechnicalError from "../../src/errors/technical-error";
 import NotFoundError from "../../src/errors/not-found-error";
+import AuthService from "../../src/services/auth-service";
+import { Role } from "../../src/clients/auth-client";
 
 describe("Doctor Service", () => {
   const getDoctorAttrs = (overrideAttrs?: Partial<DoctorAttributes>): DoctorAttributes => {
@@ -23,9 +25,18 @@ describe("Doctor Service", () => {
 
   it("should call DoctorRepository.create with the right params", async () => {
     const spy = jest.spyOn(DoctorRepository, "create").mockResolvedValue({} as Doctor);
+    jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     const doctorAttrs = getDoctorAttrs();
     await DoctorService.create(doctorAttrs);
     expect(spy).toBeCalledWith(doctorAttrs);
+  });
+
+  it("should call AuthService.setPermissions with the right params", async () => {
+    const doctorAttrs = getDoctorAttrs();
+    jest.spyOn(DoctorRepository, "create").mockResolvedValue({ authId: doctorAttrs.authId } as Doctor);
+    const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
+    await DoctorService.create(doctorAttrs);
+    expect(spy).toBeCalledWith(doctorAttrs.authId, Role.Doctor, undefined);
   });
 
   describe("when DoctorRepository errors", () => {
@@ -51,6 +62,36 @@ describe("Doctor Service", () => {
       );
       const doctorAttrs = getDoctorAttrs();
       await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(TechnicalError);
+    });
+  });
+
+  describe("when AuthService.setPermissions errors", () => {
+    const doctorAttrs = getDoctorAttrs();
+    const mockDoctor = { authId: doctorAttrs.authId,
+      id: 1,
+      destroy: () => {} } as Doctor;
+
+    beforeEach(() => {
+      jest.spyOn(DoctorRepository, "create").mockResolvedValue(mockDoctor);
+      jest.spyOn(AuthService, "setPermissions").mockRejectedValue(new Error("test"));
+    });
+
+    it("should call doctor.destroy", async () => {
+      const spy = jest.spyOn(mockDoctor, "destroy")
+        .mockResolvedValue(undefined);
+      await expect(DoctorService.create(doctorAttrs)).rejects.toThrowError(Error);
+      expect(spy).toBeCalled();
+    });
+
+    describe("when destroy doctor errors", () => {
+      it("should throw TechnicalError", async () => {
+        jest.spyOn(mockDoctor, "destroy")
+          .mockRejectedValue(new TechnicalError("test"));
+        await expect(DoctorService.create(doctorAttrs))
+          .rejects
+          .toEqual(new TechnicalError("Error deleting doctor after failure to setPermissions on " +
+              "AuthService. DoctorId: 1 test"));
+      });
     });
   });
 });
