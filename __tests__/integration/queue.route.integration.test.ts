@@ -3,11 +3,16 @@ import { StatusCodes } from "http-status-codes";
 import request from "supertest";
 import app from "../../src/app";
 import QueueStatus from "../../src/queue_status";
-import { createClinic, destroyClinicById } from "../helpers/clinic-helper";
-import { createQueue,
-  destroyQueueById, destroyQueuesByIds, getQueueById,
-  getQueueIdsByClinicId } from "../helpers/queue-helpers";
+import {
+  createQueue,
+  destroyQueueById,
+  destroyQueuesByIds,
+  getQueueById,
+  getQueueIdsByClinicId,
+} from "../helpers/queue-helpers";
 import Queue from "../../src/models/queue";
+import { clinicFactory } from "../factories";
+import Clinic from "../../src/models/clinic";
 
 describe("#Queues Component", () => {
   const QUEUES_PATH = "/api/v1/queues";
@@ -16,13 +21,14 @@ describe("#Queues Component", () => {
     let clinicId: number;
 
     beforeAll(async () => {
-      const clinicCreated = await createClinic();
+      const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
     });
+
     afterAll(async () => {
       const queueIdsToDelete = await getQueueIdsByClinicId(clinicId);
       await destroyQueuesByIds(queueIdsToDelete);
-      await destroyClinicById(clinicId);
+      await Clinic.destroy({ where: { id: clinicId } });
     });
     it("should create queue successfully given clinic exists", async () => {
       const response = await request(app)
@@ -60,7 +66,7 @@ describe("#Queues Component", () => {
     let clinicId: number;
 
     beforeEach(async () => {
-      const clinicCreated = await createClinic();
+      const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
 
       const queueCreated = await createQueue(clinicId);
@@ -68,7 +74,7 @@ describe("#Queues Component", () => {
     });
     afterEach(async () => {
       await destroyQueueById(queueId);
-      await destroyClinicById(clinicId);
+      await Clinic.destroy({ where: { id: clinicId } });
     });
     it("should update existing queue successfully", async () => {
       await request(app)
@@ -117,7 +123,7 @@ describe("#Queues Component", () => {
     let clinicId: number;
 
     beforeAll(async () => {
-      const clinicCreated = await createClinic();
+      const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
 
       const queueCreated = await createQueue(clinicId);
@@ -126,7 +132,7 @@ describe("#Queues Component", () => {
 
     afterAll(async () => {
       await destroyQueueById(queueId);
-      await destroyClinicById(clinicId);
+      await Clinic.destroy({ where: { id: clinicId } });
     });
 
     it("should get all queues successfully", async () => {

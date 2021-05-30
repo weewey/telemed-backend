@@ -29,6 +29,8 @@ const clinic = Factory.define<Clinic>("clinic", Clinic)
   .attr("postalCode", () => "123456")
   .attr("phoneNumber", () => randomInt(88888888, 99999999).toString())
   .attr("createdAt", () => new Date(Date.now()))
+  .attr("lat", () => 1.1)
+  .attr("long", () => 100.1)
   .attr("updatedAt", () => new Date(Date.now()));
 
 export const clinicFactory = buildWrapper<Clinic>(clinic);
