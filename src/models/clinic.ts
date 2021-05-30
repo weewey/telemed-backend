@@ -34,14 +34,14 @@ export default class Clinic extends Model {
 
   @Column({
     type: DataType.DOUBLE,
-    allowNull: true,
+    allowNull: false,
     validate: { isNumeric: true, min: -90, max: 90 },
   })
   public lat!: number;
 
   @Column({
     type: DataType.DOUBLE,
-    allowNull: true,
+    allowNull: false,
     validate: { isNumeric: true, min: -180, max: 180 },
   })
   public long!: number;

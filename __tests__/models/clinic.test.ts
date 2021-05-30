@@ -1,6 +1,7 @@
 import { v4 as generateUUID } from "uuid";
 import Clinic, { ClinicAttributes } from "../../src/models/clinic";
 import { UniqueConstraintError, ValidationError } from "sequelize";
+import { omit } from "lodash";
 
 describe("Clinic", () => {
   const clinicIdsToBeDeleted: Array<number> = [];
@@ -87,6 +88,14 @@ describe("Clinic", () => {
           .rejects
           .toEqual(new ValidationError("Validation error: Validation max on long failed"));
       });
+    });
+
+    it.each([ [ "lat" ],
+      [ "long" ] ])("should return an error when %s is null", async (field) => {
+      const clinicAttrs = omit(getClinicAttrs(), field);
+      await expect(Clinic.create(clinicAttrs))
+        .rejects
+        .toEqual(new ValidationError(`notNull Violation: Clinic.${field} cannot be null`));
     });
   });
 });
