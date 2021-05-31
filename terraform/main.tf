@@ -22,7 +22,8 @@ resource "google_cloud_run_service" "qdoc" {
   template {
     metadata {
       annotations = {
-        "autoscaling.knative.dev/maxScale"      = "1000"
+        "autoscaling.knative.dev/maxScale"      = "2"
+        "autoscaling.knative.dev/minScale"      = "1"
         "run.googleapis.com/client-name"        = "terraform"
         "run.googleapis.com/cloudsql-instances" = "qdoc-309515:asia-southeast1:qdoc-postgres-staging"
       }
