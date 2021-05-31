@@ -1,14 +1,14 @@
-import ClinicStaffsRepository, { ClinicStaffsAttributes } from "../../src/respository/clinic-staffs-repository";
-import ClinicStaffs from "../../src/models/clinic-staffs";
-import ClinicStaffsService from "../../src/services/clinic-staffs-service";
 import { v4 as generateUUID } from "uuid";
-import RepositoryError from "../../src/errors/repository-error";
-import { Errors } from "../../src/errors/error-mappings";
-import BusinessError from "../../src/errors/business-error";
-import TechnicalError from "../../src/errors/technical-error";
-import NotFoundError from "../../src/errors/not-found-error";
-import AuthService from "../../src/services/auth-service";
 import { Role } from "../../src/clients/auth-client";
+import BusinessError from "../../src/errors/business-error";
+import { Errors } from "../../src/errors/error-mappings";
+import NotFoundError from "../../src/errors/not-found-error";
+import RepositoryError from "../../src/errors/repository-error";
+import TechnicalError from "../../src/errors/technical-error";
+import ClinicStaffs from "../../src/models/clinic-staffs";
+import ClinicStaffsRepository, { ClinicStaffsAttributes } from "../../src/respository/clinic-staffs-repository";
+import AuthService from "../../src/services/auth-service";
+import ClinicStaffsService from "../../src/services/clinic-staffs-service";
 
 describe("ClinicStaffs Service", () => {
   const getClinicStaffAttrs = (overrideAttrs?: Partial<ClinicStaffsAttributes>): ClinicStaffsAttributes => {

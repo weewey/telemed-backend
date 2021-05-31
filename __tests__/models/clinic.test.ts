@@ -1,23 +1,10 @@
-import { v4 as generateUUID } from "uuid";
-import Clinic, { ClinicAttributes } from "../../src/models/clinic";
-import { UniqueConstraintError, ValidationError } from "sequelize";
 import { omit } from "lodash";
+import { UniqueConstraintError, ValidationError } from "sequelize";
+import Clinic from "../../src/models/clinic";
+import { getClinicAttrs } from "../helpers/clinic-helpers";
 
 describe("Clinic", () => {
   const clinicIdsToBeDeleted: Array<number> = [];
-  const getClinicAttrs = (overrideAttrs?: Partial<ClinicAttributes>): ClinicAttributes => {
-    return {
-      name: "clinic name",
-      imageUrl: "http://image.url",
-      lat: 1.2,
-      long: 100.1,
-      address: `${generateUUID()} Address`,
-      postalCode: `${generateUUID()} Postal Code`,
-      email: `${generateUUID()}@gmail.com`,
-      phoneNumber: generateUUID().toString(),
-      ...overrideAttrs,
-    };
-  };
 
   afterAll(async () => {
     await Clinic.destroy({ where: { id: clinicIdsToBeDeleted } });
