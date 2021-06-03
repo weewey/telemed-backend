@@ -1,11 +1,11 @@
-import { errorHandler } from "./errors/error-handler";
-import express, { Router } from "express";
 import cors from "cors";
+import express, { Router } from "express";
+import { errorHandler } from "./errors/error-handler";
 import { clinicRoute } from "./routes/clinic-route";
-import { queueRoute } from "./routes/queue-route";
-import { patientRoute } from "./routes/patient-route";
-import { doctorRoute } from "./routes/doctor-route";
 import { clinicStaffsRoute } from "./routes/clinic-staffs-route";
+import { doctorRoute } from "./routes/doctor-route";
+import { patientRoute } from "./routes/patient-route";
+import { queueRoute } from "./routes/queue-route";
 import { ticketRoute } from "./routes/ticket-route";
 
 const app: express.Application = express();

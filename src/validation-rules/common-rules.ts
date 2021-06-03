@@ -1,5 +1,5 @@
-import { ValidationChain } from "express-validator/src/chain/validation-chain";
 import { body } from "express-validator";
+import { ValidationChain } from "express-validator/src/chain/validation-chain";
 
 export const nameRules = (fields: string[]): ValidationChain[] => {
   return fields.map((field) =>
@@ -31,4 +31,14 @@ export const booleanRule = (fields: string[]): ValidationChain[] => {
       .isBoolean()
       .withMessage(`${field} must be of boolean type`)
       .toBoolean());
+};
+
+export const stringRule = (fields: string[]): ValidationChain[] => {
+  return fields.map((field) =>
+    body(field)
+      .exists()
+      .withMessage(`${field} must be present`)
+      .bail()
+      .isString()
+      .withMessage(`${field} must be of string`));
 };

@@ -1,3 +1,4 @@
+import { randomInt } from "crypto";
 import { v4 as generateUUID } from "uuid";
 import { ClinicAttributes } from "../../src/models/clinic";
 
@@ -8,9 +9,9 @@ export const getClinicAttrs = (overrideAttrs?: Partial<ClinicAttributes>): Clini
     lat: 1.2,
     long: 100.1,
     address: `${generateUUID()} Address`,
-    postalCode: `${generateUUID()} Postal Code`,
+    postalCode: randomInt(111111, 999999).toString(),
     email: `${generateUUID()}@gmail.com`,
-    phoneNumber: generateUUID().toString(),
+    phoneNumber: randomInt(88888888, 99999999).toString(),
     ...overrideAttrs,
   };
 };

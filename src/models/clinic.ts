@@ -16,7 +16,12 @@ export interface ClinicAttributes {
 @Table({ tableName: "Clinics" })
 
 export default class Clinic extends Model {
-  @Column({ allowNull: false, primaryKey: true, type: DataType.INTEGER, autoIncrement: true })
+  @Column({
+    allowNull: false,
+    primaryKey: true,
+    type: DataType.INTEGER,
+    autoIncrement: true,
+  })
   public id!: number;
 
   @Column({
