@@ -1,8 +1,8 @@
-import Clinic, { ClinicAttributes } from "../models/clinic";
 import { BaseError, UniqueConstraintError, ValidationError } from "sequelize";
-import { Logger } from "../logger";
-import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
+import RepositoryError from "../errors/repository-error";
+import { Logger } from "../logger";
+import Clinic, { ClinicAttributes } from "../models/clinic";
 import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
 
 class ClinicRepository {
