@@ -1,9 +1,9 @@
+import { randomInt } from "crypto";
 import { Factory } from "rosie";
+import { v4 as generateUUID } from "uuid";
 import Clinic from "../../src/models/clinic";
 import Queue from "../../src/models/queue";
-import { randomInt } from "crypto";
 import QueueStatus from "../../src/queue_status";
-import { v4 as generateUUID } from "uuid";
 
 interface BuildWrapperResult<T> {
   build: (props?: any) => Promise<T>;
@@ -24,9 +24,9 @@ const buildWrapper = <T>(factory: any): BuildWrapperResult<T> => {
 
 const clinic = Factory.define<Clinic>("clinic", Clinic)
   .attr("address", () => "address")
-  .attr("name", () => "clinic name")
+  .attr("name", () => `clinic name ${generateUUID()}`)
   .attr("email", () => `email${generateUUID()}@email.com`)
-  .attr("postalCode", () => "123456")
+  .attr("postalCode", () => randomInt(111111, 999999).toString())
   .attr("phoneNumber", () => randomInt(88888888, 99999999).toString())
   .attr("createdAt", () => new Date(Date.now()))
   .attr("lat", () => 1.1)

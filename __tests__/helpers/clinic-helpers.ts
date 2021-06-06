@@ -1,6 +1,6 @@
 import { randomInt } from "crypto";
 import { v4 as generateUUID } from "uuid";
-import { ClinicAttributes } from "../../src/models/clinic";
+import Clinic, { ClinicAttributes } from "../../src/models/clinic";
 
 export const getClinicAttrs = (overrideAttrs?: Partial<ClinicAttributes>): ClinicAttributes => {
   return {
@@ -14,4 +14,8 @@ export const getClinicAttrs = (overrideAttrs?: Partial<ClinicAttributes>): Clini
     phoneNumber: randomInt(88888888, 99999999).toString(),
     ...overrideAttrs,
   };
+};
+
+export const destroyClinicById = async (id: number[]): Promise<void> => {
+  await Clinic.destroy({ where: { id } });
 };

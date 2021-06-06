@@ -45,6 +45,13 @@ describe("Clinic", () => {
           .rejects
           .toThrowError(UniqueConstraintError);
       });
+
+      it("should return UniqueConstraintError when the union of name and postalCode is not unique", async () => {
+        const clinic2Attrs = getClinicAttrs({ name: clinic1.name, postalCode: clinic1.postalCode });
+        await expect(Clinic.create(clinic2Attrs))
+          .rejects
+          .toThrowError(UniqueConstraintError);
+      });
     });
 
     describe("ValidationError", () => {

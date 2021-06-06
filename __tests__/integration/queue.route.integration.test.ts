@@ -1,18 +1,19 @@
-import { Errors } from "../../src/errors/error-mappings";
 import { StatusCodes } from "http-status-codes";
 import request from "supertest";
 import app from "../../src/app";
+import { Errors } from "../../src/errors/error-mappings";
+import Queue from "../../src/models/queue";
 import QueueStatus from "../../src/queue_status";
+import { clinicFactory } from "../factories";
+import { destroyClinicById } from "../helpers/clinic-helpers";
 import {
   createQueue,
   destroyQueueById,
   destroyQueuesByIds,
   getQueueById,
-  getQueueIdsByClinicId,
+  // eslint-disable-next-line
+  getQueueIdsByClinicId
 } from "../helpers/queue-helpers";
-import Queue from "../../src/models/queue";
-import { clinicFactory } from "../factories";
-import Clinic from "../../src/models/clinic";
 
 describe("#Queues Component", () => {
   const QUEUES_PATH = "/api/v1/queues";
@@ -28,7 +29,7 @@ describe("#Queues Component", () => {
     afterAll(async () => {
       const queueIdsToDelete = await getQueueIdsByClinicId(clinicId);
       await destroyQueuesByIds(queueIdsToDelete);
-      await Clinic.destroy({ where: { id: clinicId } });
+      await destroyClinicById([ clinicId ]);
     });
     it("should create queue successfully given clinic exists", async () => {
       const response = await request(app)
@@ -74,7 +75,7 @@ describe("#Queues Component", () => {
     });
     afterEach(async () => {
       await destroyQueueById(queueId);
-      await Clinic.destroy({ where: { id: clinicId } });
+      await destroyClinicById([ clinicId ]);
     });
     it("should update existing queue successfully", async () => {
       await request(app)
@@ -133,7 +134,7 @@ describe("#Queues Component", () => {
 
     afterAll(async () => {
       await destroyQueueById(queueId);
-      await Clinic.destroy({ where: { id: clinicId } });
+      await destroyClinicById([ clinicId ]);
     });
 
     it("should get all queues successfully", async () => {
