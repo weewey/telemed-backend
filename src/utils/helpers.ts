@@ -1,12 +1,7 @@
 import { ValidationErrorItem } from "sequelize";
 
-interface ErrorFieldsAndMessageInterface {
-  errorFields: string,
-  errorMessage: string
-}
-
-export const mapSequelizeErrorsToErrorFieldsAndMessage =
-    (errors: ValidationErrorItem[]): ErrorFieldsAndMessageInterface => {
+export const mapSequelizeErrorToErrorMessage =
+    (errorMessagePrefix: string, errors: ValidationErrorItem[]): string => {
       let errorFields = "";
       let errorMessage = "";
 
@@ -14,5 +9,6 @@ export const mapSequelizeErrorsToErrorFieldsAndMessage =
         errorMessage = `${errorMessage}${message} `;
         errorFields = `${errorFields}${path} `;
       });
-      return { errorFields, errorMessage };
+
+      return `${errorMessagePrefix}. Fields: [ ${errorFields}], message: [ ${errorMessage}]`;
     };

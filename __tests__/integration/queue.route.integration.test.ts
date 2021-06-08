@@ -11,8 +11,7 @@ import {
   destroyQueueById,
   destroyQueuesByIds,
   getQueueById,
-  // eslint-disable-next-line
-  getQueueIdsByClinicId
+  getQueueIdsByClinicId,
 } from "../helpers/queue-helpers";
 
 describe("#Queues Component", () => {

@@ -3,8 +3,7 @@ import ClinicRepository from "../respository/clinic-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 class ClinicService {
   public static async create(clinicAttributes: ClinicAttributes): Promise<Clinic> {
-    const clinic = await this.createClinic(clinicAttributes);
-    return clinic;
+    return this.createClinic(clinicAttributes);
   }
 
   private static async createClinic(clinicAttributes: ClinicAttributes): Promise<Clinic> {

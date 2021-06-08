@@ -4,7 +4,7 @@ import app from "../../src/app";
 import { Errors } from "../../src/errors/error-mappings";
 import { destroyClinicById, getClinicAttrs } from "../helpers/clinic-helpers";
 
-describe("#Patient Component", () => {
+describe("#Clinic Component", () => {
   const CLINIC_PATH = "/api/v1/clinics";
 
   describe("#POST /clinic", () => {
@@ -15,7 +15,7 @@ describe("#Patient Component", () => {
       await destroyClinicById(clinicIdsToDestroy);
     });
 
-    it("should create Patient successfully", async () => {
+    it("should create Clinic successfully", async () => {
       const response = await request(app)
         .post(CLINIC_PATH)
         .send(clinicAttrs)
@@ -52,7 +52,7 @@ describe("#Patient Component", () => {
 
         expect(response.body).toMatchObject({
           error: {
-            message: `Unable to create clinic. Fields: [${errorFields} ], message: [${errorMessage} ]`,
+            message: `Unable to create clinic. Fields: [ ${errorFields} ], message: [ ${errorMessage} ]`,
             code: Errors.FIELD_ALREADY_EXISTS.code,
           },
         });
