@@ -4,6 +4,8 @@ import app from "../../src/app";
 import Clinic from "../../src/models/clinic";
 import ClinicService from "../../src/services/clinic-service";
 import { getClinicAttrs } from "../helpers/clinic-helpers";
+import { Logger } from "../../src/logger";
+import { omit } from "lodash";
 
 describe("Clinics Route", () => {
   const clinicBaseUrl = "/api/v1/clinics";
@@ -70,18 +72,68 @@ describe("Clinics Route", () => {
 
     describe("success", () => {
       it("calls ClinicStaffsService.create", async () => {
-        await request(app).post(`${clinicBaseUrl}`).send(clinicAttrs);
+        await request(app).post(clinicBaseUrl).send(clinicAttrs);
         expect(createClinicSpy).toHaveBeenCalled();
       });
 
       it("returns statusCode 201", async () => {
-        const result = await request(app).post(`${clinicBaseUrl}`).send(clinicAttrs);
+        const result = await request(app).post(clinicBaseUrl).send(clinicAttrs);
         expect(result.status).toEqual(StatusCodes.CREATED);
       });
 
       it("returns the clinic in the body", async () => {
-        const result = await request(app).post(`${clinicBaseUrl}`).send(clinicAttrs);
+        const result = await request(app).post(clinicBaseUrl).send(clinicAttrs);
         expect(result.body).toEqual(mockClinic);
+      });
+
+      it("should allow the imageUrl to be optional in the body", async () => {
+        const clinicAttrsWithoutImageUrl = omit(clinicAttrs, "imageUrl");
+        const result = await request(app).post(clinicBaseUrl).send(clinicAttrsWithoutImageUrl);
+        expect(result.status).toEqual(StatusCodes.CREATED);
+      });
+    });
+
+    describe("error scenarios", () => {
+      beforeEach(() => {
+        jest.spyOn(Logger, "error").mockImplementation(() => {});
+      });
+
+      describe("route validation errors", () => {
+        it.each([
+          [ "name" ],
+          [ "lat" ],
+          [ "long" ],
+          [ "address" ],
+          [ "postalCode" ],
+          [ "email" ],
+          [ "phoneNumber" ],
+        ])("should throw validation error when field does not exist (%s)", async (missingField) => {
+          const clinicAttrsWithMissingKey = omit(clinicAttrs, missingField);
+          const response = await request(app).post(clinicBaseUrl)
+            .send(clinicAttrsWithMissingKey)
+            .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body.error).toMatchObject({ invalidParams: [
+            { name: missingField, reason: `${missingField} must be present` } ] });
+        });
+
+        it("should not allow lat that is above 90", async () => {
+          const response = await request(app).post(clinicBaseUrl)
+            .send({ ...clinicAttrs, lat: 91 })
+            .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body.error).toMatchObject({ invalidParams: [
+            { name: "lat", reason: "lat must be between -90 and 90" } ] });
+        });
+
+        it("should not allow long that is above 180", async () => {
+          const response = await request(app).post(clinicBaseUrl)
+            .send({ ...clinicAttrs, long: 181 })
+            .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body.error).toMatchObject({ invalidParams: [
+            { name: "long", reason: "long must be between -180 and 180" } ] });
+        });
       });
     });
   });
