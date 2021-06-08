@@ -2,7 +2,7 @@ import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/tick
 import { ForeignKeyConstraintError, Op, Transaction, ValidationError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
-import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
+import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
 import { Logger } from "../logger";
 import TicketStatus from "../ticket_status";
 import NotFoundError from "../errors/not-found-error";
@@ -20,8 +20,7 @@ class TicketRepository {
         throw new RepositoryError(Errors.ENTITY_NOT_FOUND.code, message);
       }
       if (error instanceof ValidationError) {
-        const { errorFields, errorMessage } = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors);
-        const message = `Unable to create ticket. Fields: [ ${errorFields}], message: [ ${errorMessage}]`;
+        const message = mapSequelizeErrorToErrorMessage("Unable to create ticket.", error.errors);
         Logger.error(message);
         throw new RepositoryError(Errors.VALIDATION_ERROR.code, message);
       }

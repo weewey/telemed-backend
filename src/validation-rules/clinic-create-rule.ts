@@ -11,9 +11,7 @@ const EMAIL = "email";
 const PHONENUMBER = "phoneNumber";
 
 const imageUrlRule: ValidationChain = body(IMAGEURL)
-  .exists()
-  .withMessage("image url must be present")
-  .bail()
+  .if(body(IMAGEURL).exists())
   .isURL()
   .withMessage("image url must be a valid url");
 

@@ -3,7 +3,7 @@ import { BaseError, ForeignKeyConstraintError, UniqueConstraintError, Validation
 import { Logger } from "../logger";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
-import { mapSequelizeErrorsToErrorFieldsAndMessage } from "../utils/helpers";
+import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
 
 export interface DoctorAttributes {
   firstName: string,
@@ -29,14 +29,12 @@ class DoctorRepository {
 
   private static handleCreateDoctorError(error: BaseError): RepositoryError {
     if (error instanceof UniqueConstraintError) {
-      const { errorFields, errorMessage } = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors);
-      const message = `Unable to create doctor. Fields: [${errorFields}], message: [${errorMessage}]`;
+      const message = mapSequelizeErrorToErrorMessage("Unable to create doctor", error.errors);
       Logger.error(message);
       throw new RepositoryError(Errors.FIELD_ALREADY_EXISTS.code, message);
     }
     if (error instanceof ValidationError) {
-      const { errorFields, errorMessage } = mapSequelizeErrorsToErrorFieldsAndMessage(error.errors);
-      const message = `Unable to create doctor. Fields: [ ${errorFields}], message: [ ${errorMessage}]`;
+      const message = mapSequelizeErrorToErrorMessage("Unable to create doctor", error.errors);
       Logger.error(message);
       throw new RepositoryError(Errors.VALIDATION_ERROR.code, message);
     }

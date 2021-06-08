@@ -4,7 +4,7 @@ import app from "../../src/app";
 import { Errors } from "../../src/errors/error-mappings";
 import { destroyClinicById, getClinicAttrs } from "../helpers/clinic-helpers";
 
-describe("#Patient Component", () => {
+describe("#Clinic Component", () => {
   const CLINIC_PATH = "/api/v1/clinics";
 
   describe("#POST /clinic", () => {
@@ -15,7 +15,7 @@ describe("#Patient Component", () => {
       await destroyClinicById(clinicIdsToDestroy);
     });
 
-    it("should create Patient successfully", async () => {
+    it("should create Clinic successfully", async () => {
       const response = await request(app)
         .post(CLINIC_PATH)
         .send(clinicAttrs)
@@ -37,8 +37,9 @@ describe("#Patient Component", () => {
 
     describe("Error Scenarios", () => {
       it.each([
-        [ "email", { email: "repeatedEmail@qdoc.com" } ],
-      ])("should throw error when creating clinic with [%s] that already exists", async (fieldName, field) => {
+        [ [ "email" ], { email: "repeatedEmail@qdoc.com" } ],
+        [ [ "name", "postalCode" ], { name: "repeated clinic", postalCode: "123456" } ],
+      ])("should throw error when creating clinic with [%s] that already exists", async (fieldNames, field) => {
         await request(app).post(CLINIC_PATH).send({ ...getClinicAttrs(), ...field });
 
         const response = await request(app)
@@ -46,9 +47,12 @@ describe("#Patient Component", () => {
           .send({ ...getClinicAttrs(), ...field })
           .expect(StatusCodes.BAD_REQUEST);
 
+        const errorFields = fieldNames.join(" ");
+        const errorMessage = fieldNames.map(v => `${v} must be unique`).join(" ");
+
         expect(response.body).toMatchObject({
           error: {
-            message: `Unable to create clinic. Fields: [${fieldName} ], message: [${fieldName} must be unique ]`,
+            message: `Unable to create clinic. Fields: [ ${errorFields} ], message: [ ${errorMessage} ]`,
             code: Errors.FIELD_ALREADY_EXISTS.code,
           },
         });
