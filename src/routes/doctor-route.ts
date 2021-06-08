@@ -14,14 +14,15 @@ doctorRoute.post("/",
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, onDuty, email, authId, mobileNumber, queueId, clinicId } = req.body;
 
-    const doctor = await DoctorService.create({ firstName,
+    const doctorAttrs = { firstName,
       lastName,
-      onDuty,
       email,
       authId,
       mobileNumber,
       queueId,
-      clinicId });
+      clinicId,
+      onDuty: onDuty || false };
+    const doctor = await DoctorService.create(doctorAttrs);
 
     res.status(StatusCodes.CREATED).json(doctor);
   }));
