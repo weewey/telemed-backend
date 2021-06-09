@@ -6,6 +6,7 @@ const FIRST_NAME = "firstName";
 const LAST_NAME = "lastName";
 const EMAIL = "email";
 const AUTH_ID = "authId";
+const MOBILE_NUMBER = "mobileNumber";
 
 const authIdRule: ValidationChain =
     body(AUTH_ID)
@@ -13,7 +14,14 @@ const authIdRule: ValidationChain =
       .withMessage("authId must be present")
       .bail();
 
+const mobileNumberRule: ValidationChain = body(MOBILE_NUMBER)
+  .exists()
+  .withMessage("mobileNumber must be present")
+  .bail()
+  .isLength({ min: 8 })
+  .withMessage("mobileNumber must have min 8 characters");
+
 export const clinicStaffsCreateRule = [
   ...nameRules([ FIRST_NAME, LAST_NAME ]),
-  emailRule(EMAIL), authIdRule,
+  emailRule(EMAIL), authIdRule, mobileNumberRule,
 ];

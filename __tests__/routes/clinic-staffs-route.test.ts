@@ -4,6 +4,8 @@ import ClinicStaffsService from "../../src/services/clinic-staffs-service";
 import ClinicStaffs from "../../src/models/clinic-staffs";
 import { StatusCodes } from "http-status-codes";
 import { ClinicStaffsAttributes } from "../../src/respository/clinic-staffs-repository";
+import { omit } from "lodash";
+import { Logger } from "../../src/logger";
 
 describe("ClinicStaffs Route", () => {
   const clinicStaffsBaseUrl = "/api/v1/clinic-staffs";
@@ -12,7 +14,7 @@ describe("ClinicStaffs Route", () => {
     lastName: "last name",
     email: "email@email.com",
     authId: "authId",
-    mobileNumber: "999",
+    mobileNumber: "123456789",
   };
   const mockClinicStaffs = { id: 1, firstName: "Monk", lastName: "Wong" } as ClinicStaffs;
 
@@ -36,6 +38,29 @@ describe("ClinicStaffs Route", () => {
       it("returns the staff in the body", async () => {
         const result = await request(app).post(`${clinicStaffsBaseUrl}`).send(clinicStaffsAttrs);
         expect(result.body).toEqual(mockClinicStaffs);
+      });
+    });
+
+    describe("error scenarios", () => {
+      beforeEach(() => {
+        jest.spyOn(Logger, "error").mockImplementation(() => {});
+      });
+      describe("route validation errors", () => {
+        it.each([
+          [ "firstName" ],
+          [ "lastName" ],
+          [ "email" ],
+          [ "authId" ],
+          [ "mobileNumber" ],
+        ])("should throw validation error when field does not exist (%s)", async (missingField) => {
+          const clinicStaffAttrsWithMissingKey = omit(clinicStaffsAttrs, missingField);
+          const response = await request(app).post(clinicStaffsBaseUrl)
+            .send(clinicStaffAttrsWithMissingKey)
+            .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body.error).toMatchObject({ invalidParams: [
+            { name: missingField, reason: `${missingField} must be present` } ] });
+        });
       });
     });
   });
