@@ -14,7 +14,7 @@ import Clinic from "./clinic";
 
 @Table({ tableName: "ClinicStaffs" })
 
-export default class ClinicStaffs extends Model {
+export default class ClinicStaff extends Model {
   @Column({ allowNull: false, primaryKey: true, type: DataType.INTEGER, autoIncrement: true })
   public id!: number;
 

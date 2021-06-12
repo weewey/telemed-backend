@@ -5,13 +5,13 @@ import { Errors } from "../../src/errors/error-mappings";
 import NotFoundError from "../../src/errors/not-found-error";
 import RepositoryError from "../../src/errors/repository-error";
 import TechnicalError from "../../src/errors/technical-error";
-import ClinicStaffs from "../../src/models/clinic-staffs";
-import ClinicStaffsRepository, { ClinicStaffsAttributes } from "../../src/respository/clinic-staffs-repository";
+import ClinicStaff from "../../src/models/clinic-staff";
+import ClinicStaffRepository, { ClinicStaffAttributes } from "../../src/respository/clinic-staff-repository";
 import AuthService from "../../src/services/auth-service";
 import ClinicStaffsService from "../../src/services/clinic-staffs-service";
 
 describe("ClinicStaffs Service", () => {
-  const getClinicStaffAttrs = (overrideAttrs?: Partial<ClinicStaffsAttributes>): ClinicStaffsAttributes => {
+  const getClinicStaffAttrs = (overrideAttrs?: Partial<ClinicStaffAttributes>): ClinicStaffAttributes => {
     return {
       authId: generateUUID(),
       email: `${generateUUID()}@gmail.com`,
@@ -24,8 +24,8 @@ describe("ClinicStaffs Service", () => {
 
   it("should call ClinicStaffsRepository.create with the right params", async () => {
     const clinicStaffsAttrs = getClinicStaffAttrs();
-    const spy = jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue(
-      { authId: clinicStaffsAttrs.authId } as ClinicStaffs,
+    const spy = jest.spyOn(ClinicStaffRepository, "create").mockResolvedValue(
+      { authId: clinicStaffsAttrs.authId } as ClinicStaff,
     );
     jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await ClinicStaffsService.create(clinicStaffsAttrs);
@@ -34,8 +34,8 @@ describe("ClinicStaffs Service", () => {
 
   it("should call AuthService.setPermissions with the right params", async () => {
     const clinicStaffAttrs = getClinicStaffAttrs();
-    jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue(
-      { authId: clinicStaffAttrs.authId } as ClinicStaffs,
+    jest.spyOn(ClinicStaffRepository, "create").mockResolvedValue(
+      { authId: clinicStaffAttrs.authId } as ClinicStaff,
     );
     const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await ClinicStaffsService.create(clinicStaffAttrs);
@@ -44,7 +44,7 @@ describe("ClinicStaffs Service", () => {
 
   describe("when ClinicStaffsRepository errors", () => {
     it("should throw BusinessError when the error is due to uniqueness/validation", async () => {
-      jest.spyOn(ClinicStaffsRepository, "create").mockRejectedValue(
+      jest.spyOn(ClinicStaffRepository, "create").mockRejectedValue(
         new RepositoryError(Errors.FIELD_ALREADY_EXISTS.code, "message"),
       );
       const clinicStaffsAttrs = getClinicStaffAttrs();
@@ -52,7 +52,7 @@ describe("ClinicStaffs Service", () => {
     });
 
     it("should throw NotFoundError when the error is due to associated entity not found", async () => {
-      jest.spyOn(ClinicStaffsRepository, "create").mockRejectedValue(
+      jest.spyOn(ClinicStaffRepository, "create").mockRejectedValue(
         new RepositoryError(Errors.ENTITY_NOT_FOUND.code, "not found"),
       );
       const clinicStaffsAttrs = getClinicStaffAttrs();
@@ -60,7 +60,7 @@ describe("ClinicStaffs Service", () => {
     });
 
     it("should throw TechnicalError when it encounters other errors", async () => {
-      jest.spyOn(ClinicStaffsRepository, "create").mockRejectedValue(
+      jest.spyOn(ClinicStaffRepository, "create").mockRejectedValue(
         new RepositoryError("other error code", "message"),
       );
       const clinicStaffsAttrs = getClinicStaffAttrs();
@@ -72,10 +72,10 @@ describe("ClinicStaffs Service", () => {
     const clinicStaffAttrs = getClinicStaffAttrs();
     const mockClinicStaff = { authId: clinicStaffAttrs.authId,
       id: 1,
-      destroy: () => {} } as ClinicStaffs;
+      destroy: () => {} } as ClinicStaff;
 
     beforeEach(() => {
-      jest.spyOn(ClinicStaffsRepository, "create").mockResolvedValue(mockClinicStaff);
+      jest.spyOn(ClinicStaffRepository, "create").mockResolvedValue(mockClinicStaff);
       jest.spyOn(AuthService, "setPermissions").mockRejectedValue(new Error("test"));
     });
 

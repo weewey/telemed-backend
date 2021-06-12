@@ -1,5 +1,5 @@
-import ClinicStaffs from "../models/clinic-staffs";
-import ClinicStaffsRepository, { ClinicStaffsAttributes } from "../respository/clinic-staffs-repository";
+import ClinicStaff from "../models/clinic-staff";
+import ClinicStaffRepository, { ClinicStaffAttributes } from "../respository/clinic-staff-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import AuthService from "./auth-service";
 import { Role } from "../clients/auth-client";
@@ -7,13 +7,13 @@ import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 
 class ClinicStaffsService {
-  public static async create(clinicStaffsAttributes: ClinicStaffsAttributes): Promise<ClinicStaffs> {
+  public static async create(clinicStaffsAttributes: ClinicStaffAttributes): Promise<ClinicStaff> {
     const clinicStaff = await this.createClinicStaffs(clinicStaffsAttributes);
     await this.setPermissions(clinicStaff);
     return clinicStaff;
   }
 
-  private static async setPermissions(clinicStaff: ClinicStaffs):Promise<void> {
+  private static async setPermissions(clinicStaff: ClinicStaff):Promise<void> {
     try {
       await AuthService.setPermissions(clinicStaff.authId, Role.ClinicStaff, clinicStaff.clinicId);
     } catch (e) {
@@ -24,15 +24,15 @@ class ClinicStaffsService {
     }
   }
 
-  private static async createClinicStaffs(clinicStaffsAttributes: ClinicStaffsAttributes): Promise<ClinicStaffs> {
+  private static async createClinicStaffs(clinicStaffsAttributes: ClinicStaffAttributes): Promise<ClinicStaff> {
     try {
-      return await ClinicStaffsRepository.create(clinicStaffsAttributes);
+      return await ClinicStaffRepository.create(clinicStaffsAttributes);
     } catch (e) {
       throw mapRepositoryErrors(e);
     }
   }
 
-  private static async deleteAppendErrorMessagePrefix(clinicStaff: ClinicStaffs,
+  private static async deleteAppendErrorMessagePrefix(clinicStaff: ClinicStaff,
     errorMessagePrefix = ""): Promise<void> {
     try {
       return await clinicStaff.destroy();

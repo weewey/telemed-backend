@@ -1,11 +1,11 @@
-import ClinicStaffs from "../models/clinic-staffs";
+import ClinicStaff from "../models/clinic-staff";
 import { BaseError, ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
 import { Logger } from "../logger";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
 
-export interface ClinicStaffsAttributes {
+export interface ClinicStaffAttributes {
   firstName: string,
   lastName: string,
   email: string,
@@ -14,11 +14,11 @@ export interface ClinicStaffsAttributes {
   clinicId?: number,
 }
 
-class ClinicStaffsRepository {
-  public static async create(clinicStaffsAttributes: ClinicStaffsAttributes): Promise<ClinicStaffs> {
-    let staff: ClinicStaffs;
+class ClinicStaffRepository {
+  public static async create(clinicStaffAttributes: ClinicStaffAttributes): Promise<ClinicStaff> {
+    let staff: ClinicStaff;
     try {
-      staff = await ClinicStaffs.create(clinicStaffsAttributes);
+      staff = await ClinicStaff.create(clinicStaffAttributes);
     } catch (error) {
       throw this.handleCreateStaffError(error);
     }
@@ -45,4 +45,4 @@ class ClinicStaffsRepository {
   }
 }
 
-export default ClinicStaffsRepository;
+export default ClinicStaffRepository;

@@ -1,22 +1,22 @@
 import app from "../../src/app";
 import request from "supertest";
 import ClinicStaffsService from "../../src/services/clinic-staffs-service";
-import ClinicStaffs from "../../src/models/clinic-staffs";
+import ClinicStaff from "../../src/models/clinic-staff";
 import { StatusCodes } from "http-status-codes";
-import { ClinicStaffsAttributes } from "../../src/respository/clinic-staffs-repository";
+import { ClinicStaffAttributes } from "../../src/respository/clinic-staff-repository";
 import { omit } from "lodash";
 import { Logger } from "../../src/logger";
 
 describe("ClinicStaffs Route", () => {
   const clinicStaffsBaseUrl = "/api/v1/clinic-staffs";
-  const clinicStaffsAttrs: ClinicStaffsAttributes = {
+  const clinicStaffsAttrs: ClinicStaffAttributes = {
     firstName: "first name",
     lastName: "last name",
     email: "email@email.com",
     authId: "authId",
     mobileNumber: "123456789",
   };
-  const mockClinicStaffs = { id: 1, firstName: "Monk", lastName: "Wong" } as ClinicStaffs;
+  const mockClinicStaffs = { id: 1, firstName: "Monk", lastName: "Wong" } as ClinicStaff;
 
   describe("POST /", () => {
     let createClinicStaffsSpy: jest.SpyInstance;
