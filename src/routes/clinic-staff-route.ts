@@ -3,14 +3,14 @@ import asyncHandler from "express-async-handler";
 import { StatusCodes } from "http-status-codes";
 import ClinicStaffsService from "../services/clinic-staffs-service";
 import { validateRequest } from "./validate-request";
-import { clinicStaffsCreateRule } from "../validation-rules/clinic-staffs-create-rule";
+import { usersCreateRule } from "../validation-rules/users-create-rule";
 
-export const clinicStaffsRoute = Router();
+export const clinicStaffRoute = Router();
 
-clinicStaffsRoute.use(express.json());
+clinicStaffRoute.use(express.json());
 
-clinicStaffsRoute.post("/",
-  validateRequest(clinicStaffsCreateRule),
+clinicStaffRoute.post("/",
+  validateRequest(usersCreateRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, email, authId, mobileNumber, clinicId } = req.body;
 

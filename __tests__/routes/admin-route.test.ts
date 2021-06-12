@@ -1,43 +1,43 @@
 import app from "../../src/app";
 import request from "supertest";
-import ClinicStaffsService from "../../src/services/clinic-staffs-service";
-import ClinicStaff from "../../src/models/clinic-staff";
+import Admin from "../../src/models/admin";
 import { StatusCodes } from "http-status-codes";
-import { ClinicStaffAttributes } from "../../src/respository/clinic-staff-repository";
+import { AdminAttributes } from "../../src/respository/admin-repository";
 import { omit } from "lodash";
 import { Logger } from "../../src/logger";
+import AdminService from "../../src/services/admin-service";
 
-describe("ClinicStaffs Route", () => {
-  const clinicStaffsBaseUrl = "/api/v1/clinic-staffs";
-  const clinicStaffsAttrs: ClinicStaffAttributes = {
+describe("Admin Route", () => {
+  const adminBaseUrl = "/api/v1/admins";
+  const adminAttrs: AdminAttributes = {
     firstName: "first name",
     lastName: "last name",
     email: "email@email.com",
     authId: "authId",
     mobileNumber: "123456789",
   };
-  const mockClinicStaffs = { id: 1, firstName: "Monk", lastName: "Wong" } as ClinicStaff;
+  const mockAdmin = { id: 1, firstName: "Monk", lastName: "Wong" } as Admin;
 
   describe("POST /", () => {
-    let createClinicStaffsSpy: jest.SpyInstance;
+    let createAdminsSpy: jest.SpyInstance;
     beforeAll(() => {
-      createClinicStaffsSpy = jest.spyOn(ClinicStaffsService, "create").mockResolvedValue(mockClinicStaffs);
+      createAdminsSpy = jest.spyOn(AdminService, "create").mockResolvedValue(mockAdmin);
     });
 
     describe("success", () => {
-      it("calls ClinicStaffsService.create", async () => {
-        await request(app).post(`${clinicStaffsBaseUrl}`).send(clinicStaffsAttrs);
-        expect(createClinicStaffsSpy).toHaveBeenCalled();
+      it("calls AdminsService.create", async () => {
+        await request(app).post(`${adminBaseUrl}`).send(adminAttrs);
+        expect(createAdminsSpy).toHaveBeenCalled();
       });
 
       it("returns statusCode 201", async () => {
-        const result = await request(app).post(`${clinicStaffsBaseUrl}`).send(clinicStaffsAttrs);
+        const result = await request(app).post(`${adminBaseUrl}`).send(adminAttrs);
         expect(result.status).toEqual(StatusCodes.CREATED);
       });
 
       it("returns the staff in the body", async () => {
-        const result = await request(app).post(`${clinicStaffsBaseUrl}`).send(clinicStaffsAttrs);
-        expect(result.body).toEqual(mockClinicStaffs);
+        const result = await request(app).post(`${adminBaseUrl}`).send(adminAttrs);
+        expect(result.body).toEqual(mockAdmin);
       });
     });
 
@@ -53,9 +53,9 @@ describe("ClinicStaffs Route", () => {
           [ "authId" ],
           [ "mobileNumber" ],
         ])("should throw validation error when field does not exist (%s)", async (missingField) => {
-          const clinicStaffAttrsWithMissingKey = omit(clinicStaffsAttrs, missingField);
-          const response = await request(app).post(clinicStaffsBaseUrl)
-            .send(clinicStaffAttrsWithMissingKey)
+          const adminAttrsWithMissingKey = omit(adminAttrs, missingField);
+          const response = await request(app).post(adminBaseUrl)
+            .send(adminAttrsWithMissingKey)
             .expect(StatusCodes.BAD_REQUEST);
 
           expect(response.body.error).toMatchObject({ invalidParams: [

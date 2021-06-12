@@ -4,7 +4,7 @@ import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Vali
 import RepositoryError from "../../src/errors/repository-error";
 import { Logger } from "../../src/logger";
 import { Errors } from "../../src/errors/error-mappings";
-import Admin from "../../src/models/admins";
+import Admin from "../../src/models/admin";
 import objectContaining = jasmine.objectContaining;
 
 describe("Admin Repository", () => {

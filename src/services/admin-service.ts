@@ -4,7 +4,7 @@ import AuthService from "./auth-service";
 import { Role } from "../clients/auth-client";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
-import Admin from "../models/admins";
+import Admin from "../models/admin";
 
 class AdminService {
   public static async create(adminAttributes: AdminAttributes): Promise<Admin> {

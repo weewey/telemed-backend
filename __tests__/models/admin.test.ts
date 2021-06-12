@@ -1,6 +1,6 @@
 import { v4 as generateUUID } from "uuid";
 import { AdminAttributes } from "../../src/respository/admin-repository";
-import Admin from "../../src/models/admins";
+import Admin from "../../src/models/admin";
 import { UniqueConstraintError, ValidationError } from "sequelize";
 
 describe("Admin", () => {

@@ -8,7 +8,7 @@ import TechnicalError from "../../src/errors/technical-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import AuthService from "../../src/services/auth-service";
 import { Role } from "../../src/clients/auth-client";
-import Admin from "../../src/models/admins";
+import Admin from "../../src/models/admin";
 
 describe("Admin Service", () => {
   const getAdminAttrs = (overrideAttrs?: Partial<AdminAttributes>): AdminAttributes => {

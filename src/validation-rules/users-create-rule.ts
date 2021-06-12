@@ -21,7 +21,7 @@ const mobileNumberRule: ValidationChain = body(MOBILE_NUMBER)
   .isLength({ min: 8 })
   .withMessage("mobileNumber must have min 8 characters");
 
-export const clinicStaffsCreateRule = [
+export const usersCreateRule = [
   ...nameRules([ FIRST_NAME, LAST_NAME ]),
   emailRule(EMAIL), authIdRule, mobileNumberRule,
 ];

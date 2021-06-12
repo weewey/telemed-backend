@@ -1,4 +1,4 @@
-import Admin from "../models/admins";
+import Admin from "../models/admin";
 import { BaseError, ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
 import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
 import { Errors } from "../errors/error-mappings";
