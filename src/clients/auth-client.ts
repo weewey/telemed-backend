@@ -4,6 +4,7 @@ export enum Role {
   Patient = "PATIENT",
   Doctor = "DOCTOR",
   ClinicStaff = "CLINIC-STAFF",
+  Admin = "ADMIN",
 }
 
 export interface UserPermissions {
