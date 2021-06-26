@@ -18,3 +18,4 @@ services:
       - "./firebase:/home/node"
     ports:
       - "9098:9098"
+      - "4578:4578"

@@ -8,7 +8,7 @@ import { generateRandomString } from "../helpers/common-helpers";
 import * as admin from "firebase-admin";
 
 describe("#Patient Component", () => {
-  const firebaseAuthAdmin = admin.initializeApp(undefined, "integration-test").auth();
+  const firebaseAuthAdmin = admin.initializeApp({ projectId: "local_env" }, "integration-test").auth();
 
   const PATIENT_PATH = "/api/v1/patients";
   const defaultPatient = {

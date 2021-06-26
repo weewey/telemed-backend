@@ -16,7 +16,7 @@ export class AuthClient {
   private firebaseAuthAdmin: admin.auth.Auth;
 
   constructor() {
-    this.firebaseAuthAdmin = admin.initializeApp({ projectId: "project-id" }).auth();
+    this.firebaseAuthAdmin = admin.initializeApp({}).auth();
   }
 
   public async setPermissions(authId: string, permissions: UserPermissions): Promise<void> {
