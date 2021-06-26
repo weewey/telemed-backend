@@ -15,6 +15,7 @@ jobs:
       NODE_ENV: ci
       FIREBASE_CONFIG: ${{ secrets.STAGING_FIREBASE_CONFIG }}
       FIREBASE_AUTH_EMULATOR_HOST: 'localhost:9098'
+      GOOGLE_CLOUD_PROJECT: 'local'
     services:
       postgres:
         image: postgres
