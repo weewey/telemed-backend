@@ -36,7 +36,7 @@ describe("Doctor Service", () => {
     jest.spyOn(DoctorRepository, "create").mockResolvedValue({ authId: doctorAttrs.authId } as Doctor);
     const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await DoctorService.create(doctorAttrs);
-    expect(spy).toBeCalledWith(doctorAttrs.authId, Role.Doctor, undefined);
+    expect(spy).toBeCalledWith(doctorAttrs.authId, Role.DOCTOR, undefined);
   });
 
   describe("when DoctorRepository errors", () => {

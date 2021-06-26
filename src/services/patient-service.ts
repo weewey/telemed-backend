@@ -23,7 +23,7 @@ class PatientService {
 
   private static async setPermissions(patient: Patient): Promise<void> {
     try {
-      await AuthService.setPermissions(patient.authId, Role.Patient);
+      await AuthService.setPermissions(patient.authId, Role.PATIENT);
     } catch (e) {
       await this.deleteAppendErrorMessagePrefix(patient,
         `Error deleting patient after failure to setPermissions on AuthService. PatientId: ${patient.id}`);

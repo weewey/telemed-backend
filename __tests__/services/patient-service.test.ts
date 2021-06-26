@@ -37,7 +37,7 @@ describe("Patient service", () => {
 
       expect(AuthService.setPermissions).toHaveBeenCalledTimes(1);
       expect(AuthService.setPermissions).toHaveBeenCalledWith(patientAttributes.authId,
-        Role.Patient);
+        Role.PATIENT);
     });
 
     describe("Error scenarios", () => {

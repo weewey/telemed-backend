@@ -15,7 +15,7 @@ class ClinicStaffsService {
 
   private static async setPermissions(clinicStaff: ClinicStaff):Promise<void> {
     try {
-      await AuthService.setPermissions(clinicStaff.authId, Role.ClinicStaff, clinicStaff.clinicId);
+      await AuthService.setPermissions(clinicStaff.authId, Role.CLINIC_STAFF, clinicStaff.clinicId);
     } catch (e) {
       await this.deleteAppendErrorMessagePrefix(clinicStaff,
         "Error deleting clinicStaff after failure to setPermissions on AuthService. " +

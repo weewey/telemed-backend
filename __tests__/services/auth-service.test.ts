@@ -4,7 +4,7 @@ import TechnicalError from "../../src/errors/technical-error";
 
 describe("AuthService", () => {
   const authId = "authId";
-  const role = Role.Patient;
+  const role = Role.PATIENT;
   const clinicId = 1;
 
   describe("#setPermissions", () => {

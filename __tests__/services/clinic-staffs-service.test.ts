@@ -39,7 +39,7 @@ describe("ClinicStaffs Service", () => {
     );
     const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await ClinicStaffsService.create(clinicStaffAttrs);
-    expect(spy).toBeCalledWith(clinicStaffAttrs.authId, Role.ClinicStaff, undefined);
+    expect(spy).toBeCalledWith(clinicStaffAttrs.authId, Role.CLINIC_STAFF, undefined);
   });
 
   describe("when ClinicStaffsRepository errors", () => {

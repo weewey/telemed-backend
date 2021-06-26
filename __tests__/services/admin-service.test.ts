@@ -35,7 +35,7 @@ describe("Admin Service", () => {
     jest.spyOn(AdminRepository, "create").mockResolvedValue({ authId: adminAttrs.authId } as Admin);
     const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await AdminService.create(adminAttrs);
-    expect(spy).toBeCalledWith(adminAttrs.authId, Role.Admin);
+    expect(spy).toBeCalledWith(adminAttrs.authId, Role.ADMIN);
   });
 
   describe("when AdminRepository errors", () => {

@@ -1,10 +1,10 @@
 import * as admin from "firebase-admin";
 
 export enum Role {
-  Patient = "PATIENT",
-  Doctor = "DOCTOR",
-  ClinicStaff = "CLINIC-STAFF",
-  Admin = "ADMIN",
+  PATIENT = "PATIENT",
+  DOCTOR = "DOCTOR",
+  CLINIC_STAFF = "CLINIC_STAFF",
+  ADMIN = "ADMIN",
 }
 
 export interface UserPermissions {
@@ -16,7 +16,7 @@ export class AuthClient {
   private firebaseAuthAdmin: admin.auth.Auth;
 
   constructor() {
-    this.firebaseAuthAdmin = admin.initializeApp().auth();
+    this.firebaseAuthAdmin = admin.initializeApp({ projectId: "project-id" }).auth();
   }
 
   public async setPermissions(authId: string, permissions: UserPermissions): Promise<void> {
