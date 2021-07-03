@@ -4,6 +4,7 @@ import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
+import Ticket from "../models/ticket";
 
 export interface FindAllQueueAttributes {
   clinicId: number,
@@ -33,17 +34,18 @@ class QueueRepository {
     return Queue.findAll();
   }
 
-  // TODO: make queue status not optional
-  public static async getByClinicIdAndStatus(clinicId: number, status?: QueueStatus): Promise<Queue[]> {
+  public static async getByClinicIdAndStatus(clinicId: number, status: QueueStatus): Promise<Queue[]> {
     return Queue.findAll({
       where: {
-        clinicId, ...(status && { status }),
+        clinicId,
+        ...(status && { status }),
       },
+      include: Ticket,
     });
   }
 
-  public static async getById(clinicId: number): Promise<Queue|null> {
-    return Queue.findByPk(clinicId);
+  public static async getById(queueId: number): Promise<Queue|null> {
+    return Queue.findByPk(queueId, { include: Ticket });
   }
 
   public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<void> {

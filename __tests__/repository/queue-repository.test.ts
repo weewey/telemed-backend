@@ -4,6 +4,7 @@ import { ForeignKeyConstraintError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import QueueRepository from "../../src/respository/queue-repository";
+import Ticket from "../../src/models/ticket";
 import objectContaining = jasmine.objectContaining;
 
 describe("QueueRepository", () => {
@@ -97,24 +98,8 @@ describe("QueueRepository", () => {
             clinicId: mockQueue.clinicId,
             status: mockQueue.status,
           },
+          include: Ticket,
         });
-      });
-    });
-
-    describe("when no status is passed in", () => {
-      it("should get all queues by clinic id", async () => {
-        jest.spyOn(Queue, "findAll").mockResolvedValue([ mockQueue ]);
-
-        await QueueRepository.getByClinicIdAndStatus(mockQueue.clinicId);
-
-        expect(Queue.findAll).toHaveBeenCalledTimes(1);
-        expect(Queue.findAll).toBeCalledWith(
-          {
-            where: {
-              clinicId: mockQueue.clinicId,
-            },
-          },
-        );
       });
     });
   });
@@ -129,7 +114,7 @@ describe("QueueRepository", () => {
       await QueueRepository.getById(queueId);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toBeCalledWith(queueId);
+      expect(spy).toBeCalledWith(queueId, { include: Ticket });
     });
   });
 });

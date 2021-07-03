@@ -34,7 +34,7 @@ class QueueService {
     }
   }
 
-  public static async getQueuesByClinicAndStatus(clinicId: number, queueStatus?: QueueStatus): Promise<Queue[]> {
+  public static async getQueuesByClinicAndStatus(clinicId: number, queueStatus: QueueStatus): Promise<Queue[]> {
     try {
       return await QueueRepository.getByClinicIdAndStatus(clinicId, queueStatus);
     } catch (error) {
