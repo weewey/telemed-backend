@@ -1,9 +1,9 @@
+/* eslint-disable import/no-cycle */
 import { Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Table, UpdatedAt } from "sequelize-typescript";
-// eslint-disable-next-line import/no-cycle
 import Clinic from "./clinic";
 import QueueStatus from "../queue_status";
-// eslint-disable-next-line import/no-cycle
 import Doctor from "./doctor";
+import Ticket from "./ticket";
 
 export interface QueueAttributes {
   clinicId: number
@@ -79,6 +79,9 @@ export default class Queue extends Model {
     defaultValue: 0,
   })
   public latestGeneratedTicketDisplayNumber!: number;
+
+  @HasMany(() => Ticket)
+  public tickets?: Ticket[];
 
   @HasMany(() => Doctor)
   public doctors?: Doctor[];
