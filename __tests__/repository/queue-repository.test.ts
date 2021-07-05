@@ -51,7 +51,7 @@ describe("QueueRepository", () => {
     describe("when clinicId is passed in", () => {
       it("should call findAll with the right params", async () => {
         await QueueRepository.findAll({ clinicId: 1 });
-        expect(spy).toBeCalledWith({ where: { clinicId: 1 }, include: [Ticket] });
+        expect(spy).toBeCalledWith({ where: { clinicId: 1 }, include: [ Ticket ] });
       });
     });
 
@@ -60,7 +60,7 @@ describe("QueueRepository", () => {
         const status = QueueStatus.ACTIVE;
 
         await QueueRepository.findAll({ clinicId: 1, status });
-        expect(spy).toBeCalledWith({ where: { clinicId: 1, status }, include: [Ticket] });
+        expect(spy).toBeCalledWith({ where: { clinicId: 1, status }, include: [ Ticket ] });
       });
     });
   });

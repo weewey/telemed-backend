@@ -1,7 +1,7 @@
-import Queue, {QueueAttributes, QueueAttributesWithId} from "../models/queue";
-import {ForeignKeyConstraintError} from "sequelize";
+import Queue, { QueueAttributes, QueueAttributesWithId } from "../models/queue";
+import { ForeignKeyConstraintError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
-import {Errors} from "../errors/error-mappings";
+import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
 import Ticket from "../models/ticket";
@@ -28,10 +28,10 @@ class QueueRepository {
 
   public static async findAll(findAllQueueAttributes?: FindAllQueueAttributes): Promise<Queue[]> {
     if (findAllQueueAttributes) {
-      return Queue.findAll({ where: { ...findAllQueueAttributes }, include: [Ticket] });
+      return Queue.findAll({ where: { ...findAllQueueAttributes }, include: [ Ticket ] });
     }
 
-    return Queue.findAll({include: [Ticket]});
+    return Queue.findAll({ include: [ Ticket ] });
   }
 
   public static async getByClinicIdAndStatus(clinicId: number, status: QueueStatus): Promise<Queue[]> {
