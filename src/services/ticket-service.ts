@@ -58,7 +58,6 @@ class TicketService {
     try {
       await queue.update({
         latestGeneratedTicketDisplayNumber: ticket.displayNumber,
-        waitingTicketsCount: queue.waitingTicketsCount + 1,
         waitingTicketsId: queue.waitingTicketsId.concat(ticket.id),
       }, { transaction });
     } catch (e) {
