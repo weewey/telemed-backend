@@ -60,13 +60,6 @@ export default class Queue extends Model {
   public waitingTicketsId!: Array<number> ;
 
   @Column({
-    type: DataType.ARRAY(DataType.INTEGER),
-    allowNull: false,
-    defaultValue: [],
-  })
-  public closedTicketsId!: Array<number> ;
-
-  @Column({
     type: DataType.INTEGER(),
     defaultValue: 0,
   })
