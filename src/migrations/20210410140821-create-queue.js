@@ -20,6 +20,10 @@ module.exports = {
         type: Sequelize.ENUM,
         values: [ "ACTIVE", "INACTIVE", "CLOSED" ],
       },
+      waitingTicketsCount: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       waitingTicketsId: {
         allowNull: false,
         type: Sequelize.ARRAY(Sequelize.INTEGER),
