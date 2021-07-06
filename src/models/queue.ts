@@ -52,6 +52,10 @@ export default class Queue extends Model {
   })
   public closedAt?: Date;
 
+  @ForeignKey(() => Clinic)
+  @Column
+  public currentTicketId!: number;
+
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
     allowNull: false,
