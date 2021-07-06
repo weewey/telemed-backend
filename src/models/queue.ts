@@ -9,7 +9,7 @@ export interface QueueAttributes {
   clinicId: number
   status: string
   latestGeneratedTicketDisplayNumber?: number
-  waitingTicketsId?: Array<number>
+  order?: Array<number>
   startedAt?: Date
   closedAt?: Date | null
 }
@@ -57,7 +57,7 @@ export default class Queue extends Model {
     allowNull: false,
     defaultValue: [],
   })
-  public waitingTicketsId!: Array<number> ;
+  public order!: Array<number> ;
 
   @Column({
     type: DataType.INTEGER(),

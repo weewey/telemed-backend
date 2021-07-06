@@ -30,7 +30,7 @@ module.exports = {
       await queryInterface.bulkInsert("Queues", [ {
         clinicId: clinic[0][0].id,
         status: "INACTIVE",
-        waitingTicketsId: "{}",
+        order: "{}",
         closedTicketsId: "{}",
         latestGeneratedTicketDisplayNumber: 0,
         createdAt: new Date(),
@@ -39,7 +39,7 @@ module.exports = {
       {
         clinicId: clinic[0][0].id,
         status: "INACTIVE",
-        waitingTicketsId: "{}",
+        order: "{}",
         closedTicketsId: "{}",
         latestGeneratedTicketDisplayNumber: 0,
         createdAt: new Date(),
