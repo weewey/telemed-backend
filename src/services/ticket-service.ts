@@ -58,7 +58,7 @@ class TicketService {
     try {
       await queue.update({
         latestGeneratedTicketDisplayNumber: ticket.displayNumber,
-        order: queue.order.concat(ticket.id),
+        pendingTicketIdsOrder: queue.pendingTicketIdsOrder.concat(ticket.id),
       }, { transaction });
     } catch (e) {
       throw new TechnicalError(`Failed to update queueId: ${queue.id} ${e.message}`);

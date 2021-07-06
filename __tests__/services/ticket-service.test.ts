@@ -57,7 +57,7 @@ describe("TicketService", () => {
         await TicketService.create(createTicketReq);
         expect(queueUpdateSpy).toBeCalledWith({
           latestGeneratedTicketDisplayNumber: expectedTicketAttr.displayNumber,
-          order: mockActiveQueue.order.concat(mockTicket.id),
+          pendingTicketIdsOrder: mockActiveQueue.pendingTicketIdsOrder.concat(mockTicket.id),
         }, { transaction: expect.anything() });
       });
     });
