@@ -119,7 +119,7 @@ describe("Queues Route", () => {
       it("should return 204 with the expected body", async () => {
         jest.spyOn(QueueService, "update").mockResolvedValue();
         await request(app).put(QUEUES_PUT_PATH)
-          .send({ status: QueueStatus.ACTIVE })
+          .send({ status: QueueStatus.ACTIVE, clinicId: "1" })
           .expect(StatusCodes.NO_CONTENT)
           .expect("");
       });
@@ -134,10 +134,10 @@ describe("Queues Route", () => {
       ])("should call QueueService#update with the expected params for queueId (%s) and status (%s)",
         async (queueIdNo, status) => {
           jest.spyOn(QueueService, "update").mockResolvedValue();
-          const expectedQueueAttr = { id: queueIdNo, status: status.toUpperCase() };
+          const expectedQueueAttr = { id: queueIdNo, status: status.toUpperCase(), clinicId: 1 };
 
           await request(app).put(`${queuesPath}/${queueIdNo}`)
-            .send({ status });
+            .send({ status, clinicId: 1 });
 
           expect(QueueService.update).toHaveBeenCalledTimes(1);
           expect(QueueService.update).toHaveBeenCalledWith(expectedQueueAttr);
@@ -153,7 +153,7 @@ describe("Queues Route", () => {
         const QUEUES_PUT_PATH = `${queuesPath}/${queueId}`;
         jest.spyOn(QueueService, "update").mockResolvedValue();
         const response = await request(app).put(QUEUES_PUT_PATH)
-          .send({ status: QueueStatus.ACTIVE })
+          .send({ status: QueueStatus.ACTIVE, clinicId: 1 })
           .expect(StatusCodes.BAD_REQUEST);
 
         expect(response.body).toMatchObject({
@@ -175,7 +175,7 @@ describe("Queues Route", () => {
           const QUEUES_PUT_PATH = `${queuesPath}/${144}`;
           jest.spyOn(QueueService, "update").mockResolvedValue();
           const response = await request(app).put(QUEUES_PUT_PATH)
-            .send({ status })
+            .send({ status, clinicId: 1 })
             .expect(StatusCodes.BAD_REQUEST);
 
           expect(response.body).toMatchObject({
@@ -185,6 +185,36 @@ describe("Queues Route", () => {
             },
           });
         });
+    });
+
+    it("should return 400 if clinicId does not exist", async () => {
+      const QUEUES_PUT_PATH = `${queuesPath}/1`;
+      const response = await request(app).put(QUEUES_PUT_PATH)
+        .send({ status: QueueStatus.ACTIVE })
+        .expect(StatusCodes.BAD_REQUEST);
+
+      expect(response.body).toMatchObject({
+        error: {
+          id: expect.anything(),
+          invalidParams: [ { name: "clinicId", reason: "Clinic Id is required" } ],
+          type: "validation",
+        },
+      });
+    });
+
+    it("should return 400 if clinicId is not a number", async () => {
+      const QUEUES_PUT_PATH = `${queuesPath}/1`;
+      const response = await request(app).put(QUEUES_PUT_PATH)
+        .send({ status: QueueStatus.ACTIVE, clinicId: "a" })
+        .expect(StatusCodes.BAD_REQUEST);
+
+      expect(response.body).toMatchObject({
+        error: {
+          id: expect.anything(),
+          invalidParams: [ { name: "clinicId", reason: "clinicId must contain only numbers." } ],
+          type: "validation",
+        },
+      });
     });
   });
 

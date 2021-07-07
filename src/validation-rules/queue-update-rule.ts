@@ -4,6 +4,7 @@ import QueueStatus from "../queue_status";
 
 const QUEUE_ID = "queueId";
 const STATUS = "status";
+const CLINIC_ID = "clinicId";
 
 export const queueIdRule: ValidationChain[] = [
   check(QUEUE_ID)
@@ -12,6 +13,16 @@ export const queueIdRule: ValidationChain[] = [
     .bail()
     .isNumeric()
     .withMessage("Queue Id must contain only numbers.")
+    .toInt(),
+];
+
+const clinicIdRule: ValidationChain[] = [
+  body(CLINIC_ID)
+    .exists()
+    .withMessage("Clinic Id is required")
+    .bail()
+    .isNumeric()
+    .withMessage("clinicId must contain only numbers.")
     .toInt(),
 ];
 
@@ -27,4 +38,5 @@ const queueStatusRule: ValidationChain[] = [
 export const queueUpdateRules = [
   ...queueIdRule,
   ...queueStatusRule,
+  ...clinicIdRule,
 ];
