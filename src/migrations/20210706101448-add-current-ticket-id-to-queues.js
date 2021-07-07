@@ -5,8 +5,8 @@ module.exports = {
       allowNull: true,
       references: {
         model: "Tickets",
-        key: "id"
-      }
+        key: "id",
+      },
     });
   },
 
