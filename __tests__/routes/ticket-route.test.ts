@@ -24,7 +24,10 @@ describe("Tickets Route", () => {
     "clinicId": clinicId,
   } as Ticket;
 
-  beforeEach(jest.clearAllMocks);
+  beforeEach(() => {
+    jest.spyOn(Logger, "error").mockImplementation(() => {});
+    jest.clearAllMocks();
+  });
 
   describe("POST /tickets", () => {
     describe("Successful scenarios", () => {
@@ -90,8 +93,7 @@ describe("Tickets Route", () => {
         [ 9324, "Closed" ],
       ])("should call TicketService#update with the expected params for ticketId (%s) and status (%s)",
         async (ticketIdNo, status) => {
-          jest.spyOn(TicketService, "update").mockResolvedValue();
-          const expectedTicketAttr = { status: status.toUpperCase() };
+          const expectedTicketAttr = { id: ticketIdNo, status: status.toUpperCase() };
 
           await request(app).put(`${ticketsPath}/${ticketIdNo}`)
             .send({ status });

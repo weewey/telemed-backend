@@ -23,7 +23,7 @@ ticketRoute.post("/",
 ticketRoute.put("/:ticketId",
   validateRequest(ticketUpdateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const id = req.params.queueId;
+    const id = req.params.ticketId;
     const updateAttributes = { id, ...req.body };
 
     await TicketService.update(updateAttributes);
