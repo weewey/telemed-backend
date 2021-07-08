@@ -6,6 +6,7 @@ import Ticket from "../../src/models/ticket";
 import TicketStatus from "../../src/ticket_status";
 import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../src/logger";
+import NotFoundError from "../../src/errors/not-found-error";
 
 describe("Tickets Route", () => {
   const clinicId = 1;
@@ -141,6 +142,35 @@ describe("Tickets Route", () => {
             },
           });
         });
+    });
+  });
+
+  describe("GET /:ticketId", () => {
+    const ticketId = 1;
+    const TICKET_GET_PATH = `${ticketsPath}/${ticketId}`;
+
+    // eslint-disable-next-line jest/expect-expect
+    it("should return ticket", async () => {
+      const mockTicket = { id: 1 } as Ticket;
+      jest.spyOn(TicketService, "get").mockResolvedValue(mockTicket);
+      await request(app).get(TICKET_GET_PATH)
+        .expect(StatusCodes.OK, mockTicket);
+    });
+
+    describe("Error scenarios", () => {
+      // eslint-disable-next-line jest/expect-expect
+      it("should return 404 when ticket is not found", async () => {
+        jest.spyOn(TicketService, "get").mockRejectedValue(new NotFoundError("test", "test"));
+        await request(app).get(TICKET_GET_PATH)
+          .expect(StatusCodes.NOT_FOUND);
+      });
+
+      // eslint-disable-next-line jest/expect-expect
+      it("should return 400 when ticketId is not a number", async () => {
+        jest.spyOn(TicketService, "get").mockRejectedValue(new NotFoundError("test", "test"));
+        await request(app).get(`${ticketsPath}/asd`)
+          .expect(StatusCodes.BAD_REQUEST);
+      });
     });
   });
 });

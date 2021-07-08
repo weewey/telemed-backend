@@ -6,6 +6,7 @@ import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
 import { Logger } from "../logger";
 import TicketStatus from "../ticket_status";
 import NotFoundError from "../errors/not-found-error";
+import Queue from "../models/queue";
 
 class TicketRepository {
   public static async create(ticketAttr: TicketAttributes, transaction?: Transaction): Promise<Ticket> {
@@ -48,6 +49,10 @@ class TicketRepository {
       throw new NotFoundError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message);
     }
     await ticket.update(updateAttributes);
+  }
+
+  public static async get(ticketId: number): Promise<Ticket|null> {
+    return Ticket.findByPk(ticketId, { include: Queue });
   }
 }
 

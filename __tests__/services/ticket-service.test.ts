@@ -168,4 +168,20 @@ describe("TicketService", () => {
         expect(TicketRepository.update).toHaveBeenCalledWith({ ...ticketAttrActive, ...fields });
       });
   });
+
+  describe("get", () => {
+    const ticketId = 1;
+    it("should call TicketRepository.get", async () => {
+      const spy = jest.spyOn(TicketRepository, "get");
+      await TicketRepository.get(ticketId);
+      expect(spy).toHaveBeenCalledWith(ticketId);
+    });
+
+    describe("when Ticket is not found", () => {
+      it("should throw NotFoundException", async () => {
+        jest.spyOn(TicketRepository, "get").mockResolvedValue(null);
+        await expect(TicketService.get(ticketId)).rejects.toThrowError(NotFoundError);
+      });
+    });
+  });
 });

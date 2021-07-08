@@ -4,7 +4,6 @@ import { ForeignKeyConstraintError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import QueueRepository from "../../src/respository/queue-repository";
-import Ticket from "../../src/models/ticket";
 import objectContaining = jasmine.objectContaining;
 
 describe("QueueRepository", () => {
@@ -51,7 +50,7 @@ describe("QueueRepository", () => {
     describe("when clinicId is passed in", () => {
       it("should call findAll with the right params", async () => {
         await QueueRepository.findAll({ clinicId: 1 });
-        expect(spy).toBeCalledWith({ where: { clinicId: 1 }, include: [ Ticket ] });
+        expect(spy).toBeCalledWith({ where: { clinicId: 1 } });
       });
     });
 
@@ -60,7 +59,7 @@ describe("QueueRepository", () => {
         const status = QueueStatus.ACTIVE;
 
         await QueueRepository.findAll({ clinicId: 1, status });
-        expect(spy).toBeCalledWith({ where: { clinicId: 1, status }, include: [ Ticket ] });
+        expect(spy).toBeCalledWith({ where: { clinicId: 1, status } });
       });
     });
   });
@@ -98,7 +97,6 @@ describe("QueueRepository", () => {
             clinicId: mockQueue.clinicId,
             status: mockQueue.status,
           },
-          include: Ticket,
         });
       });
     });
@@ -114,7 +112,7 @@ describe("QueueRepository", () => {
       await QueueRepository.getById(queueId);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toBeCalledWith(queueId, { include: Ticket });
+      expect(spy).toBeCalledWith(queueId);
     });
   });
 });

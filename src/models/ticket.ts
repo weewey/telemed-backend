@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { Column, CreatedAt, DataType, ForeignKey, Model, Table, UpdatedAt } from "sequelize-typescript";
+import { BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, Table, UpdatedAt } from "sequelize-typescript";
 import Clinic from "./clinic";
 import Queue from "./queue";
 import Patient from "./patient";
@@ -50,6 +50,9 @@ export default class Ticket extends Model {
     type: DataType.INTEGER,
   })
   public queueId!: number;
+
+  @BelongsTo(() => Queue)
+  public queue!: Queue;
 
   @ForeignKey(() => Clinic)
   @Column({

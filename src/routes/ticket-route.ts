@@ -3,7 +3,7 @@ import asyncHandler from "express-async-handler";
 import TicketService from "../services/ticket-service";
 import { validateRequest } from "./validate-request";
 import { ticketCreateRules } from "../validation-rules/ticket-create-rule";
-import { ticketUpdateRules } from "../validation-rules/ticket-update-rule";
+import { ticketIdRule, ticketUpdateRules } from "../validation-rules/ticket-update-rule";
 import { StatusCodes } from "http-status-codes";
 
 export const ticketRoute = Router();
@@ -28,4 +28,13 @@ ticketRoute.put("/:ticketId",
 
     await TicketService.update(updateAttributes);
     res.status(StatusCodes.NO_CONTENT).send();
+  }));
+
+ticketRoute.get("/:ticketId",
+  validateRequest(ticketIdRule),
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { ticketId } = req.params;
+
+    const ticket = await TicketService.get(Number(ticketId));
+    res.status(StatusCodes.OK).json(ticket);
   }));

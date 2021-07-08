@@ -54,4 +54,8 @@ export const Errors = {
     message: "Unable to create ticket as patient already has an active ticket",
     code: "QDOC-014",
   },
+  TICKET_NOT_FOUND: {
+    message: "Ticket not found.",
+    code: "QDOC-015",
+  },
 };

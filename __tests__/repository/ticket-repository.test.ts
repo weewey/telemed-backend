@@ -5,6 +5,7 @@ import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import TicketRepository from "../../src/respository/ticket-repository";
 import NotFoundError from "../../src/errors/not-found-error";
+import Queue from "../../src/models/queue";
 import objectContaining = jasmine.objectContaining;
 
 describe("TicketRepository", () => {
@@ -94,6 +95,16 @@ describe("TicketRepository", () => {
         .toMatchObject(objectContaining({
           code: Errors.ENTITY_NOT_FOUND.code,
         }));
+    });
+  });
+
+  describe("get", () => {
+    const ticketId = 1;
+
+    it("should call the Ticket.find with the right params", async () => {
+      const spy = jest.spyOn(Ticket, "findByPk");
+      await TicketRepository.get(ticketId);
+      expect(spy).toHaveBeenCalledWith(ticketId, { include: Queue });
     });
   });
 });

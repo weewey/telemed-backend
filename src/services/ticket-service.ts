@@ -11,6 +11,7 @@ import { sequelize } from "../utils/db-connection";
 import { Transaction } from "sequelize";
 import TechnicalError from "../errors/technical-error";
 import { Logger } from "../logger";
+import NotFoundError from "../errors/not-found-error";
 
 export type CreateTicketRequest = {
   patientId: number,
@@ -110,6 +111,14 @@ class TicketService {
         ...((status === TicketStatus.CLOSED) && { updatedAt: new Date() }),
         ...((status === TicketStatus.SERVING) && { updatedAt: new Date() }) },
     );
+  }
+
+  public static async get(ticketId: number): Promise<Ticket> {
+    const ticket = await TicketRepository.get(ticketId);
+    if (ticket == null) {
+      throw new NotFoundError(Errors.TICKET_NOT_FOUND.code, Errors.TICKET_NOT_FOUND.message);
+    }
+    return ticket;
   }
 }
 
