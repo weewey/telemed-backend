@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hau-zy/qdoc.git"
+    "url": "git+https://github.com/qdoctech/qdoc.git"
   },
   "dependencies": {
     "@types/express-validator": "^3.0.0",
