@@ -161,7 +161,7 @@ describe("TicketService", () => {
           status,
         };
 
-        jest.spyOn(TicketRepository, "update").mockResolvedValueOnce();
+        jest.spyOn(TicketRepository, "update").mockResolvedValueOnce({} as Ticket);
         await TicketService.update(ticketAttrActive);
 
         expect(TicketRepository.update).toHaveBeenCalledTimes(1);

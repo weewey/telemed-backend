@@ -10,6 +10,7 @@ export interface QueueAttributes {
   status: string
   latestGeneratedTicketDisplayNumber?: number
   pendingTicketIdsOrder?: Array<number>
+  currentTicketId?: number| null
   startedAt?: Date
   closedAt?: Date | null
 }

@@ -96,6 +96,13 @@ describe("TicketRepository", () => {
           code: Errors.ENTITY_NOT_FOUND.code,
         }));
     });
+    it("should return the update ticket", async () => {
+      const ticket = new Ticket();
+      const updatedTicket = new Ticket();
+      jest.spyOn(Ticket, "findByPk").mockResolvedValue(ticket);
+      jest.spyOn(ticket, "update").mockResolvedValue(updatedTicket);
+      expect(await TicketRepository.update(ticketModelAttributes)).toEqual(updatedTicket);
+    });
   });
 
   describe("get", () => {

@@ -42,13 +42,13 @@ class TicketRepository {
     } });
   }
 
-  public static async update(ticketModelAttributes: Partial<TicketAttributesWithId>): Promise<void> {
+  public static async update(ticketModelAttributes: Partial<TicketAttributesWithId>): Promise<Ticket> {
     const { id, ...updateAttributes } = ticketModelAttributes;
     const ticket = await Ticket.findByPk(id);
     if (!ticket) {
       throw new NotFoundError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message);
     }
-    await ticket.update(updateAttributes);
+    return ticket.update(updateAttributes);
   }
 
   public static async get(ticketId: number): Promise<Ticket|null> {
