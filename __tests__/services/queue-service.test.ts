@@ -7,9 +7,13 @@ import QueueRepository from "../../src/respository/queue-repository";
 import RepositoryError from "../../src/errors/repository-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import TechnicalError from "../../src/errors/technical-error";
+import { Logger } from "../../src/logger";
 
 describe("QueueService", () => {
-  beforeEach(jest.clearAllMocks);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(Logger, "error").mockImplementation(() => {});
+  });
 
   describe("#create", () => {
     const queueAttr: QueueAttributes = {
@@ -113,67 +117,67 @@ describe("QueueService", () => {
         expect(QueueRepository.update).toHaveBeenCalledWith({ ...queueAttrActive, ...fields });
       });
   });
-});
 
-describe("#getQueuesByClinicAndStatus", () => {
-  const clinicId = 1;
-  const queueStatus = QueueStatus.ACTIVE;
+  describe("#getQueuesByClinicAndStatus", () => {
+    const clinicId = 1;
+    const queueStatus = QueueStatus.ACTIVE;
 
-  it("should call QueueRespository#getByClinicIdAndStatus", async () => {
-    jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
-    await QueueService.getQueuesByClinicAndStatus(clinicId, queueStatus);
+    it("should call QueueRespository#getByClinicIdAndStatus", async () => {
+      jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
+      await QueueService.getQueuesByClinicAndStatus(clinicId, queueStatus);
 
-    expect(QueueRepository.getByClinicIdAndStatus).toHaveBeenCalledTimes(1);
-    expect(QueueRepository.getByClinicIdAndStatus).toHaveBeenCalledWith(clinicId, queueStatus);
-  });
-});
-
-describe("getQueueById", () => {
-  const queueId = 1;
-  const mockQueue = { id: queueId } as Queue;
-
-  it("should call queueRepository.getById", async () => {
-    const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValueOnce(mockQueue);
-    await QueueService.getQueueById(queueId);
-    expect(spy).toHaveBeenCalledWith(queueId);
-  });
-
-  describe("when queue is not found", () => {
-    beforeEach(() => {
-      jest.spyOn(QueueRepository, "getById").mockResolvedValueOnce(null);
-    });
-
-    it("should throw NotFoundError", async () => {
-      await expect(QueueService.getQueueById(queueId))
-        .rejects
-        .toThrowError(NotFoundError);
+      expect(QueueRepository.getByClinicIdAndStatus).toHaveBeenCalledTimes(1);
+      expect(QueueRepository.getByClinicIdAndStatus).toHaveBeenCalledWith(clinicId, queueStatus);
     });
   });
-});
 
-describe("fetchAllQueues", () => {
-  it("should call QueueRepository.findAll", async () => {
-    const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValueOnce([]);
-    await QueueService.fetchAllQueues();
-    expect(spy).toBeCalledTimes(1);
+  describe("getQueueById", () => {
+    const queueId = 1;
+    const mockQueue = { id: queueId } as Queue;
+
+    it("should call queueRepository.getById", async () => {
+      const spy = jest.spyOn(QueueRepository, "getById").mockResolvedValueOnce(mockQueue);
+      await QueueService.getQueueById(queueId);
+      expect(spy).toHaveBeenCalledWith(queueId);
+    });
+
+    describe("when queue is not found", () => {
+      beforeEach(() => {
+        jest.spyOn(QueueRepository, "getById").mockResolvedValueOnce(null);
+      });
+
+      it("should throw NotFoundError", async () => {
+        await expect(QueueService.getQueueById(queueId))
+          .rejects
+          .toThrowError(NotFoundError);
+      });
+    });
   });
 
-  it("should return technical error if QueueRepository errors", async () => {
-    jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
-    await expect(QueueService.fetchAllQueues()).rejects.toThrowError(TechnicalError);
-  });
-
-  it("should return expected error message if QueueRepository errors", async () => {
-    jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
-    await expect(QueueService.fetchAllQueues()).rejects.toThrowError("Failed to fetch all queues: test");
-  });
-
-  describe("when clinicId is passed in", () => {
-    it("should call QueueRepository.findAll with the right params", async () => {
+  describe("fetchAllQueues", () => {
+    it("should call QueueRepository.findAll", async () => {
       const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValueOnce([]);
-      const findAllParams = { clinicId: 1 };
-      await QueueService.fetchAllQueues(findAllParams);
-      expect(spy).toBeCalledWith(findAllParams);
+      await QueueService.fetchAllQueues();
+      expect(spy).toBeCalledTimes(1);
+    });
+
+    it("should return technical error if QueueRepository errors", async () => {
+      jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
+      await expect(QueueService.fetchAllQueues()).rejects.toThrowError(TechnicalError);
+    });
+
+    it("should return expected error message if QueueRepository errors", async () => {
+      jest.spyOn(QueueRepository, "findAll").mockRejectedValueOnce(new Error("test"));
+      await expect(QueueService.fetchAllQueues()).rejects.toThrowError("Failed to fetch all queues: test");
+    });
+
+    describe("when clinicId is passed in", () => {
+      it("should call QueueRepository.findAll with the right params", async () => {
+        const spy = jest.spyOn(QueueRepository, "findAll").mockResolvedValueOnce([]);
+        const findAllParams = { clinicId: 1 };
+        await QueueService.fetchAllQueues(findAllParams);
+        expect(spy).toBeCalledWith(findAllParams);
+      });
     });
   });
 });
