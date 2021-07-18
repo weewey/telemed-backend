@@ -34,13 +34,9 @@ class QueueService {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
     }
 
+    this.validateQueueIsActive(queue);
     const { currentTicketId, pendingTicketIdsOrder } = queue;
-    if (currentTicketId) {
-      throw new BusinessError(
-        Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.code,
-        Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.message,
-      );
-    }
+    this.validateNoCurrentTicketId(currentTicketId);
 
     const nextTicketId = pendingTicketIdsOrder[0];
     if (!nextTicketId) {
@@ -48,6 +44,21 @@ class QueueService {
     }
 
     return this.setQueueNextTicket(queue, nextTicketId, pendingTicketIdsOrder);
+  }
+
+  private static validateNoCurrentTicketId(currentTicketId: number): void {
+    if (currentTicketId) {
+      throw new BusinessError(
+        Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.code,
+        Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.message,
+      );
+    }
+  }
+
+  private static validateQueueIsActive(queue: Queue): void {
+    if (queue.status !== QueueStatus.ACTIVE) {
+      throw new BusinessError(Errors.QUEUE_IS_NOT_ACTIVE.code, Errors.QUEUE_IS_NOT_ACTIVE.message);
+    }
   }
 
   private static async setQueueNextTicket(

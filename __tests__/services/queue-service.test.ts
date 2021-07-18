@@ -207,6 +207,32 @@ describe("QueueService", () => {
     describe("when queue is found", () => {
       const queueId = 1;
 
+      describe("when queue status is not active", () => {
+        const queue = {
+          id: queueId,
+          currentTicketId: null,
+          pendingTicketIdsOrder: [ 2, 3 ],
+          clinicId: 1,
+          status: QueueStatus.CLOSED,
+          update: () => {
+          },
+        } as unknown as Queue;
+
+        beforeEach(() => {
+          jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+          jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
+        });
+
+        it("should return BusinessError", async () => {
+          await expect(QueueService.nextTicket(queueId)).rejects.toThrowError(BusinessError);
+        });
+
+        it("should return BusinessError with the expected code and message", async () => {
+          await expect(QueueService.nextTicket(queueId)).rejects.toMatchObject(
+            { code: Errors.QUEUE_IS_NOT_ACTIVE.code, message: Errors.QUEUE_IS_NOT_ACTIVE.message },
+          );
+        });
+      });
       describe("when currentTicketId on the Queue is not null", () => {
         const queue = {
           id: queueId,

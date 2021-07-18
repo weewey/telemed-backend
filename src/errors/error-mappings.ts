@@ -62,4 +62,8 @@ export const Errors = {
     message: "Unable to set next ticket on queue as queue currently has a current ticket",
     code: "QDOC-016",
   },
+  QUEUE_IS_NOT_ACTIVE: {
+    message: "Queue is not active",
+    code: "QDOC-017",
+  },
 };
