@@ -4,7 +4,6 @@ import app from "../../src/app";
 import { Errors } from "../../src/errors/error-mappings";
 import Queue from "../../src/models/queue";
 import QueueStatus from "../../src/queue_status";
-import { clinicFactory } from "../factories";
 import { destroyClinicById } from "../helpers/clinic-helpers";
 import {
   createQueue,
@@ -13,6 +12,14 @@ import {
   getQueueById,
   getQueueIdsByClinicId,
 } from "../helpers/queue-helpers";
+import { clinicFactory } from "../factories/clinic";
+import { patientFactory } from "../factories/patient";
+import { ticketFactory } from "../factories/ticket";
+import { queueFactory } from "../factories/queue";
+import { destroyTicketsByIds } from "../helpers/ticket-helpers";
+import { destroyPatientsByIds } from "../helpers/patient-helpers";
+import TicketRepository from "../../src/respository/ticket-repository";
+import TicketStatus from "../../src/ticket_status";
 
 describe("#Queues Component", () => {
   const QUEUES_PATH = "/api/v1/queues";
@@ -58,6 +65,55 @@ describe("#Queues Component", () => {
           code: Errors.ENTITY_NOT_FOUND.code,
         },
       });
+    });
+  });
+
+  describe("#POST /queues/:queueId/next-ticket", () => {
+    let clinicId: number;
+    let queueId: number;
+    let patientId: number;
+    let ticketId: number;
+
+    beforeAll(async () => {
+      const clinicCreated = await clinicFactory.build();
+      clinicId = clinicCreated.id;
+      const queueCreated = await queueFactory.build({ clinicId,
+        status: QueueStatus.ACTIVE,
+        latestGeneratedTicketDisplayNumber: 1 });
+      queueId = queueCreated.id;
+      const patientCreated = await patientFactory.build();
+      patientId = patientCreated.id;
+      const ticketCreated = await ticketFactory.build({ displayNumber: 1,
+        queueId,
+        clinicId,
+        patientId });
+      ticketId = ticketCreated.id;
+      await queueCreated.update({ pendingTicketIdsOrder: [ ticketCreated.id ] });
+    });
+
+    afterAll(async () => {
+      await destroyQueuesByIds([ queueId ]);
+      await destroyClinicById([ clinicId ]);
+      await destroyTicketsByIds([ ticketId ]);
+      await destroyPatientsByIds([ patientId ]);
+    });
+
+    it("should set currentTicketId to the first element from the pendingTicketIdsOrder", async () => {
+      const response = await request(app)
+        .post(`${QUEUES_PATH}/${queueId}/next-ticket`)
+        .expect(StatusCodes.OK);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          currentTicketId: ticketId,
+          status: QueueStatus.ACTIVE,
+          pendingTicketIdsOrder: [],
+        }),
+      );
+
+      const ticket = await TicketRepository.get(ticketId);
+      expect(ticket!.status).toEqual(TicketStatus.SERVING);
     });
   });
 
