@@ -354,4 +354,36 @@ describe("Queues Route", () => {
       });
     });
   });
+
+  describe("POST /queues/:queueId/next-ticket", () => {
+    describe("success scenarios", () => {
+      it("should call QueueService.nextTicket", async () => {
+        jest.spyOn(QueueService, "nextTicket").mockResolvedValue(queue);
+
+        await request(app).post(`${queuesPath}/${queue.id}/next-ticket`);
+        expect(QueueService.nextTicket).toHaveBeenNthCalledWith(1, queue.id);
+      });
+
+      it("should return the updatedQueue", async () => {
+        const updatedQueue = { id: queue.id, currentTicketId: 1 } as Queue;
+        jest.spyOn(QueueService, "nextTicket").mockResolvedValue(updatedQueue);
+
+        const response =
+            await request(app).post(`${queuesPath}/${queue.id}/next-ticket`)
+              .expect(StatusCodes.OK);
+        expect(response.body).toMatchObject(updatedQueue);
+      });
+    });
+
+    describe("error scenarios", () => {
+      it("should return badRequest when queueId is not a number", async () => {
+        const response =
+            await request(app).post(`${queuesPath}/asd/next-ticket`)
+              .expect(StatusCodes.BAD_REQUEST);
+        expect(response.body).toMatchObject({ error: { invalidParams: [
+          { name: "queueId",
+            reason: "Queue Id must contain only numbers." } ] } });
+      });
+    });
+  });
 });

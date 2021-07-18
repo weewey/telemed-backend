@@ -8,6 +8,7 @@ import { queueIdRule, queueUpdateRules } from "../validation-rules/queue-update-
 import { queueCreateRules } from "../validation-rules/queue-create-rule";
 import { getAllQueuesRule } from "../validation-rules/queue-get-rule";
 import { FindAllQueueAttributes } from "../respository/queue-repository";
+import { queueNextTicketRule } from "../validation-rules/queue-next-ticket-rule";
 
 export const queueRoute = Router();
 
@@ -20,6 +21,14 @@ queueRoute.post("/",
     const queueAttr = { clinicId, status: QueueStatus.INACTIVE };
     const queueInfo = await QueueService.create(queueAttr);
     res.status(StatusCodes.CREATED).json(queueInfo);
+  }));
+
+queueRoute.post("/:queueId/next-ticket",
+  validateRequest(queueNextTicketRule),
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.queueId;
+    const queue = await QueueService.nextTicket(Number(id));
+    res.status(StatusCodes.OK).json(queue);
   }));
 
 queueRoute.put("/:queueId",
