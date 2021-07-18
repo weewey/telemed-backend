@@ -58,4 +58,8 @@ export const Errors = {
     message: "Ticket not found.",
     code: "QDOC-015",
   },
+  UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET: {
+    message: "Unable to set next ticket on queue as queue currently has a current ticket",
+    code: "QDOC-016",
+  },
 };

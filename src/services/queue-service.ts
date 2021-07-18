@@ -7,6 +7,9 @@ import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import NotFoundError from "../errors/not-found-error";
+import TicketRepository from "../respository/ticket-repository";
+import TicketStatus from "../ticket_status";
+import { sequelize } from "../utils/db-connection";
 
 class QueueService {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -22,6 +25,55 @@ class QueueService {
     } catch (error) {
       Logger.error(`Error creating queue. ErrorMessage: ${error.message}, Queue attributes: `, queueAttr);
       throw mapRepositoryErrors(error);
+    }
+  }
+
+  public static async nextTicket(queueId: number): Promise<Queue> {
+    const queue = await QueueRepository.getById(queueId);
+    if (!queue) {
+      throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
+    }
+
+    const { currentTicketId, pendingTicketIdsOrder } = queue;
+    if (currentTicketId) {
+      throw new BusinessError(
+        Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.code,
+        Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.message,
+      );
+    }
+
+    const nextTicketId = pendingTicketIdsOrder[0];
+    if (!nextTicketId) {
+      return queue;
+    }
+
+    return this.setQueueNextTicket(queue, nextTicketId, pendingTicketIdsOrder);
+  }
+
+  private static async setQueueNextTicket(
+    queue: Queue,
+    nextTicketId: number,
+    pendingTicketIdsOrder: Array<number>,
+  ): Promise<Queue> {
+    try {
+      return await sequelize.transaction(
+        async (transaction) => {
+          const updatedQueue = queue.update({
+            currentTicketId: nextTicketId,
+            pendingTicketIdsOrder: pendingTicketIdsOrder.splice(1),
+          }, { transaction });
+
+          await TicketRepository.update({
+            id: nextTicketId,
+            status: TicketStatus.SERVING,
+          }, transaction);
+
+          return updatedQueue;
+        },
+      );
+    } catch (e) {
+      Logger.error(`Error when setting next ticket on queue: ${e.message}`);
+      throw e;
     }
   }
 

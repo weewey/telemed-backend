@@ -42,11 +42,15 @@ class TicketRepository {
     } });
   }
 
-  public static async update(ticketModelAttributes: Partial<TicketAttributesWithId>): Promise<Ticket> {
+  public static async update(ticketModelAttributes: Partial<TicketAttributesWithId>,
+    transaction?: Transaction): Promise<Ticket> {
     const { id, ...updateAttributes } = ticketModelAttributes;
     const ticket = await Ticket.findByPk(id);
     if (!ticket) {
       throw new NotFoundError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message);
+    }
+    if (transaction) {
+      return ticket.update(updateAttributes, { transaction });
     }
     return ticket.update(updateAttributes);
   }

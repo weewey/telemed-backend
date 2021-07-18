@@ -8,11 +8,16 @@ import RepositoryError from "../../src/errors/repository-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import TechnicalError from "../../src/errors/technical-error";
 import { Logger } from "../../src/logger";
+import TicketRepository from "../../src/respository/ticket-repository";
+import TicketStatus from "../../src/ticket_status";
+import Ticket from "../../src/models/ticket";
+import { Transaction } from "sequelize";
 
 describe("QueueService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(Logger, "error").mockImplementation(() => {});
+    jest.spyOn(Logger, "error").mockImplementation(() => {
+    });
   });
 
   describe("#create", () => {
@@ -34,7 +39,10 @@ describe("QueueService", () => {
     describe("Error scenarios", () => {
       describe("when the status in the create queue request is CLOSED", () => {
         it("should throw 400 business error QUEUE_CREATION_NO_CLOSED_STATUS", async () => {
-          await expect(QueueService.create({ ...queueAttr, status: QueueStatus.CLOSED }))
+          await expect(QueueService.create({
+            ...queueAttr,
+            status: QueueStatus.CLOSED,
+          }))
             .rejects
             .toThrow(
               new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code,
@@ -59,7 +67,11 @@ describe("QueueService", () => {
 
       describe("when there is already an existing active queue for the clinic", () => {
         beforeEach(() => {
-          const mockActiveQueue = { id: 1, status: QueueStatus.ACTIVE, clinicId: 1 } as Queue;
+          const mockActiveQueue = {
+            id: 1,
+            status: QueueStatus.ACTIVE,
+            clinicId: 1,
+          } as Queue;
           jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([ mockActiveQueue ]);
         });
         it("should throw business error UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS", async () => {
@@ -99,7 +111,10 @@ describe("QueueService", () => {
 
   describe("#update", () => {
     it.each([
-      [ QueueStatus.ACTIVE, { startedAt: expect.any(Date), closedAt: null } ],
+      [ QueueStatus.ACTIVE, {
+        startedAt: expect.any(Date),
+        closedAt: null,
+      } ],
       [ QueueStatus.CLOSED, { closedAt: expect.any(Date) } ],
       [ QueueStatus.INACTIVE, { closedAt: null } ],
     ])("status is %s: should update successfully, including the correct values for startedAt and closedAt",
@@ -177,6 +192,114 @@ describe("QueueService", () => {
         const findAllParams = { clinicId: 1 };
         await QueueService.fetchAllQueues(findAllParams);
         expect(spy).toBeCalledWith(findAllParams);
+      });
+    });
+  });
+
+  describe("nextTicket", () => {
+    describe("when queueId is not found", () => {
+      it("should return NotFoundError", async () => {
+        const queueId = 1;
+        jest.spyOn(QueueRepository, "getById").mockResolvedValue(null);
+        await expect(QueueService.nextTicket(queueId)).rejects.toThrowError(NotFoundError);
+      });
+    });
+    describe("when queue is found", () => {
+      const queueId = 1;
+
+      describe("when currentTicketId on the Queue is not null", () => {
+        const queue = {
+          id: queueId,
+          currentTicketId: 1,
+          pendingTicketIdsOrder: [ 2, 3 ],
+          clinicId: 1,
+          status: QueueStatus.ACTIVE,
+          update: () => {
+          },
+        } as unknown as Queue;
+        beforeEach(() => {
+          jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+          jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
+        });
+        it("should return BusinessError", async () => {
+          await expect(QueueService.nextTicket(queueId)).rejects.toThrowError(BusinessError);
+        });
+
+        it("should return BusinessError with the expected code and message", async () => {
+          await expect(QueueService.nextTicket(queueId)).rejects.toMatchObject({
+            code: Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.code,
+            message: Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.message,
+          });
+        });
+      });
+
+      describe("when currentTicketId on the Queue is null", () => {
+        describe("and the pendingTicketIdsOrder is not empty", () => {
+          const queue = {
+            id: queueId,
+            currentTicketId: null,
+            pendingTicketIdsOrder: [ 1, 2 ],
+            clinicId: 1,
+            status: QueueStatus.ACTIVE,
+            update: () => {
+            },
+          } as unknown as Queue;
+          beforeEach(() => {
+            jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+            jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
+            jest.spyOn(queue, "update").mockResolvedValue(queue);
+          });
+
+          it("should call QueueRepository with the expected updated queue attrs", async () => {
+            const spy = jest.spyOn(queue, "update");
+            await QueueService.nextTicket(queueId);
+            expect(spy).toBeCalledWith({
+              currentTicketId: 1,
+              pendingTicketIdsOrder: [ 2 ],
+            },
+            { transaction: expect.any(Transaction) });
+          });
+
+          it("should call TicketRepository.update with the expected params", async () => {
+            const spy = jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+
+            await QueueService.nextTicket(queueId);
+
+            expect(spy).toBeCalledWith({
+              id: 1,
+              status: TicketStatus.SERVING,
+            },
+            expect.any(Transaction));
+          });
+
+          describe("and TicketRepository.update returns an error", () => {
+            beforeEach(() => {
+              jest.spyOn(TicketRepository, "update").mockRejectedValue(new Error("error"));
+            });
+          });
+        });
+
+        describe("and the pendingTicketIdsOrder is empty", () => {
+          const queue = {
+            id: queueId,
+            currentTicketId: null,
+            pendingTicketIdsOrder: [],
+            clinicId: 1,
+            status: QueueStatus.ACTIVE,
+            update: () => {
+            },
+          } as unknown as Queue;
+          beforeEach(() => {
+            jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+            jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
+            jest.spyOn(queue, "update").mockResolvedValue(queue);
+          });
+          it("should not call queue.update", async () => {
+            const spy = jest.spyOn(queue, "update");
+            await QueueService.nextTicket(queueId);
+            expect(spy).not.toBeCalled();
+          });
+        });
       });
     });
   });
