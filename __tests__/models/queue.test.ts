@@ -1,8 +1,8 @@
 import QueueStatus from "../../src/queue_status";
 import Queue from "../../src/models/queue";
-import { clinicFactory } from "../factories";
 import { DatabaseError, ForeignKeyConstraintError } from "sequelize";
 import Clinic from "../../src/models/clinic";
+import { clinicFactory } from "../factories/clinic";
 
 describe("Queue", () => {
   let clinicId: number;

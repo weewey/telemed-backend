@@ -1,11 +1,11 @@
 import Ticket, { TicketAttributes } from "../../src/models/ticket";
 import Patient from "../../src/models/patient";
-import { clinicFactory } from "../factories";
 import QueueStatus from "../../src/queue_status";
 import TicketStatus from "../../src/ticket_status";
 import Queue from "../../src/models/queue";
 import { v4 as generateUUID } from "uuid";
 import { ForeignKeyConstraintError } from "sequelize";
+import { clinicFactory } from "../factories/clinic";
 
 describe("Ticket", () => {
   const ticketIdsToBeDeleted: Array<number> = [];

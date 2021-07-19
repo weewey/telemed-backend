@@ -5,11 +5,11 @@ import QueueStatus from "../../src/queue_status";
 import BusinessError from "../../src/errors/business-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import { Errors } from "../../src/errors/error-mappings";
-import { queueFactory } from "../factories";
 import TicketRepository from "../../src/respository/ticket-repository";
 import TicketStatus from "../../src/ticket_status";
 import Ticket, { TicketAttributesWithId } from "../../src/models/ticket";
 import TechnicalError from "../../src/errors/technical-error";
+import { queueFactory } from "../factories/queue";
 
 describe("TicketService", () => {
   beforeEach(jest.clearAllMocks);
