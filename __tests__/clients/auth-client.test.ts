@@ -9,7 +9,7 @@ describe("AuthClient", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
           (uid, customUserClaims) => {} } as admin.auth.Auth;
     const mockFirebaseAdmin = { auth: () => mockFirebaseAuthAdmin } as admin.app.App;
-    const userPermissions = { role: Role.PATIENT, clinicId: 1 };
+    const userPermissions = { authId, role: Role.PATIENT, clinicId: 1 };
 
     beforeEach(() => {
       jest.spyOn(admin, "initializeApp").mockReturnValue(mockFirebaseAdmin);
@@ -18,7 +18,7 @@ describe("AuthClient", () => {
 
     it("should call setCustomUserClaims with the right params", async () => {
       const spy = jest.spyOn(mockFirebaseAuthAdmin, "setCustomUserClaims").mockResolvedValue(undefined);
-      await authClient.setPermissions(authId, userPermissions);
+      await authClient.setPermissions(userPermissions);
       expect(spy).toBeCalledWith(authId, { role: Role.PATIENT, clinicId: 1 });
     });
   });

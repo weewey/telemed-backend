@@ -2,7 +2,7 @@ import Doctor from "../models/doctor";
 import DoctorRepository, { DoctorAttributes } from "../respository/doctor-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import AuthService from "./auth-service";
-import { Role } from "../clients/auth-client";
+import { Role, UserPermissions } from "../clients/auth-client";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 
@@ -23,12 +23,22 @@ class DoctorService {
 
   private static async setPermissions(doctor: Doctor): Promise<void> {
     try {
-      await AuthService.setPermissions(doctor.authId, Role.DOCTOR, doctor.clinicId);
+      const userPermission = this.generateUserPermission(doctor);
+      await AuthService.setPermissions(userPermission);
     } catch (e) {
       await this.deleteAppendErrorMessagePrefix(doctor,
         `Error deleting doctor after failure to setPermissions on AuthService. DoctorId: ${doctor.id}`);
       throw e;
     }
+  }
+
+  private static generateUserPermission(doctor: Doctor): UserPermissions {
+    const permissions = {
+      authId: doctor.authId,
+      role: Role.DOCTOR,
+      doctorId: doctor.id,
+    };
+    return doctor.clinicId ? { clinicId: doctor.clinicId, ...permissions } : permissions;
   }
 
   private static async deleteAppendErrorMessagePrefix(doctor: Doctor, errorMessagePrefix = ""): Promise<void> {

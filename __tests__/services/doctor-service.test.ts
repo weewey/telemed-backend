@@ -33,10 +33,16 @@ describe("Doctor Service", () => {
 
   it("should call AuthService.setPermissions with the right params", async () => {
     const doctorAttrs = getDoctorAttrs();
-    jest.spyOn(DoctorRepository, "create").mockResolvedValue({ authId: doctorAttrs.authId } as Doctor);
+    jest.spyOn(DoctorRepository, "create").mockResolvedValue({ authId: doctorAttrs.authId, id: 1 } as Doctor);
     const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await DoctorService.create(doctorAttrs);
-    expect(spy).toBeCalledWith(doctorAttrs.authId, Role.DOCTOR, undefined);
+    expect(spy).toBeCalledWith(
+      {
+        authId: doctorAttrs.authId,
+        role: Role.DOCTOR,
+        doctorId: 1,
+      },
+    );
   });
 
   describe("when DoctorRepository errors", () => {

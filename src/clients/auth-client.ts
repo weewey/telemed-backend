@@ -8,8 +8,13 @@ export enum Role {
 }
 
 export interface UserPermissions {
-  role: Role,
+  authId: string
+  role: Role
   clinicId?: number
+  doctorId?: number
+  patientId?: number
+  adminId?: number
+  clinicStaffId?: number
 }
 
 export class AuthClient {
@@ -19,8 +24,9 @@ export class AuthClient {
     this.firebaseAuthAdmin = admin.initializeApp({}).auth();
   }
 
-  public async setPermissions(authId: string, permissions: UserPermissions): Promise<void> {
-    await this.firebaseAuthAdmin.setCustomUserClaims(authId, { ...permissions });
+  public async setPermissions(userPermissions: UserPermissions): Promise<void> {
+    const { authId, ...userClaims } = userPermissions;
+    await this.firebaseAuthAdmin.setCustomUserClaims(authId, userClaims);
   }
 }
 

@@ -10,6 +10,7 @@ import { Role } from "../../src/clients/auth-client";
 describe("Patient service", () => {
   describe("#create", () => {
     const authId = "service-auth-Id";
+    const patientId = 1;
     const patientAttributes: PatientAttributes = {
       firstName: "firstName",
       lastName: "lastName-service",
@@ -19,7 +20,7 @@ describe("Patient service", () => {
     };
 
     beforeEach(() => {
-      jest.spyOn(patientRepository, "create").mockResolvedValue({ authId } as Patient);
+      jest.spyOn(patientRepository, "create").mockResolvedValue({ authId, id: patientId } as Patient);
       jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     });
 
@@ -28,16 +29,17 @@ describe("Patient service", () => {
     it("should call patient repository #create", async () => {
       await PatientService.create(patientAttributes);
 
-      expect(patientRepository.create).toHaveBeenCalledTimes(1);
       expect(patientRepository.create).toHaveBeenCalledWith(patientAttributes);
     });
 
     it("should call AuthService.setPermissions", async () => {
       await PatientService.create(patientAttributes);
 
-      expect(AuthService.setPermissions).toHaveBeenCalledTimes(1);
-      expect(AuthService.setPermissions).toHaveBeenCalledWith(patientAttributes.authId,
-        Role.PATIENT);
+      expect(AuthService.setPermissions).toHaveBeenCalledWith(
+        { authId: patientAttributes.authId,
+          role: Role.PATIENT,
+          patientId },
+      );
     });
 
     describe("Error scenarios", () => {

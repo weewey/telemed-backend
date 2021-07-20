@@ -6,7 +6,9 @@ import NotFoundError from "../../src/errors/not-found-error";
 import RepositoryError from "../../src/errors/repository-error";
 import TechnicalError from "../../src/errors/technical-error";
 import ClinicStaff from "../../src/models/clinic-staff";
-import ClinicStaffRepository, { ClinicStaffAttributes } from "../../src/respository/clinic-staff-repository";
+import ClinicStaffRepository, {
+  ClinicStaffAttributes,
+} from "../../src/respository/clinic-staff-repository";
 import AuthService from "../../src/services/auth-service";
 import ClinicStaffsService from "../../src/services/clinic-staffs-service";
 
@@ -18,6 +20,7 @@ describe("ClinicStaffs Service", () => {
       firstName: "first name",
       lastName: "last",
       mobileNumber: generateUUID(),
+      clinicId: 1,
       ...overrideAttrs,
     };
   };
@@ -35,11 +38,19 @@ describe("ClinicStaffs Service", () => {
   it("should call AuthService.setPermissions with the right params", async () => {
     const clinicStaffAttrs = getClinicStaffAttrs();
     jest.spyOn(ClinicStaffRepository, "create").mockResolvedValue(
-      { authId: clinicStaffAttrs.authId } as ClinicStaff,
+      { authId: clinicStaffAttrs.authId,
+        clinicId: clinicStaffAttrs.clinicId,
+        id: 1 } as ClinicStaff,
     );
     const spy = jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     await ClinicStaffsService.create(clinicStaffAttrs);
-    expect(spy).toBeCalledWith(clinicStaffAttrs.authId, Role.CLINIC_STAFF, undefined);
+    expect(spy)
+      .toBeCalledWith({
+        authId: clinicStaffAttrs.authId,
+        role: Role.CLINIC_STAFF,
+        clinicId: clinicStaffAttrs.clinicId,
+        clinicStaffId: 1,
+      });
   });
 
   describe("when ClinicStaffsRepository errors", () => {

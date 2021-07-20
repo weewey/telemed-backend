@@ -23,7 +23,11 @@ class AdminService {
 
   private static async setPermissions(admin: Admin): Promise<void> {
     try {
-      await AuthService.setPermissions(admin.authId, Role.ADMIN);
+      await AuthService.setPermissions(
+        { authId: admin.authId,
+          role: Role.ADMIN,
+          adminId: admin.id },
+      );
     } catch (e) {
       await this.deleteAppendErrorMessagePrefix(admin,
         `Error deleting admin after failure to setPermissions on AuthService. AdminId: ${admin.id}`);

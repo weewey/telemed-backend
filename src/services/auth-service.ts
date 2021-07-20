@@ -1,14 +1,13 @@
-import { authClient, Role } from "../clients/auth-client";
+import { authClient, UserPermissions } from "../clients/auth-client";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 
 export default class AuthService {
-  public static async setPermissions(authId: string, role: Role, clinicId?: number): Promise<void> {
-    const userPermissions = clinicId ? { role, clinicId } : { role };
+  public static async setPermissions(userPermissions: UserPermissions): Promise<void> {
     try {
-      await authClient.setPermissions(authId, userPermissions);
+      await authClient.setPermissions(userPermissions);
     } catch (e) {
-      const errorMessage = `Failed to set role: ${role} on authId: ${authId} in Firebase. ${e.message}`;
+      const errorMessage = `Failed to setPermission: ${JSON.stringify(userPermissions)} in Firebase. ${e.message}`;
       Logger.error(errorMessage);
       throw new TechnicalError(errorMessage);
     }
