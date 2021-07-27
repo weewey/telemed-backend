@@ -52,6 +52,20 @@ describe("TicketRepository", () => {
     });
   });
 
+  describe("#findAll", () => {
+    it("should call findAll with the right params", async () => {
+      const findAllTicketAttributes = {
+        queueId: 2,
+        status: TicketStatus.WAITING,
+        patientId: 1,
+      };
+      const spy = jest.spyOn(Ticket, "findAll").mockResolvedValue([]);
+      await TicketRepository.findAll(findAllTicketAttributes);
+      expect(spy).toBeCalledWith({ where: { queueId: 2,
+        status: TicketStatus.WAITING,
+        patientId: 1 } });
+    });
+  });
   describe("findByPatientIdAndStatus", () => {
     const patientId = 1;
     it("should call findAll with the right params", async () => {

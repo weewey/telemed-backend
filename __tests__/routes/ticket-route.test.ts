@@ -70,6 +70,7 @@ describe("Tickets Route", () => {
       });
     });
   });
+
   describe("PUT /tickets", () => {
     describe("Successful scenarios", () => {
       const ticketId = 123456;
@@ -171,6 +172,39 @@ describe("Tickets Route", () => {
       it("should return 400 when ticketId is not a number", async () => {
         jest.spyOn(TicketService, "get").mockRejectedValue(new NotFoundError("test", "test"));
         await request(app).get(`${ticketsPath}/asd`)
+          .expect(StatusCodes.BAD_REQUEST);
+      });
+    });
+  });
+
+  describe("GET /", () => {
+    const GET_ALL_TICKETS_PATH = `${ticketsPath}`;
+
+    it("should call TicketService.findAll with the expected params", async () => {
+      const mockTicket = { id: 1 } as Ticket;
+      const spy = jest.spyOn(TicketService, "findAll").mockResolvedValue([ mockTicket ]);
+      await request(app).get(`${GET_ALL_TICKETS_PATH}?queueId=1&clinicId=2&patientId=1&status=SERVING`);
+      expect(spy).toBeCalledWith({
+        queueId: 1, clinicId: 2, patientId: 1, status: "SERVING",
+      });
+    });
+
+    describe("Error scenarios", () => {
+      // eslint-disable-next-line jest/expect-expect
+      it.each([
+        "patientId",
+        "queueId",
+        "clinicId",
+      ])("should return 400 when %s is not a number",
+        async (queryParam) => {
+          await request(app)
+            .get(`${GET_ALL_TICKETS_PATH}?${queryParam}=asdf`)
+            .expect(StatusCodes.BAD_REQUEST);
+        });
+
+      it("should return 400 when status is not in the list of supported status", async () => {
+        await request(app)
+          .get(`${GET_ALL_TICKETS_PATH}?status=asdf`)
           .expect(StatusCodes.BAD_REQUEST);
       });
     });

@@ -1,5 +1,5 @@
 import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/ticket";
-import TicketRepository from "../respository/ticket-repository";
+import TicketRepository, { FindAllTicketAttributes } from "../respository/ticket-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import QueueService from "./queue-service";
 import Queue from "../models/queue";
@@ -26,6 +26,10 @@ class TicketService {
     await this.validatePatientDoesNotHaveActiveTicket(createTicketRequest.patientId);
     const ticketAttr = this.generateTicketAttr(createTicketRequest, queue);
     return this.createTicketAndUpdateQueueInTransaction(ticketAttr, queue);
+  }
+
+  public static async findAll(findAllTicketAttributes: FindAllTicketAttributes): Promise<Ticket[]> {
+    return TicketRepository.findAll(findAllTicketAttributes);
   }
 
   private static validateActiveQueue(queue: Queue): void {

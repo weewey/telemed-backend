@@ -5,6 +5,8 @@ import { validateRequest } from "./validate-request";
 import { ticketCreateRules } from "../validation-rules/ticket-create-rule";
 import { ticketIdRule, ticketUpdateRules } from "../validation-rules/ticket-update-rule";
 import { StatusCodes } from "http-status-codes";
+import { FindAllTicketAttributes } from "../respository/ticket-repository";
+import { ticketGetRules } from "../validation-rules/ticket-get-rule";
 
 export const ticketRoute = Router();
 
@@ -37,4 +39,19 @@ ticketRoute.get("/:ticketId",
 
     const ticket = await TicketService.get(Number(ticketId));
     res.status(StatusCodes.OK).json(ticket);
+  }));
+
+ticketRoute.get("/",
+  validateRequest(ticketGetRules),
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { clinicId, status, patientId, queueId } = req.query;
+    const findAllTicketAttributes = {
+      ...(clinicId && { clinicId: Number(clinicId) }),
+      ...(queueId && { queueId: Number(queueId) }),
+      ...(patientId && { patientId: Number(patientId) }),
+      ...(status && { status }),
+    } as FindAllTicketAttributes;
+
+    const tickets = await TicketService.findAll(findAllTicketAttributes);
+    res.status(StatusCodes.OK).json(tickets);
   }));

@@ -8,6 +8,13 @@ import TicketStatus from "../ticket_status";
 import NotFoundError from "../errors/not-found-error";
 import Queue from "../models/queue";
 
+export interface FindAllTicketAttributes {
+  patientId?: number,
+  clinicId?: number,
+  status?: TicketStatus,
+  queueId?: number
+}
+
 class TicketRepository {
   public static async create(ticketAttr: TicketAttributes, transaction?: Transaction): Promise<Ticket> {
     let ticket: Ticket;
@@ -28,6 +35,10 @@ class TicketRepository {
       throw error;
     }
     return ticket;
+  }
+
+  public static async findAll(findAllTicketAttributes: FindAllTicketAttributes):Promise<Ticket[]> {
+    return Ticket.findAll({ where: { ...findAllTicketAttributes } });
   }
 
   public static async findByPatientIdAndStatus(patientId: number,
