@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/ticket";
 import TicketRepository, { FindAllTicketAttributes } from "../respository/ticket-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
@@ -25,7 +26,8 @@ class TicketService {
     this.validateActiveQueue(queue);
     await this.validatePatientDoesNotHaveActiveTicket(createTicketRequest.patientId);
     const ticketAttr = this.generateTicketAttr(createTicketRequest, queue);
-    return this.createTicketAndUpdateQueueInTransaction(ticketAttr, queue);
+    const ticket = await this.createTicketAndUpdateQueueInTransaction(ticketAttr, queue);
+    return ticket.reload({ include: Queue });
   }
 
   public static async findAll(findAllTicketAttributes: FindAllTicketAttributes): Promise<Ticket[]> {

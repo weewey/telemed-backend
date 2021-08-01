@@ -23,7 +23,11 @@ describe("TicketService", () => {
     const mockActiveQueue = queueFactory.instantiate({ id: createTicketReq.queueId,
       clinicId: createTicketReq.clinicId,
       status: QueueStatus.ACTIVE });
-    const mockTicket = { id: 1, displayNumber: 1 } as Ticket;
+    const reloadedTicket = { id: 1,
+      displayNumber: 1,
+      queue: { pendingTicketIdsOrder: [] } as
+          unknown as Queue } as Ticket;
+    const mockTicket = { id: 1, displayNumber: 1, reload: () => reloadedTicket } as unknown as Ticket;
 
     describe("success scenarios", () => {
       let createTicketSpy: jest.SpyInstance;
@@ -49,7 +53,7 @@ describe("TicketService", () => {
 
       it("should return the created ticket", async () => {
         const ticket = await TicketService.create(createTicketReq);
-        expect(ticket).toEqual(mockTicket);
+        expect(ticket).toEqual(reloadedTicket);
       });
 
       it("should update Queue with the latest queue ticket info", async () => {
