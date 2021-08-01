@@ -63,7 +63,8 @@ describe("TicketRepository", () => {
       await TicketRepository.findAll(findAllTicketAttributes);
       expect(spy).toBeCalledWith({ where: { queueId: 2,
         status: TicketStatus.WAITING,
-        patientId: 1 } });
+        patientId: 1 },
+      include: Queue });
     });
   });
   describe("findByPatientIdAndStatus", () => {

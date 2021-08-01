@@ -38,7 +38,7 @@ class TicketRepository {
   }
 
   public static async findAll(findAllTicketAttributes: FindAllTicketAttributes):Promise<Ticket[]> {
-    return Ticket.findAll({ where: { ...findAllTicketAttributes } });
+    return Ticket.findAll({ where: { ...findAllTicketAttributes }, include: Queue });
   }
 
   public static async findByPatientIdAndStatus(patientId: number,
