@@ -4,6 +4,7 @@ import Clinic from "./clinic";
 import Queue from "./queue";
 import Patient from "./patient";
 import TicketStatus from "../ticket_status";
+import TicketTypes from "../ticket_types";
 
 export interface TicketAttributes {
   patientId: number,
@@ -43,6 +44,13 @@ export default class Ticket extends Model {
     allowNull: false,
   })
   public status?: string;
+
+  @Column({
+    type: DataType.ENUM(),
+    values: [ TicketTypes.PHYSICAL, TicketTypes.TELEMED ],
+    allowNull: false,
+  })
+  public type!: string;
 
   @ForeignKey(() => Queue)
   @Column({

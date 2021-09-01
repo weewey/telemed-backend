@@ -6,6 +6,7 @@ import Queue from "../../src/models/queue";
 import { v4 as generateUUID } from "uuid";
 import { ForeignKeyConstraintError } from "sequelize";
 import { clinicFactory } from "../factories/clinic";
+import TicketTypes from "../../src/ticket_types";
 
 describe("Ticket", () => {
   const ticketIdsToBeDeleted: Array<number> = [];
@@ -18,6 +19,7 @@ describe("Ticket", () => {
       status: TicketStatus.WAITING,
       queueId,
       clinicId,
+      type: TicketTypes.PHYSICAL,
       ...overrideAttrs,
     } as TicketAttributes;
   };

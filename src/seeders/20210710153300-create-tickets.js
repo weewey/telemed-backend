@@ -11,6 +11,7 @@ module.exports = {
       clinicId: clinics[0][0].id,
       createdAt: new Date(),
       updatedAt: new Date(),
+      type: "PHYSICAL",
     } ]);
   },
 
