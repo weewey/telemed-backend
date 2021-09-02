@@ -13,11 +13,13 @@ import { Transaction } from "sequelize";
 import TechnicalError from "../errors/technical-error";
 import { Logger } from "../logger";
 import NotFoundError from "../errors/not-found-error";
+import TicketTypes from "../ticket_types";
 
 export type CreateTicketRequest = {
   patientId: number,
   queueId: number,
-  clinicId: number
+  clinicId: number,
+  type: TicketTypes
 };
 
 class TicketService {

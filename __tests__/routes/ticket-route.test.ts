@@ -7,12 +7,14 @@ import TicketStatus from "../../src/ticket_status";
 import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../src/logger";
 import NotFoundError from "../../src/errors/not-found-error";
+import TicketTypes from "../../src/ticket_types";
 
 describe("Tickets Route", () => {
   const clinicId = 1;
   const patientId = 1;
   const queueId = 1;
   const displayNumber = 1;
+  const type = TicketTypes.TELEMED;
 
   const ticketsPath = "/api/v1/tickets";
 
@@ -22,6 +24,7 @@ describe("Tickets Route", () => {
     "queueId": queueId,
     "displayNumber": displayNumber,
     "clinicId": clinicId,
+    "type": type,
   } as Ticket;
 
   beforeEach(() => {
@@ -37,17 +40,17 @@ describe("Tickets Route", () => {
           .mockResolvedValue([ { id: queueId, latestGeneratedTicketDisplayNumber: displayNumber } as any ]);
         jest.spyOn(TicketService, "create").mockResolvedValue(ticket);
         await request(app).post(ticketsPath)
-          .send({ patientId, queueId, clinicId })
+          .send({ patientId, queueId, clinicId, type })
           .expect(StatusCodes.CREATED)
           .expect(ticket);
       });
 
       it("calls TicketService #create with the expected params", async () => {
         const ticketServiceSpy = jest.spyOn(TicketService, "create").mockResolvedValue(ticket);
-        const expectedTicketAttr = { clinicId, patientId, queueId };
+        const expectedTicketAttr = { clinicId, patientId, queueId, type };
 
         await request(app).post(ticketsPath)
-          .send({ patientId, queueId, clinicId });
+          .send({ patientId, queueId, clinicId, type });
 
         expect(ticketServiceSpy).toHaveBeenCalledTimes(1);
         expect(ticketServiceSpy).toHaveBeenCalledWith(expectedTicketAttr);
@@ -60,9 +63,10 @@ describe("Tickets Route", () => {
       });
 
       it.each([
-        [ "patientId is missing", { clinicId, queueId } ],
-        [ "clinicId is missing", { queueId, patientId } ],
-        [ "queueId is missing", { patientId, clinicId } ],
+        [ "patientId is missing", { clinicId, queueId, type } ],
+        [ "clinicId is missing", { queueId, patientId, type } ],
+        [ "queueId is missing", { patientId, clinicId, type } ],
+        [ "type is missing", { patientId, clinicId, queueId } ],
       ])("should return bad request when (%s) from request body", async (testName: string, reqParams: any) => {
         await request(app).post(ticketsPath)
           .send(reqParams)

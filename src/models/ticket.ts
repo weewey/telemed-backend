@@ -8,10 +8,11 @@ import TicketTypes from "../ticket_types";
 
 export interface TicketAttributes {
   patientId: number,
-  status: string,
+  status: TicketStatus,
   queueId: number,
   displayNumber: number,
   clinicId: number,
+  type: TicketTypes,
 }
 
 export interface TicketAttributesWithId extends TicketAttributes {

@@ -15,9 +15,9 @@ ticketRoute.use(express.json());
 ticketRoute.post("/",
   validateRequest(ticketCreateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { patientId, queueId, clinicId } = req.body;
+    const { patientId, queueId, clinicId, type } = req.body;
 
-    const ticket = await TicketService.create({ patientId, queueId, clinicId });
+    const ticket = await TicketService.create({ patientId, queueId, clinicId, type });
 
     res.status(StatusCodes.CREATED).json(ticket);
   }));

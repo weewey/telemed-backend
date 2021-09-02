@@ -6,6 +6,7 @@ import { Errors } from "../../src/errors/error-mappings";
 import TicketRepository from "../../src/respository/ticket-repository";
 import NotFoundError from "../../src/errors/not-found-error";
 import Queue from "../../src/models/queue";
+import TicketTypes from "../../src/ticket_types";
 import objectContaining = jasmine.objectContaining;
 
 describe("TicketRepository", () => {
@@ -15,6 +16,7 @@ describe("TicketRepository", () => {
     status: TicketStatus.WAITING,
     clinicId: 1,
     queueId: 1,
+    type: TicketTypes.PHYSICAL,
   };
 
   beforeEach(() => {

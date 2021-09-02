@@ -10,6 +10,7 @@ import TicketStatus from "../../src/ticket_status";
 import Ticket, { TicketAttributesWithId } from "../../src/models/ticket";
 import TechnicalError from "../../src/errors/technical-error";
 import { queueFactory } from "../factories/queue";
+import TicketTypes from "../../src/ticket_types";
 
 describe("TicketService", () => {
   beforeEach(jest.clearAllMocks);
@@ -19,6 +20,7 @@ describe("TicketService", () => {
       patientId: 1,
       queueId: 1,
       clinicId: 1,
+      type: TicketTypes.PHYSICAL,
     };
     const mockActiveQueue = queueFactory.instantiate({ id: createTicketReq.queueId,
       clinicId: createTicketReq.clinicId,
@@ -37,6 +39,7 @@ describe("TicketService", () => {
         patientId: createTicketReq.patientId,
         clinicId: createTicketReq.clinicId,
         queueId: createTicketReq.queueId,
+        type: TicketTypes.PHYSICAL,
       };
 
       beforeAll(() => {
