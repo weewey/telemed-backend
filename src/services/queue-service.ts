@@ -18,7 +18,7 @@ class QueueService {
         Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message);
     }
 
-    await this.validateNoExistingActiveQueues(queueAttr.clinicId);
+    await this.validateNoOtherClinicActiveQueues(queueAttr.clinicId);
 
     try {
       return await QueueRepository.create(queueAttr);
@@ -88,8 +88,12 @@ class QueueService {
     }
   }
 
-  private static async validateNoExistingActiveQueues(clinicId: number): Promise<void> {
-    const existingActiveQueues = await QueueService.getQueuesByClinicAndStatus(clinicId, QueueStatus.ACTIVE);
+  private static async validateNoOtherClinicActiveQueues(clinicId: number, queueId?: number): Promise<void> {
+    let existingActiveQueues = await QueueService.getQueuesByClinicAndStatus(clinicId, QueueStatus.ACTIVE);
+    if (queueId) {
+      existingActiveQueues = existingActiveQueues.filter((element) =>
+        element.id !== queueId);
+    }
     if (existingActiveQueues.length > 0) {
       Logger.error("Existing active queue exists for clinic, Clinic ID: ", clinicId);
       throw new BusinessError(Errors.UNABLE_TO_CREATE_OR_UPDATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code,
@@ -110,7 +114,7 @@ class QueueService {
     const { status } = queueModelAttributes;
 
     if (status === QueueStatus.ACTIVE) {
-      await this.validateNoExistingActiveQueues(queueModelAttributes.clinicId!);
+      await this.validateNoOtherClinicActiveQueues(queueModelAttributes.clinicId!, queueModelAttributes.id);
     }
 
     await QueueRepository.update(

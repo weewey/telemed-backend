@@ -93,7 +93,7 @@ class TicketService {
     }
   }
 
-  private static async validatePatientDoesNotHaveActiveTicket(patientId: number) : Promise<void> {
+  private static async validatePatientDoesNotHaveActiveTicket(patientId: number): Promise<void> {
     let tickets: Ticket [];
     try {
       tickets = await TicketRepository.findPatientActiveTickets(patientId);
@@ -114,10 +114,12 @@ class TicketService {
     const { status } = ticketModelAttributes;
 
     await TicketRepository.update(
-      { ...ticketModelAttributes,
+      {
+        ...ticketModelAttributes,
         ...((status === TicketStatus.WAITING) && { updatedAt: new Date() }),
         ...((status === TicketStatus.CLOSED) && { updatedAt: new Date() }),
-        ...((status === TicketStatus.SERVING) && { updatedAt: new Date() }) },
+        ...((status === TicketStatus.SERVING) && { updatedAt: new Date() }),
+      },
     );
   }
 

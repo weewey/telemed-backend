@@ -7,7 +7,7 @@ import Ticket from "./ticket";
 
 export interface QueueAttributes {
   clinicId: number
-  status: string
+  status?: string
   latestGeneratedTicketDisplayNumber?: number
   pendingTicketIdsOrder?: Array<number>
   currentTicketId?: number| null

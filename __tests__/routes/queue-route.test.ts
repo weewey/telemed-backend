@@ -361,7 +361,7 @@ describe("Queues Route", () => {
         jest.spyOn(QueueService, "nextTicket").mockResolvedValue(queue);
 
         await request(app).post(`${queuesPath}/${queue.id}/next-ticket`);
-        expect(QueueService.nextTicket).toHaveBeenNthCalledWith(1, queue.id);
+        expect(QueueService.nextTicket).toHaveBeenCalledWith(queue.id);
       });
 
       it("should return the updatedQueue", async () => {

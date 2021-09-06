@@ -168,6 +168,7 @@ describe("TicketService", () => {
       expect(spy).toHaveBeenCalledWith(findAllTicketAttributes);
     });
   });
+
   describe("#update", () => {
     it.each([
       [ TicketStatus.WAITING, { updatedAt: expect.any(Date) } ],

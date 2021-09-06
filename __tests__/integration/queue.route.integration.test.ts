@@ -119,6 +119,7 @@ describe("#Queues Component", () => {
 
   describe("#PUT /queues", () => {
     let queueId: number;
+    let otherClinicQueueId: number;
     let clinicId: number;
 
     beforeEach(async () => {
@@ -127,9 +128,12 @@ describe("#Queues Component", () => {
 
       const queueCreated = await createQueue(clinicId);
       queueId = queueCreated.id;
+
+      const otherClinicQueueCreated = await createQueue(clinicId);
+      otherClinicQueueId = otherClinicQueueCreated.id;
     });
     afterEach(async () => {
-      await destroyQueueById(queueId);
+      await destroyQueuesByIds([ queueId, otherClinicQueueId ]);
       await destroyClinicById([ clinicId ]);
     });
     it("should update existing queue successfully", async () => {
@@ -158,12 +162,12 @@ describe("#Queues Component", () => {
       });
     });
 
-    it("should throw 400 error if existing active queue exists", async () => {
+    it("should throw 400 error if existing active queue for clinic exists", async () => {
       // setup to update queue with ACTIVE status
       await request(app).put(`${QUEUES_PATH}/${queueId}`)
         .send({ clinicId, status: QueueStatus.ACTIVE });
 
-      const response = await request(app).put(`${QUEUES_PATH}/${queueId}`)
+      const response = await request(app).put(`${QUEUES_PATH}/${otherClinicQueueId}`)
         .send({ clinicId, status: QueueStatus.ACTIVE });
 
       expect(response.body).toMatchObject(
