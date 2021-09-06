@@ -126,24 +126,23 @@ describe("QueueService", () => {
         };
         jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
 
-        jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
+        jest.spyOn(QueueRepository, "update").mockResolvedValueOnce({} as Queue);
         await QueueService.update(queueAttrActive);
 
         expect(QueueRepository.update).toHaveBeenCalledTimes(1);
         expect(QueueRepository.update).toHaveBeenCalledWith({ ...queueAttrActive, ...fields });
       });
 
-    it("should call QueueRepository with the expected params", async () => {
+    it("should return the updated Queue", async () => {
       const updateQueueAttributes: QueueAttributesWithId = {
         id: 333,
         clinicId: 1,
         currentTicketId: null,
       };
-      jest.spyOn(QueueRepository, "update").mockResolvedValueOnce();
-      await QueueService.update(updateQueueAttributes);
-
-      expect(QueueRepository.update).toHaveBeenCalledTimes(1);
-      expect(QueueRepository.update).toHaveBeenCalledWith(updateQueueAttributes);
+      const updatedQueue = {} as Queue;
+      jest.spyOn(QueueRepository, "update").mockResolvedValueOnce(updatedQueue);
+      const response = await QueueService.update(updateQueueAttributes);
+      expect(response).toEqual(updatedQueue);
     });
   });
 

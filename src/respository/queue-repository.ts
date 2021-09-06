@@ -46,14 +46,14 @@ class QueueRepository {
     return Queue.findByPk(queueId);
   }
 
-  public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<void> {
+  public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<Queue> {
     const { id, ...updateAttributes } = queueModelAttributes;
     const queue = await Queue.findByPk(id);
     if (!queue) {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
     }
 
-    await queue.update(updateAttributes);
+    return queue.update(updateAttributes);
   }
 }
 

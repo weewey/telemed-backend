@@ -116,12 +116,13 @@ describe("Queues Route", () => {
       const QUEUES_PUT_PATH = `${queuesPath}/${queueId}`;
 
       // eslint-disable-next-line jest/expect-expect
-      it("should return 204 with the expected body", async () => {
-        jest.spyOn(QueueService, "update").mockResolvedValue();
+      it("should return 200 with the updatedQueue", async () => {
+        const updatedQueue = { id: queueId, status: QueueStatus.ACTIVE, clinicId } as Queue;
+        jest.spyOn(QueueService, "update").mockResolvedValue(updatedQueue);
         await request(app).put(QUEUES_PUT_PATH)
           .send({ status: QueueStatus.ACTIVE, clinicId: "1" })
-          .expect(StatusCodes.NO_CONTENT)
-          .expect("");
+          .expect(StatusCodes.OK)
+          .expect(updatedQueue);
       });
 
       it.each([
@@ -133,7 +134,7 @@ describe("Queues Route", () => {
         [ 9324, "Closed" ],
       ])("should call QueueService#update with the expected params for queueId (%s) and status (%s)",
         async (queueIdNo, status) => {
-          jest.spyOn(QueueService, "update").mockResolvedValue();
+          jest.spyOn(QueueService, "update").mockResolvedValue({} as Queue);
           const expectedQueueAttr = { id: queueIdNo, status: status.toUpperCase(), clinicId: 1 };
 
           await request(app).put(`${queuesPath}/${queueIdNo}`)
@@ -151,7 +152,7 @@ describe("Queues Route", () => {
         [ "abcfd", queueIdCanOnlyContainNumbers ],
       ])("should return 400 when queueId in params has incorrect format (%s)", async (queueId, errorReason) => {
         const QUEUES_PUT_PATH = `${queuesPath}/${queueId}`;
-        jest.spyOn(QueueService, "update").mockResolvedValue();
+        jest.spyOn(QueueService, "update").mockResolvedValue({} as Queue);
         const response = await request(app).put(QUEUES_PUT_PATH)
           .send({ status: QueueStatus.ACTIVE, clinicId: 1 })
           .expect(StatusCodes.BAD_REQUEST);
@@ -173,7 +174,7 @@ describe("Queues Route", () => {
       ])("should return 400 when status in queue params is not supported (%s)",
         async (status, errorReason) => {
           const QUEUES_PUT_PATH = `${queuesPath}/${144}`;
-          jest.spyOn(QueueService, "update").mockResolvedValue();
+          jest.spyOn(QueueService, "update").mockResolvedValue({} as Queue);
           const response = await request(app).put(QUEUES_PUT_PATH)
             .send({ status, clinicId: 1 })
             .expect(StatusCodes.BAD_REQUEST);

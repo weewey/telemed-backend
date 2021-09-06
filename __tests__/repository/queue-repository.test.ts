@@ -70,15 +70,15 @@ describe("QueueRepository", () => {
       clinicId: 1112,
       status: QueueStatus.ACTIVE,
     };
-    const { id, ...updateAttributes } = queueModelAttributes;
-    it("should call Queue#update", async () => {
-      const queue = new Queue();
-      jest.spyOn(Queue, "findByPk").mockResolvedValue(queue);
-      jest.spyOn(queue, "update").mockResolvedValue({} as Queue);
-      await QueueRepository.update(queueModelAttributes);
 
-      expect(queue.update).toHaveBeenCalledTimes(1);
-      expect(queue.update).toHaveBeenCalledWith(updateAttributes);
+    it("should return the updatedQueue", async () => {
+      const queue = new Queue();
+      const updatedQueue = { status: QueueStatus.ACTIVE } as Queue;
+      jest.spyOn(Queue, "findByPk").mockResolvedValue(queue);
+      jest.spyOn(queue, "update").mockResolvedValue(updatedQueue);
+      const response = await QueueRepository.update(queueModelAttributes);
+
+      expect(response).toEqual(updatedQueue);
     });
   });
 

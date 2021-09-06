@@ -37,8 +37,8 @@ queueRoute.put("/:queueId",
     const id = req.params.queueId;
     const updateAttributes = { id, ...req.body };
 
-    await QueueService.update(updateAttributes);
-    res.status(StatusCodes.NO_CONTENT).send();
+    const updatedQueue = await QueueService.update(updateAttributes);
+    res.status(StatusCodes.OK).json(updatedQueue);
   }));
 
 queueRoute.get("/",

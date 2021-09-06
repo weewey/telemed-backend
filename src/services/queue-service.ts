@@ -110,14 +110,14 @@ class QueueService {
     }
   }
 
-  public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<void> {
+  public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<Queue> {
     const { status } = queueModelAttributes;
 
     if (status === QueueStatus.ACTIVE) {
       await this.validateNoOtherClinicActiveQueues(queueModelAttributes.clinicId!, queueModelAttributes.id);
     }
 
-    await QueueRepository.update(
+    return QueueRepository.update(
       { ...queueModelAttributes,
         ...((status === QueueStatus.ACTIVE) && { startedAt: new Date(), closedAt: null }),
         ...((status === QueueStatus.CLOSED) && { closedAt: new Date() }),

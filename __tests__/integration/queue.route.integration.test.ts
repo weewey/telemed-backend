@@ -5,13 +5,7 @@ import { Errors } from "../../src/errors/error-mappings";
 import Queue from "../../src/models/queue";
 import QueueStatus from "../../src/queue_status";
 import { destroyClinicById } from "../helpers/clinic-helpers";
-import {
-  createQueue,
-  destroyQueueById,
-  destroyQueuesByIds,
-  getQueueById,
-  getQueueIdsByClinicId,
-} from "../helpers/queue-helpers";
+import { createQueue, destroyQueueById, destroyQueuesByIds, getQueueIdsByClinicId } from "../helpers/queue-helpers";
 import { clinicFactory } from "../factories/clinic";
 import { patientFactory } from "../factories/patient";
 import { ticketFactory } from "../factories/ticket";
@@ -119,6 +113,7 @@ describe("#Queues Component", () => {
 
   describe("#PUT /queues", () => {
     let queueId: number;
+    let queueCreated: Queue;
     let otherClinicQueueId: number;
     let clinicId: number;
 
@@ -126,7 +121,7 @@ describe("#Queues Component", () => {
       const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
 
-      const queueCreated = await createQueue(clinicId);
+      queueCreated = await createQueue(clinicId);
       queueId = queueCreated.id;
 
       const otherClinicQueueCreated = await createQueue(clinicId);
@@ -137,14 +132,12 @@ describe("#Queues Component", () => {
       await destroyClinicById([ clinicId ]);
     });
     it("should update existing queue successfully", async () => {
-      await request(app)
+      const response = await request(app)
         .put(`${QUEUES_PATH}/${queueId}`)
         .send({ clinicId, status: QueueStatus.ACTIVE })
-        .expect(StatusCodes.NO_CONTENT);
+        .expect(StatusCodes.OK);
 
-      const updatedQueue = await getQueueById(queueId);
-
-      expect(updatedQueue?.status).toEqual(QueueStatus.ACTIVE);
+      expect(response.body).toEqual(expect.objectContaining({ id: queueId, status: QueueStatus.ACTIVE }));
     });
 
     it("should throw 404 error if existing queue does not exist", async () => {
