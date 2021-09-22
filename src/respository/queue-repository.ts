@@ -4,6 +4,7 @@ import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
+import Ticket from "../models/ticket";
 
 export interface FindAllQueueAttributes {
   clinicId: number,
@@ -42,12 +43,15 @@ class QueueRepository {
     });
   }
 
-  public static async getById(queueId: number): Promise<Queue|null> {
-    return Queue.findByPk(queueId);
+  public static async getById(queueId: number): Promise<Queue | null> {
+    return Queue.findByPk(queueId, { include: Ticket });
   }
 
   public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<Queue> {
-    const { id, ...updateAttributes } = queueModelAttributes;
+    const {
+      id,
+      ...updateAttributes
+    } = queueModelAttributes;
     const queue = await Queue.findByPk(id);
     if (!queue) {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);

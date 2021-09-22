@@ -1,5 +1,15 @@
 /* eslint-disable import/no-cycle */
-import { Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Table, UpdatedAt } from "sequelize-typescript";
+import {
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  HasMany,
+  HasOne,
+  Model,
+  Table,
+  UpdatedAt,
+} from "sequelize-typescript";
 import Clinic from "./clinic";
 import QueueStatus from "../queue_status";
 import Doctor from "./doctor";
@@ -53,9 +63,12 @@ export default class Queue extends Model {
   })
   public closedAt?: Date;
 
-  @ForeignKey(() => Clinic)
+  @ForeignKey(() => Ticket)
   @Column
   public currentTicketId!: number;
+
+  @HasOne(() => Ticket)
+  public currentTicket!: Ticket;
 
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
@@ -69,9 +82,6 @@ export default class Queue extends Model {
     defaultValue: 0,
   })
   public latestGeneratedTicketDisplayNumber!: number;
-
-  @HasMany(() => Ticket)
-  public tickets!: Ticket[];
 
   @HasMany(() => Doctor)
   public doctors!: Doctor[];

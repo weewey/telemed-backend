@@ -18,8 +18,9 @@ const typeRule: ValidationChain = body(TYPE)
   .exists()
   .withMessage("type must be present")
   .bail()
+  .toUpperCase()
   .isIn([ TicketTypes.TELEMED, TicketTypes.PHYSICAL ])
-  .withMessage("patientId must be numeric");
+  .withMessage(`type must be either ${TicketTypes.TELEMED} or ${TicketTypes.PHYSICAL}`);
 
 const queueIdRule: ValidationChain = body(QUEUE_ID)
   .exists()

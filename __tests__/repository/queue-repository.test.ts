@@ -4,6 +4,7 @@ import { ForeignKeyConstraintError } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import { Errors } from "../../src/errors/error-mappings";
 import QueueRepository from "../../src/respository/queue-repository";
+import Ticket from "../../src/models/ticket";
 import objectContaining = jasmine.objectContaining;
 
 describe("QueueRepository", () => {
@@ -112,7 +113,7 @@ describe("QueueRepository", () => {
       await QueueRepository.getById(queueId);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toBeCalledWith(queueId);
+      expect(spy).toBeCalledWith(queueId, { "include": Ticket });
     });
   });
 });
