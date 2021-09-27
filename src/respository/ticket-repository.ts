@@ -38,7 +38,14 @@ class TicketRepository {
   }
 
   public static async findAll(findAllTicketAttributes: FindAllTicketAttributes):Promise<Ticket[]> {
-    return Ticket.findAll({ where: { ...findAllTicketAttributes }, include: Queue });
+    const queryOps = Object.keys(findAllTicketAttributes).map((key) => {
+      // @ts-ignore
+      return { [key]: findAllTicketAttributes[key] };
+    });
+    return Ticket.findAll({ where: {
+      [Op.and]: queryOps,
+    },
+    include: Queue });
   }
 
   public static async findByPatientIdAndStatus(patientId: number,

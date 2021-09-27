@@ -63,9 +63,13 @@ describe("TicketRepository", () => {
       };
       const spy = jest.spyOn(Ticket, "findAll").mockResolvedValue([]);
       await TicketRepository.findAll(findAllTicketAttributes);
-      expect(spy).toBeCalledWith({ where: { queueId: 2,
-        status: TicketStatus.WAITING,
-        patientId: 1 },
+      expect(spy).toBeCalledWith({ where: {
+        [Op.and]: [
+          { queueId: 2 },
+          { status: TicketStatus.WAITING },
+          { patientId: 1 },
+        ],
+      },
       include: Queue });
     });
   });
