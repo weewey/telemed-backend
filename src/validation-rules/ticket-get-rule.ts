@@ -36,7 +36,7 @@ const ticketStatusQueryParamsRule: ValidationChain[] = [
   query(STATUS)
     .optional()
     .toUpperCase()
-    .custom(value => SUPPORTED_TICKET_STATUS.includes(value))
+    .isIn(SUPPORTED_TICKET_STATUS)
     .withMessage(`Status should contain only either ${SUPPORTED_TICKET_STATUS.join(",")}`),
 ];
 
