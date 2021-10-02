@@ -5,6 +5,9 @@ export DB_DATABASE=qdoc
 export FIREBASE_CONFIG='{"apiKey": "","authDomain": "","projectId": "","storageBucket": "","messagingSenderId": "","appId": "","measurementId": ""}'
 export FIREBASE_AUTH_EMULATOR_HOST="localhost:9098"
 export GOOGLE_CLOUD_PROJECT="local"
+export ZOOM_API_KEY="zoom_api"
+export ZOOM_API_SECRET="zoom_api_secret"
+export ZOOM_BASE_URL="zoom_base_url"
 
 // NOTE
 // REACT_APP_FIREBASE_CONFIG => get from qdoc.kdbx, ensure that the object {} is wrapped with SINGLE quotes e.g. '{}'
