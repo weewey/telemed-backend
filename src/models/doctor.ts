@@ -14,6 +14,21 @@ import Clinic from "./clinic";
 // eslint-disable-next-line import/no-cycle
 import Queue from "./queue";
 
+export interface DoctorAttributesWithId extends DoctorAttributes {
+  id: number
+}
+
+export interface DoctorAttributes {
+  firstName: string,
+  lastName: string,
+  email: string,
+  authId: string,
+  mobileNumber: string,
+  onDuty: boolean,
+  queueId?: number,
+  clinicId?: number,
+}
+
 @Table({ tableName: "Doctors" })
 
 export default class Doctor extends Model {

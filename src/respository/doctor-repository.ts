@@ -1,20 +1,10 @@
-import Doctor from "../models/doctor";
+import Doctor, { DoctorAttributes, DoctorAttributesWithId } from "../models/doctor";
 import { BaseError, ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
 import { Logger } from "../logger";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
-
-export interface DoctorAttributes {
-  firstName: string,
-  lastName: string,
-  email: string,
-  authId: string,
-  mobileNumber: string,
-  onDuty: boolean,
-  queueId?: number,
-  clinicId?: number,
-}
+import NotFoundError from "../errors/not-found-error";
 
 class DoctorRepository {
   public static async create(doctorAttributes: DoctorAttributes): Promise<Doctor> {
@@ -25,6 +15,15 @@ class DoctorRepository {
       throw this.handleCreateDoctorError(error);
     }
     return doctor;
+  }
+
+  public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>): Promise<Doctor> {
+    const { id, ...updateAttributes } = doctorAttributesWithId;
+    const doctor = await Doctor.findByPk(id);
+    if (!doctor) {
+      throw new NotFoundError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message);
+    }
+    return doctor.update(updateAttributes);
   }
 
   private static handleCreateDoctorError(error: BaseError): RepositoryError {
