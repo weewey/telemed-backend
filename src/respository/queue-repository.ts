@@ -44,7 +44,7 @@ class QueueRepository {
   }
 
   public static async getById(queueId: number): Promise<Queue | null> {
-    return Queue.findByPk(queueId, { include: Ticket });
+    return Queue.findByPk(queueId, { include: { model: Ticket, as: "currentTicket" } });
   }
 
   public static async update(queueModelAttributes: Partial<QueueAttributesWithId>): Promise<Queue> {
@@ -52,7 +52,7 @@ class QueueRepository {
       id,
       ...updateAttributes
     } = queueModelAttributes;
-    const queue = await Queue.findByPk(id);
+    const queue = await Queue.findByPk(id, { include: { model: Ticket, as: "currentTicket" } });
     if (!queue) {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
     }

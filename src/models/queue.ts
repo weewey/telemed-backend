@@ -67,7 +67,7 @@ export default class Queue extends Model {
   @Column
   public currentTicketId!: number;
 
-  @HasOne(() => Ticket)
+  @HasOne(() => Ticket, { sourceKey: "currentTicketId", foreignKey: "id" })
   public currentTicket!: Ticket;
 
   @Column({

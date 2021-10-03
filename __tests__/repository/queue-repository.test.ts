@@ -113,7 +113,7 @@ describe("QueueRepository", () => {
       await QueueRepository.getById(queueId);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toBeCalledWith(queueId, { "include": Ticket });
+      expect(spy).toBeCalledWith(queueId, { "include": { model: Ticket, as: "currentTicket" } });
     });
   });
 });
