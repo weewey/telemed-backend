@@ -12,6 +12,15 @@ export const nameRules = (fields: string[]): ValidationChain[] => {
       .trim() as ValidationChain);
 };
 
+export const optionalNameRules = (fields: string[]): ValidationChain[] => {
+  return fields.map((field) =>
+    body(field)
+      .optional()
+      .isAlpha("en-US", { ignore: " " })
+      .withMessage(`${field} should only contain alphabets`)
+      .trim() as ValidationChain);
+};
+
 export const emailRule = (field: string): ValidationChain => {
   return body(field)
     .exists()

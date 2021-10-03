@@ -1,5 +1,5 @@
-import Doctor from "../models/doctor";
-import DoctorRepository, { DoctorAttributes } from "../respository/doctor-repository";
+import Doctor, { DoctorAttributes, DoctorAttributesWithId } from "../models/doctor";
+import DoctorRepository from "../respository/doctor-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import AuthService from "./auth-service";
 import { Role, UserPermissions } from "../clients/auth-client";
@@ -11,6 +11,14 @@ class DoctorService {
     const doctor = await this.createDoctor(doctorAttributes);
     await this.setPermissions(doctor);
     return doctor;
+  }
+
+  public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>): Promise<Doctor> {
+    try {
+      return await DoctorRepository.update(doctorAttributesWithId);
+    } catch (e) {
+      throw mapRepositoryErrors(e);
+    }
   }
 
   private static async createDoctor(doctorAttributes: DoctorAttributes): Promise<Doctor> {

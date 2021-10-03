@@ -2,8 +2,7 @@ import { UniqueConstraintError, ValidationError } from "sequelize";
 import QueueStatus from "../../src/queue_status";
 import Queue from "../../src/models/queue";
 import { v4 as generateUUID } from "uuid";
-import { DoctorAttributes } from "../../src/respository/doctor-repository";
-import Doctor from "../../src/models/doctor";
+import Doctor, { DoctorAttributes } from "../../src/models/doctor";
 import { clinicFactory } from "../factories/clinic";
 
 describe("Doctor", () => {

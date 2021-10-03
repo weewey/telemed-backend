@@ -1,9 +1,8 @@
 import app from "../../src/app";
 import request from "supertest";
 import DoctorService from "../../src/services/doctor-service";
-import Doctor from "../../src/models/doctor";
+import Doctor, { DoctorAttributes } from "../../src/models/doctor";
 import { StatusCodes } from "http-status-codes";
-import { DoctorAttributes } from "../../src/respository/doctor-repository";
 import { omit } from "lodash";
 import { Logger } from "../../src/logger";
 
@@ -75,6 +74,23 @@ describe("Doctors Route", () => {
           expect(response.body.error).toMatchObject({ invalidParams: [
             { name: missingField, reason: `${missingField} must be present` } ] });
         });
+      });
+    });
+  });
+
+  describe("PUT /:doctorId", () => {
+    describe("Successful scenarios", () => {
+      const doctorId = 123456;
+      const DOCTOR_PUT_PATH = `${doctorsBaseUrl}/${doctorId}`;
+      const doctor = { id: doctorId, clinicId: 1, authId: "authId" } as unknown as Doctor;
+
+      // eslint-disable-next-line jest/expect-expect
+      it("should return 200 with the expected body", async () => {
+        jest.spyOn(DoctorService, "update").mockResolvedValue(doctor);
+        await request(app).put(DOCTOR_PUT_PATH)
+          .send({ clinicId: 1 })
+          .expect(StatusCodes.OK)
+          .expect(doctor);
       });
     });
   });

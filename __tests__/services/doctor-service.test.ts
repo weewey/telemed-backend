@@ -1,5 +1,5 @@
-import DoctorRepository, { DoctorAttributes } from "../../src/respository/doctor-repository";
-import Doctor from "../../src/models/doctor";
+import DoctorRepository from "../../src/respository/doctor-repository";
+import Doctor, { DoctorAttributes, DoctorAttributesWithId } from "../../src/models/doctor";
 import DoctorService from "../../src/services/doctor-service";
 import { v4 as generateUUID } from "uuid";
 import RepositoryError from "../../src/errors/repository-error";
@@ -98,6 +98,15 @@ describe("Doctor Service", () => {
           .toEqual(new TechnicalError("Error deleting doctor after failure to setPermissions on " +
               "AuthService. DoctorId: 1 test"));
       });
+    });
+  });
+
+  describe("#update", () => {
+    const doctorAttrsWithId = { id: 111, clinicId: 1 } as Partial<DoctorAttributesWithId>;
+    it("should call DoctorRepository.update", () => {
+      const spy = jest.spyOn(DoctorRepository, "update").mockResolvedValue({} as Doctor);
+      DoctorService.update(doctorAttrsWithId);
+      expect(spy).toBeCalledWith(doctorAttrsWithId);
     });
   });
 });
