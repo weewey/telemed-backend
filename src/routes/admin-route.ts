@@ -12,15 +12,13 @@ adminRoute.use(express.json());
 adminRoute.post("/",
   validateRequest(usersCreateRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, email, authId, mobileNumber, queueId, clinicId } = req.body;
+    const { firstName, lastName, email, authId, mobileNumber } = req.body;
 
     const adminAttrs = { firstName,
       lastName,
       email,
       authId,
-      mobileNumber,
-      queueId,
-      clinicId };
+      mobileNumber };
     const admin = await AdminService.create(adminAttrs);
 
     res.status(StatusCodes.CREATED).json(admin);
