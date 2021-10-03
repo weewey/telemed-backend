@@ -109,4 +109,12 @@ describe("Doctor Service", () => {
       expect(spy).toBeCalledWith(doctorAttrsWithId);
     });
   });
+
+  describe("getDoctors", () => {
+    it("should call Doctors.findAll", async () => {
+      const spy = jest.spyOn(Doctor, "findAll").mockResolvedValue([]);
+      await DoctorService.getDoctors();
+      expect(spy).toBeCalled();
+    });
+  });
 });

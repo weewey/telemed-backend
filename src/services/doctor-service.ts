@@ -21,6 +21,10 @@ class DoctorService {
     }
   }
 
+  public static async getDoctors(): Promise<Doctor[]> {
+    return Doctor.findAll();
+  }
+
   private static async createDoctor(doctorAttributes: DoctorAttributes): Promise<Doctor> {
     try {
       return await DoctorRepository.create(doctorAttributes);

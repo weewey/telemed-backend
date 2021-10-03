@@ -94,4 +94,15 @@ describe("Doctors Route", () => {
       });
     });
   });
+
+  describe("GET /doctors", () => {
+    it("should call DoctorService.getDoctors", async () => {
+      const doctor = { id: 1 } as Doctor;
+      jest.spyOn(DoctorService, "getDoctors").mockResolvedValue([ doctor ]);
+      const response = await request(app).get(doctorsBaseUrl)
+        .expect(StatusCodes.OK);
+
+      expect(response.body).toEqual([ doctor ]);
+    });
+  });
 });

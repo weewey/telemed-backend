@@ -1,6 +1,7 @@
 import Clinic, { ClinicAttributes } from "../models/clinic";
 import ClinicRepository from "../respository/clinic-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
+
 class ClinicService {
   public static async create(clinicAttributes: ClinicAttributes): Promise<Clinic> {
     return this.createClinic(clinicAttributes);

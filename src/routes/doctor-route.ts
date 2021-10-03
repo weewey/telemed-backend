@@ -37,3 +37,9 @@ doctorRoute.put("/:doctorId",
     const doctor = await DoctorService.update(updateAttributes);
     res.status(StatusCodes.OK).json(doctor);
   }));
+
+doctorRoute.get("/",
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const doctors = await DoctorService.getDoctors();
+    res.status(StatusCodes.OK).json(doctors);
+  }));
