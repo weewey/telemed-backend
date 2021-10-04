@@ -95,6 +95,7 @@ describe("#Queues Component", () => {
     it("should set currentTicketId to the first element from the pendingTicketIdsOrder", async () => {
       const response = await request(app)
         .post(`${QUEUES_PATH}/${queueId}/next-ticket`)
+        .send({ "doctorId": 1 })
         .expect(StatusCodes.OK);
 
       expect(response.body).toEqual(

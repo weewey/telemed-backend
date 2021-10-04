@@ -10,6 +10,13 @@ import NotFoundError from "../errors/not-found-error";
 import TicketRepository from "../respository/ticket-repository";
 import TicketStatus from "../ticket_status";
 import { sequelize } from "../utils/db-connection";
+import DoctorService from "./doctor-service";
+import ZoomService from "./zoom-service";
+import TicketTypes from "../ticket_types";
+// eslint-disable-next-line import/no-cycle
+import TicketService from "./ticket-service";
+import { ZoomMeeting } from "../clients/zoom-client";
+import Ticket from "../models/ticket";
 
 class QueueService {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -28,7 +35,9 @@ class QueueService {
     }
   }
 
-  public static async nextTicket(queueId: number): Promise<Queue> {
+  public static async nextTicket(doctorId: number, queueId: number): Promise<Queue> {
+    const doctor = await DoctorService.get(doctorId);
+
     const queue = await QueueRepository.getById(queueId);
     if (!queue) {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
@@ -43,7 +52,14 @@ class QueueService {
       return queue;
     }
 
-    return this.setQueueNextTicket(queue, nextTicketId, pendingTicketIdsOrder);
+    let zoomMeeting: ZoomMeeting|null = null;
+    const ticket = await TicketService.get(nextTicketId);
+
+    if (ticket.type === TicketTypes.TELEMED) {
+      zoomMeeting = await ZoomService.createMeeting(doctor.email);
+    }
+
+    return this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder, zoomMeeting);
   }
 
   private static validateNoCurrentTicketId(currentTicketId: number): void {
@@ -63,21 +79,20 @@ class QueueService {
 
   private static async setQueueNextTicket(
     queue: Queue,
-    nextTicketId: number,
+    nextTicket: Ticket,
     pendingTicketIdsOrder: Array<number>,
+    zoomMeeting: ZoomMeeting|null,
   ): Promise<Queue> {
+    const updateTicketAttrs = this.getUpdateTicketAttrs(nextTicket, zoomMeeting);
     try {
       return await sequelize.transaction(
         async (transaction) => {
           const updatedQueue = queue.update({
-            currentTicketId: nextTicketId,
+            currentTicketId: nextTicket.id,
             pendingTicketIdsOrder: pendingTicketIdsOrder.splice(1),
           }, { transaction });
 
-          await TicketRepository.update({
-            id: nextTicketId,
-            status: TicketStatus.SERVING,
-          }, transaction);
+          await TicketRepository.update(updateTicketAttrs, transaction);
 
           return updatedQueue;
         },
@@ -86,6 +101,24 @@ class QueueService {
       Logger.error(`Error when setting next ticket on queue: ${e.message}`);
       throw e;
     }
+  }
+
+  private static getUpdateTicketAttrs(nextTicket: Ticket, zoomMeeting: ZoomMeeting|null) {
+    let updateTicketAttrs = {
+      id: nextTicket.id,
+      status: TicketStatus.SERVING,
+    };
+    if (nextTicket.type === TicketTypes.TELEMED && zoomMeeting) {
+      updateTicketAttrs = {
+        ...updateTicketAttrs,
+        ...{
+          zoomMeetingId: zoomMeeting.id,
+          zoomStartMeetingUrl: zoomMeeting.start_url,
+          zoomJoinMeetingUrl: zoomMeeting.join_url,
+        },
+      };
+    }
+    return updateTicketAttrs;
   }
 
   private static async validateNoOtherClinicActiveQueues(clinicId: number, queueId?: number): Promise<void> {

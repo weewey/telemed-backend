@@ -1,7 +1,7 @@
-import TeleConsultService from "../../src/services/tele-consult-service";
+import ZoomService from "../../src/services/zoom-service";
 import { zoomClient, ZoomMeeting, ZoomUser } from "../../src/clients/zoom-client";
 
-describe("TeleConsultService", () => {
+describe("ZoomService", () => {
   const email = "email";
   const firstName = "firstName";
   const lastName = "lastName";
@@ -9,7 +9,7 @@ describe("TeleConsultService", () => {
   describe("createUser", () => {
     it("should call zoomClient.createUser with the expected params", async () => {
       const spy = jest.spyOn(zoomClient, "createUser").mockResolvedValue({} as ZoomUser);
-      await TeleConsultService.createUser(email, firstName, lastName);
+      await ZoomService.createUser(email, firstName, lastName);
       expect(spy).toBeCalledWith(
         { "action": "create",
           "user_info":
@@ -20,7 +20,7 @@ describe("TeleConsultService", () => {
     describe("when it errors", () => {
       it("should throw an error", async () => {
         jest.spyOn(zoomClient, "createUser").mockRejectedValue(new Error("123"));
-        await expect(TeleConsultService.createUser(email, firstName, lastName)).rejects.toThrowError();
+        await expect(ZoomService.createUser(email, firstName, lastName)).rejects.toThrowError();
       });
     });
   });
@@ -28,7 +28,7 @@ describe("TeleConsultService", () => {
   describe("createMeeting", () => {
     it("should call zoomClient.createMeeting", async () => {
       const spy = jest.spyOn(zoomClient, "createMeeting").mockResolvedValue({} as ZoomMeeting);
-      await TeleConsultService.createMeeting(email);
+      await ZoomService.createMeeting(email);
       expect(spy).toBeCalledWith({
         "encryption_type": "e2ee",
         "host_id": "email",

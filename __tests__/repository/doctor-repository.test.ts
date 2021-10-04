@@ -121,4 +121,14 @@ describe("Doctor Repository", () => {
       });
     });
   });
+
+  describe("get", () => {
+    it("should call Doctor.findByPk", async () => {
+      const doctorId = 1;
+      const spy = jest.spyOn(Doctor, "findByPk").mockResolvedValue(null);
+
+      await DoctorRepository.get(doctorId);
+      expect(spy).toBeCalled();
+    });
+  });
 });

@@ -2,6 +2,7 @@
 import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/ticket";
 import TicketRepository, { FindAllTicketAttributes } from "../respository/ticket-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
+// eslint-disable-next-line import/no-cycle
 import QueueService from "./queue-service";
 import Queue from "../models/queue";
 import QueueStatus from "../queue_status";

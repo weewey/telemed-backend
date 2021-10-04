@@ -17,6 +17,10 @@ class DoctorRepository {
     return doctor;
   }
 
+  public static async get(doctorId: number): Promise<Doctor|null> {
+    return Doctor.findByPk(doctorId);
+  }
+
   public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>): Promise<Doctor> {
     const { id, ...updateAttributes } = doctorAttributesWithId;
     const doctor = await Doctor.findByPk(id);

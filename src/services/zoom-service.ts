@@ -1,7 +1,8 @@
 import { zoomClient, ZoomMeeting, ZoomUser } from "../clients/zoom-client";
 import { Logger } from "../logger";
+import TechnicalError from "../errors/technical-error";
 
-export default class TeleConsultService {
+export default class ZoomService {
   static BASIC_USER_TYPE = 1;
 
   static INSTANT_MEETING_TYPE = 1;
@@ -47,7 +48,7 @@ export default class TeleConsultService {
       return await zoomClient.createMeeting(createMeetingRequest);
     } catch (e) {
       Logger.error(`Error creating meeting: ${e.message}`);
-      throw e;
+      throw new TechnicalError(e.message);
     }
   }
 }

@@ -5,8 +5,10 @@ import AuthService from "./auth-service";
 import { Role, UserPermissions } from "../clients/auth-client";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
-import ZoomService from "./tele-consult-service";
+import ZoomService from "./zoom-service";
 import { ZoomUser } from "../clients/zoom-client";
+import NotFoundError from "../errors/not-found-error";
+import { Errors } from "../errors/error-mappings";
 
 class DoctorService {
   public static async create(doctorAttributes: DoctorAttributes): Promise<Doctor> {
@@ -25,6 +27,14 @@ class DoctorService {
 
   public static async getDoctors(): Promise<Doctor[]> {
     return Doctor.findAll();
+  }
+
+  public static async get(doctorId: number): Promise<Doctor> {
+    const doctor = await DoctorRepository.get(doctorId);
+    if (doctor == null) {
+      throw new NotFoundError(Errors.DOCTOR_NOT_FOUND.code, Errors.DOCTOR_NOT_FOUND.message);
+    }
+    return doctor;
   }
 
   private static async createDoctor(doctorAttributes: DoctorAttributes): Promise<Doctor> {

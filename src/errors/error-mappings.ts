@@ -66,4 +66,8 @@ export const Errors = {
     message: "Queue is not active",
     code: "QDOC-017",
   },
+  DOCTOR_NOT_FOUND: {
+    message: "Doctor not found.",
+    code: "QDOC-018",
+  },
 };

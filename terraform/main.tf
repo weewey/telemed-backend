@@ -56,6 +56,18 @@ resource "google_cloud_run_service" "qdoc" {
           name  = "API_PORT"
           value = 8080
         }
+        env {
+          name  = "ZOOM_API_KEY"
+          value = var.zoom_api_key
+        }
+        env {
+          name  = "ZOOM_API_SECRET"
+          value = var.zoom_api_secret
+        }
+        env {
+          name  = "ZOOM_BASE_URL"
+          value = var.zoom_base_url
+        }
       }
     }
   }

@@ -9,7 +9,7 @@ import TechnicalError from "../../src/errors/technical-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import AuthService from "../../src/services/auth-service";
 import { Role } from "../../src/clients/auth-client";
-import TeleConsultService from "../../src/services/tele-consult-service";
+import ZoomService from "../../src/services/zoom-service";
 import { ZoomUser } from "../../src/clients/zoom-client";
 
 describe("Doctor Service", () => {
@@ -28,7 +28,7 @@ describe("Doctor Service", () => {
   describe("#create", () => {
     const zoomUserId = "123";
     beforeEach(() => {
-      jest.spyOn(TeleConsultService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
+      jest.spyOn(ZoomService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
       jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     });
     it("should call DoctorRepository.create with the right params", async () => {
@@ -39,7 +39,7 @@ describe("Doctor Service", () => {
     });
 
     it("should call TeleConsultService.createUser", async () => {
-      const spy = jest.spyOn(TeleConsultService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
+      const spy = jest.spyOn(ZoomService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
       const doctorAttrs = getDoctorAttrs();
       await DoctorService.create(doctorAttrs);
       expect(spy).toBeCalledWith(doctorAttrs.email, doctorAttrs.firstName, doctorAttrs.lastName);
@@ -130,6 +130,16 @@ describe("Doctor Service", () => {
       const spy = jest.spyOn(Doctor, "findAll").mockResolvedValue([]);
       await DoctorService.getDoctors();
       expect(spy).toBeCalled();
+    });
+  });
+
+  describe("#get", () => {
+    const doctorId = 1;
+
+    it("should call doctorRespository.get", async () => {
+      const spy = jest.spyOn(DoctorRepository, "get").mockResolvedValue({} as Doctor);
+      await DoctorService.get(doctorId);
+      expect(spy).toBeCalledWith(doctorId);
     });
   });
 });

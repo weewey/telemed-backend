@@ -13,9 +13,9 @@ export interface TicketAttributes {
   displayNumber: number,
   clinicId: number,
   type: TicketTypes,
-  teleConsultMeetingId?: string,
-  teleConsultStartMeetingUrl?: string,
-  teleConsultJoinMeetingUrl?: string
+  zoomMeetingId?: string,
+  zoomStartMeetingUrl?: string,
+  zoomJoinMeetingUrl?: string
 }
 
 export interface TicketAttributesWithId extends TicketAttributes {
@@ -77,19 +77,19 @@ export default class Ticket extends Model {
     allowNull: true,
     type: DataType.STRING,
   })
-  public teleConsultMeetingId?: string;
+  public zoomMeetingId?: string;
 
   @Column({
     allowNull: true,
     type: DataType.STRING,
   })
-  public teleConsultStartMeetingUrl?: string|null;
+  public zoomStartMeetingUrl?: string|null;
 
   @Column({
     allowNull: true,
     type: DataType.STRING,
   })
-  public teleConsultJoinMeetingUrl?: string;
+  public zoomJoinMeetingUrl?: string;
 
   @CreatedAt
   public createdAt!: Date;

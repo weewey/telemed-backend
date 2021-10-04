@@ -12,6 +12,12 @@ import TicketRepository from "../../src/respository/ticket-repository";
 import TicketStatus from "../../src/ticket_status";
 import Ticket from "../../src/models/ticket";
 import { Transaction } from "sequelize";
+import DoctorService from "../../src/services/doctor-service";
+import Doctor from "../../src/models/doctor";
+import TicketService from "../../src/services/ticket-service";
+import TicketTypes from "../../src/ticket_types";
+import ZoomService from "../../src/services/zoom-service";
+import { ZoomMeeting } from "../../src/clients/zoom-client";
 
 describe("QueueService", () => {
   beforeEach(() => {
@@ -210,11 +216,16 @@ describe("QueueService", () => {
   });
 
   describe("nextTicket", () => {
+    const doctorId = 1;
+    const doctorEmail = "doctor@email.com";
+    beforeEach(() => {
+      jest.spyOn(DoctorService, "get").mockResolvedValue({ id: doctorId, email: doctorEmail } as Doctor);
+    });
     describe("when queueId is not found", () => {
       it("should return NotFoundError", async () => {
         const queueId = 1;
         jest.spyOn(QueueRepository, "getById").mockResolvedValue(null);
-        await expect(QueueService.nextTicket(queueId)).rejects.toThrowError(NotFoundError);
+        await expect(QueueService.nextTicket(doctorId, queueId)).rejects.toThrowError(NotFoundError);
       });
     });
     describe("when queue is found", () => {
@@ -237,11 +248,11 @@ describe("QueueService", () => {
         });
 
         it("should return BusinessError", async () => {
-          await expect(QueueService.nextTicket(queueId)).rejects.toThrowError(BusinessError);
+          await expect(QueueService.nextTicket(doctorId, queueId)).rejects.toThrowError(BusinessError);
         });
 
         it("should return BusinessError with the expected code and message", async () => {
-          await expect(QueueService.nextTicket(queueId)).rejects.toMatchObject(
+          await expect(QueueService.nextTicket(doctorId, queueId)).rejects.toMatchObject(
             { code: Errors.QUEUE_IS_NOT_ACTIVE.code, message: Errors.QUEUE_IS_NOT_ACTIVE.message },
           );
         });
@@ -261,11 +272,11 @@ describe("QueueService", () => {
           jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
         });
         it("should return BusinessError", async () => {
-          await expect(QueueService.nextTicket(queueId)).rejects.toThrowError(BusinessError);
+          await expect(QueueService.nextTicket(doctorId, queueId)).rejects.toThrowError(BusinessError);
         });
 
         it("should return BusinessError with the expected code and message", async () => {
-          await expect(QueueService.nextTicket(queueId)).rejects.toMatchObject({
+          await expect(QueueService.nextTicket(doctorId, queueId)).rejects.toMatchObject({
             code: Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.code,
             message: Errors.UNABLE_TO_SET_NEXT_TICKET_AS_QUEUE_CURRENTLY_HAS_A_CURRENT_TICKET.message,
           });
@@ -288,27 +299,61 @@ describe("QueueService", () => {
             jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
             jest.spyOn(queue, "update").mockResolvedValue(queue);
           });
+          describe("when the next ticket is a physical ticket", () => {
+            beforeEach(() => {
+              jest.spyOn(TicketService, "get").mockResolvedValue({ id: 1, type: TicketTypes.PHYSICAL } as Ticket);
+            });
 
-          it("should call QueueRepository with the expected updated queue attrs", async () => {
-            const spy = jest.spyOn(queue, "update");
-            await QueueService.nextTicket(queueId);
-            expect(spy).toBeCalledWith({
-              currentTicketId: 1,
-              pendingTicketIdsOrder: [ 2 ],
-            },
-            { transaction: expect.any(Transaction) });
+            it("should call QueueRepository with the expected updated queue attrs", async () => {
+              const spy = jest.spyOn(queue, "update");
+              await QueueService.nextTicket(doctorId, queueId);
+              expect(spy).toBeCalledWith({
+                currentTicketId: 1,
+                pendingTicketIdsOrder: [ 2 ],
+              },
+              { transaction: expect.any(Transaction) });
+            });
+
+            it("should call TicketRepository.update with the expected params", async () => {
+              const spy = jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+
+              await QueueService.nextTicket(doctorId, queueId);
+
+              expect(spy).toBeCalledWith({
+                id: 1,
+                status: TicketStatus.SERVING,
+              },
+              expect.any(Transaction));
+            });
           });
 
-          it("should call TicketRepository.update with the expected params", async () => {
-            const spy = jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+          describe("when the next ticket is a telemed ticket", () => {
+            beforeEach(() => {
+              jest.spyOn(TicketService, "get").mockResolvedValue({ id: 1, type: TicketTypes.TELEMED } as Ticket);
+            });
 
-            await QueueService.nextTicket(queueId);
+            it("should call ZoomService.createMeeting", async () => {
+              const spy = jest.spyOn(ZoomService, "createMeeting").mockResolvedValue({} as ZoomMeeting);
+              await QueueService.nextTicket(doctorId, queueId);
+              expect(spy).toBeCalledWith(doctorEmail);
+            });
 
-            expect(spy).toBeCalledWith({
-              id: 1,
-              status: TicketStatus.SERVING,
-            },
-            expect.any(Transaction));
+            it("should call TicketRepository.update with the expected params", async () => {
+              jest.spyOn(ZoomService, "createMeeting").mockResolvedValue({ id: "1",
+                uuid: "123",
+                join_url: "join_url",
+                start_url: "start_url" } as ZoomMeeting);
+              const spy = jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
+              await QueueService.nextTicket(doctorId, queueId);
+              expect(spy).toBeCalledWith({
+                id: 1,
+                status: TicketStatus.SERVING,
+                zoomJoinMeetingUrl: "join_url",
+                zoomMeetingId: "1",
+                zoomStartMeetingUrl: "start_url",
+              },
+              expect.any(Transaction));
+            });
           });
 
           describe("and TicketRepository.update returns an error", () => {
@@ -335,7 +380,7 @@ describe("QueueService", () => {
           });
           it("should not call queue.update", async () => {
             const spy = jest.spyOn(queue, "update");
-            await QueueService.nextTicket(queueId);
+            await QueueService.nextTicket(doctorId, queueId);
             expect(spy).not.toBeCalled();
           });
         });

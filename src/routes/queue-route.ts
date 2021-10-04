@@ -27,7 +27,8 @@ queueRoute.post("/:queueId/next-ticket",
   validateRequest(queueNextTicketRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.queueId;
-    const queue = await QueueService.nextTicket(Number(id));
+    const { doctorId } = req.body;
+    const queue = await QueueService.nextTicket(doctorId, Number(id));
     res.status(StatusCodes.OK).json(queue);
   }));
 

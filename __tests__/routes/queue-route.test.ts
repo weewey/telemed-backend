@@ -357,12 +357,16 @@ describe("Queues Route", () => {
   });
 
   describe("POST /queues/:queueId/next-ticket", () => {
+    const doctorId = 1;
     describe("success scenarios", () => {
       it("should call QueueService.nextTicket", async () => {
         jest.spyOn(QueueService, "nextTicket").mockResolvedValue(queue);
 
-        await request(app).post(`${queuesPath}/${queue.id}/next-ticket`);
-        expect(QueueService.nextTicket).toHaveBeenCalledWith(queue.id);
+        await request(app)
+          .post(`${queuesPath}/${queue.id}/next-ticket`)
+          .send({ doctorId });
+
+        expect(QueueService.nextTicket).toHaveBeenCalledWith(doctorId, queue.id);
       });
 
       it("should return the updatedQueue", async () => {
@@ -371,6 +375,7 @@ describe("Queues Route", () => {
 
         const response =
             await request(app).post(`${queuesPath}/${queue.id}/next-ticket`)
+              .send({ doctorId })
               .expect(StatusCodes.OK);
         expect(response.body).toMatchObject(updatedQueue);
       });
@@ -380,10 +385,20 @@ describe("Queues Route", () => {
       it("should return badRequest when queueId is not a number", async () => {
         const response =
             await request(app).post(`${queuesPath}/asd/next-ticket`)
+              .send({ "doctorId": 123 })
               .expect(StatusCodes.BAD_REQUEST);
         expect(response.body).toMatchObject({ error: { invalidParams: [
           { name: "queueId",
             reason: "Queue Id must contain only numbers." } ] } });
+      });
+
+      it("should return badRequest when doctorId is not present", async () => {
+        const response =
+            await request(app).post(`${queuesPath}/1/next-ticket`)
+              .expect(StatusCodes.BAD_REQUEST);
+        expect(response.body).toMatchObject({ error: { invalidParams: [
+          { name: "doctorId",
+            reason: "Doctor Id is required" } ] } });
       });
     });
   });
