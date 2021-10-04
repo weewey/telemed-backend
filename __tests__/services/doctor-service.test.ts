@@ -9,6 +9,8 @@ import TechnicalError from "../../src/errors/technical-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import AuthService from "../../src/services/auth-service";
 import { Role } from "../../src/clients/auth-client";
+import TeleConsultService from "../../src/services/tele-consult-service";
+import { ZoomUser } from "../../src/clients/zoom-client";
 
 describe("Doctor Service", () => {
   const getDoctorAttrs = (overrideAttrs?: Partial<DoctorAttributes>): DoctorAttributes => {
@@ -23,12 +25,25 @@ describe("Doctor Service", () => {
     };
   };
 
-  it("should call DoctorRepository.create with the right params", async () => {
-    const spy = jest.spyOn(DoctorRepository, "create").mockResolvedValue({} as Doctor);
-    jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
-    const doctorAttrs = getDoctorAttrs();
-    await DoctorService.create(doctorAttrs);
-    expect(spy).toBeCalledWith(doctorAttrs);
+  describe("#create", () => {
+    const zoomUserId = "123";
+    beforeEach(() => {
+      jest.spyOn(TeleConsultService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
+      jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
+    });
+    it("should call DoctorRepository.create with the right params", async () => {
+      const spy = jest.spyOn(DoctorRepository, "create").mockResolvedValue({} as Doctor);
+      const doctorAttrs = getDoctorAttrs();
+      await DoctorService.create(doctorAttrs);
+      expect(spy).toBeCalledWith({ ...doctorAttrs, zoomUserId });
+    });
+
+    it("should call TeleConsultService.createUser", async () => {
+      const spy = jest.spyOn(TeleConsultService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
+      const doctorAttrs = getDoctorAttrs();
+      await DoctorService.create(doctorAttrs);
+      expect(spy).toBeCalledWith(doctorAttrs.email, doctorAttrs.firstName, doctorAttrs.lastName);
+    });
   });
 
   it("should call AuthService.setPermissions with the right params", async () => {

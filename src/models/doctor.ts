@@ -27,6 +27,7 @@ export interface DoctorAttributes {
   onDuty: boolean,
   queueId?: number,
   clinicId?: number,
+  zoomUserId?: string
 }
 
 @Table({ tableName: "Doctors" })
@@ -83,6 +84,12 @@ export default class Doctor extends Model {
     type: DataType.INTEGER,
   })
   public queueId?: number;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  public zoomUserId?: string;
 
   @BelongsTo(() => Queue)
   public queue?: Queue;

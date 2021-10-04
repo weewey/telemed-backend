@@ -5,6 +5,8 @@ import AuthService from "./auth-service";
 import { Role, UserPermissions } from "../clients/auth-client";
 import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
+import ZoomService from "./tele-consult-service";
+import { ZoomUser } from "../clients/zoom-client";
 
 class DoctorService {
   public static async create(doctorAttributes: DoctorAttributes): Promise<Doctor> {
@@ -26,10 +28,20 @@ class DoctorService {
   }
 
   private static async createDoctor(doctorAttributes: DoctorAttributes): Promise<Doctor> {
+    const { email, firstName, lastName } = doctorAttributes;
+    const zoomUser = await this.createZoomUser(email, firstName, lastName);
     try {
-      return await DoctorRepository.create(doctorAttributes);
+      return await DoctorRepository.create({ ...doctorAttributes, zoomUserId: zoomUser.id });
     } catch (e) {
       throw mapRepositoryErrors(e);
+    }
+  }
+
+  private static async createZoomUser(email: string, firstName: string, lastName: string): Promise<ZoomUser> {
+    try {
+      return await ZoomService.createUser(email, firstName, lastName);
+    } catch (e) {
+      throw new TechnicalError(e.message);
     }
   }
 
