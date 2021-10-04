@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import jwt from "jsonwebtoken";
 import EnvConfig from "../config/env-config";
-import "axios-debug-log";
 
 export interface ZoomUserInfo {
   email: string
