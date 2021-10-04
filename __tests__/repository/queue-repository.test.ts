@@ -74,12 +74,16 @@ describe("QueueRepository", () => {
 
     it("should return the updatedQueue", async () => {
       const queue = new Queue();
-      const updatedQueue = { status: QueueStatus.ACTIVE } as Queue;
+      const reloadedQueue = { status: QueueStatus.ACTIVE, currentTicket: {} } as Queue;
+      const updatedQueue = { status: QueueStatus.ACTIVE,
+        reload: ():Queue => {
+          return reloadedQueue;
+        } } as unknown as Queue;
       jest.spyOn(Queue, "findByPk").mockResolvedValue(queue);
       jest.spyOn(queue, "update").mockResolvedValue(updatedQueue);
       const response = await QueueRepository.update(queueModelAttributes);
 
-      expect(response).toEqual(updatedQueue);
+      expect(response).toEqual(reloadedQueue);
     });
   });
 

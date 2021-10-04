@@ -293,6 +293,8 @@ describe("QueueService", () => {
             status: QueueStatus.ACTIVE,
             update: () => {
             },
+            reload: () => {
+            },
           } as unknown as Queue;
           beforeEach(() => {
             jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);

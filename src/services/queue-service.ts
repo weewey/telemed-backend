@@ -90,14 +90,14 @@ class QueueService {
     try {
       return await sequelize.transaction(
         async (transaction) => {
-          const updatedQueue = queue.update({
+          const updatedQueue = await queue.update({
             currentTicketId: nextTicket.id,
             pendingTicketIdsOrder: pendingTicketIdsOrder.splice(1),
           }, { transaction });
 
           await TicketRepository.update(updateTicketAttrs, transaction);
 
-          return updatedQueue;
+          return updatedQueue.reload({ "include": { model: Ticket, as: "currentTicket" }, transaction });
         },
       );
     } catch (e) {
