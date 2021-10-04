@@ -14,6 +14,8 @@ import { destroyTicketsByIds } from "../helpers/ticket-helpers";
 import { destroyPatientsByIds } from "../helpers/patient-helpers";
 import TicketRepository from "../../src/respository/ticket-repository";
 import TicketStatus from "../../src/ticket_status";
+import { doctorFactory } from "../factories/doctor";
+import { destroyDoctorsByIds } from "../helpers/doctor-helpers";
 
 describe("#Queues Component", () => {
   const QUEUES_PATH = "/api/v1/queues";
@@ -67,6 +69,7 @@ describe("#Queues Component", () => {
     let queueId: number;
     let patientId: number;
     let ticketId: number;
+    let doctorId: number;
 
     beforeAll(async () => {
       const clinicCreated = await clinicFactory.build();
@@ -82,6 +85,8 @@ describe("#Queues Component", () => {
         clinicId,
         patientId });
       ticketId = ticketCreated.id;
+      const doctorCreated = await doctorFactory.build();
+      doctorId = doctorCreated.id;
       await queueCreated.update({ pendingTicketIdsOrder: [ ticketCreated.id ] });
     });
 
@@ -90,12 +95,13 @@ describe("#Queues Component", () => {
       await destroyClinicById([ clinicId ]);
       await destroyTicketsByIds([ ticketId ]);
       await destroyPatientsByIds([ patientId ]);
+      await destroyDoctorsByIds([ doctorId ]);
     });
 
     it("should set currentTicketId to the first element from the pendingTicketIdsOrder", async () => {
       const response = await request(app)
         .post(`${QUEUES_PATH}/${queueId}/next-ticket`)
-        .send({ "doctorId": 1 })
+        .send({ "doctorId": doctorId })
         .expect(StatusCodes.OK);
 
       expect(response.body).toEqual(
