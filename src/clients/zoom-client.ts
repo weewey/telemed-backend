@@ -1,12 +1,17 @@
 import axios, { AxiosInstance } from "axios";
 import jwt from "jsonwebtoken";
 import EnvConfig from "../config/env-config";
+import "axios-debug-log";
 
 export interface ZoomUserInfo {
   email: string
   type: number
   first_name: string
   last_name: string
+}
+
+export interface CreateZoomUserResponse {
+  data: ZoomUser
 }
 
 export interface ZoomUser {
@@ -17,6 +22,10 @@ export interface ZoomUser {
 export interface CreateZoomUserRequest {
   action: string
   user_info: ZoomUserInfo
+}
+
+export interface CreateZoomMeetingResponse {
+  data: ZoomMeeting
 }
 
 export interface ZoomMeeting {
@@ -70,17 +79,19 @@ export default class ZoomClient {
   }
 
   public async createMeeting(createZoomMeetingRequest: CreateZoomMeetingRequest): Promise<ZoomMeeting> {
-    return this.client.post<CreateZoomMeetingRequest, ZoomMeeting>(
+    const response = await this.client.post<CreateZoomMeetingRequest, CreateZoomMeetingResponse>(
       `${this.baseUrl}/users/${createZoomMeetingRequest.host_id}/meetings`,
       createZoomMeetingRequest,
       { headers: { "Authorization": `Bearer ${this.getToken(this.apiKey, this.apiSecret)}` } },
     );
+    return response.data;
   }
 
   public async createUser(createZoomUserRequest: CreateZoomUserRequest): Promise<ZoomUser> {
-    return this.client.post<CreateZoomUserRequest, ZoomUser>(`${this.baseUrl}/users`,
+    const response = await this.client.post<CreateZoomUserRequest, CreateZoomUserResponse>(`${this.baseUrl}/users`,
       createZoomUserRequest,
       { headers: { "Authorization": `Bearer ${this.getToken(this.apiKey, this.apiSecret)}` } });
+    return response.data;
   }
 
   private getToken(apiKey: string, apiSecret: string): string {

@@ -52,14 +52,14 @@ class QueueService {
       return queue;
     }
 
-    let zoomMeeting: ZoomMeeting|null = null;
     const ticket = await TicketService.get(nextTicketId);
 
     if (ticket.type === TicketTypes.TELEMED) {
-      zoomMeeting = await ZoomService.createMeeting(doctor.email);
+      const zoomMeeting = await ZoomService.createMeeting(doctor.email);
+      return this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder, zoomMeeting);
     }
 
-    return this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder, zoomMeeting);
+    return this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder);
   }
 
   private static validateNoCurrentTicketId(currentTicketId: number): void {
@@ -81,9 +81,12 @@ class QueueService {
     queue: Queue,
     nextTicket: Ticket,
     pendingTicketIdsOrder: Array<number>,
-    zoomMeeting: ZoomMeeting|null,
+    zoomMeeting?: ZoomMeeting,
   ): Promise<Queue> {
     const updateTicketAttrs = this.getUpdateTicketAttrs(nextTicket, zoomMeeting);
+    // eslint-disable-next-line no-console
+    Logger.info("updateTicketAttrs");
+    Logger.info(JSON.stringify(updateTicketAttrs));
     try {
       return await sequelize.transaction(
         async (transaction) => {
@@ -103,20 +106,18 @@ class QueueService {
     }
   }
 
-  private static getUpdateTicketAttrs(nextTicket: Ticket, zoomMeeting: ZoomMeeting|null) {
-    let updateTicketAttrs = {
+  private static getUpdateTicketAttrs(nextTicket: Ticket, zoomMeeting: ZoomMeeting | undefined) {
+    const updateTicketAttrs = {
       id: nextTicket.id,
       status: TicketStatus.SERVING,
     };
     if (nextTicket.type === TicketTypes.TELEMED && zoomMeeting) {
-      updateTicketAttrs = {
-        ...updateTicketAttrs,
+      return { ...updateTicketAttrs,
         ...{
           zoomMeetingId: zoomMeeting.id,
           zoomStartMeetingUrl: zoomMeeting.start_url,
           zoomJoinMeetingUrl: zoomMeeting.join_url,
-        },
-      };
+        } };
     }
     return updateTicketAttrs;
   }
