@@ -16,6 +16,7 @@ export interface TicketAttributes {
   zoomMeetingId?: string,
   zoomStartMeetingUrl?: string,
   zoomJoinMeetingUrl?: string
+  zoomPassword?: string
 }
 
 export interface TicketAttributesWithId extends TicketAttributes {
