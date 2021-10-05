@@ -16,7 +16,7 @@ export interface TicketAttributes {
   zoomMeetingId?: string,
   zoomStartMeetingUrl?: string,
   zoomJoinMeetingUrl?: string
-  zoomPassword?: string
+  zoomMeetingPassword?: string
 }
 
 export interface TicketAttributesWithId extends TicketAttributes {
@@ -96,7 +96,7 @@ export default class Ticket extends Model {
     allowNull: true,
     type: DataType.STRING,
   })
-  public zoomPassword?: string;
+  public zoomMeetingPassword?: string;
 
   @CreatedAt
   public createdAt!: Date;
