@@ -1,6 +1,8 @@
 import AuthService from "../../src/services/auth-service";
 import { authClient, Role } from "../../src/clients/auth-client";
 import TechnicalError from "../../src/errors/technical-error";
+import { auth } from "firebase-admin/lib/auth";
+import DecodedIdToken = auth.DecodedIdToken;
 
 describe("AuthService", () => {
   const authId = "authId";
@@ -57,6 +59,15 @@ describe("AuthService", () => {
             `Failed to setPermission: ${JSON.stringify({ authId, role })} in Firebase. firebase error`,
           ));
       });
+    });
+  });
+
+  describe("verifyJwt", () => {
+    it("should call expected", async () => {
+      const token = "123";
+      const spy = jest.spyOn(authClient, "verifyJwt").mockResolvedValue({} as DecodedIdToken);
+      await AuthService.verifyJwt(token);
+      expect(spy).toBeCalledWith(token);
     });
   });
 });

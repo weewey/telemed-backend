@@ -9,12 +9,14 @@ import { queueCreateRules } from "../validation-rules/queue-create-rule";
 import { getAllQueuesRule } from "../validation-rules/queue-get-rule";
 import { FindAllQueueAttributes } from "../respository/queue-repository";
 import { queueNextTicketRule } from "../validation-rules/queue-next-ticket-rule";
+import { authMiddleware } from "../middlewares/auth-middleware";
 
 export const queueRoute = Router();
 
 queueRoute.use(express.json());
 
 queueRoute.post("/",
+  authMiddleware,
   validateRequest(queueCreateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { clinicId } = req.body;
@@ -24,6 +26,7 @@ queueRoute.post("/",
   }));
 
 queueRoute.post("/:queueId/next-ticket",
+  authMiddleware,
   validateRequest(queueNextTicketRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.queueId;
@@ -33,6 +36,7 @@ queueRoute.post("/:queueId/next-ticket",
   }));
 
 queueRoute.put("/:queueId",
+  authMiddleware,
   validateRequest(queueUpdateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.queueId;

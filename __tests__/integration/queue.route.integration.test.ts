@@ -16,8 +16,14 @@ import TicketRepository from "../../src/respository/ticket-repository";
 import TicketStatus from "../../src/ticket_status";
 import { doctorFactory } from "../factories/doctor";
 import { destroyDoctorsByIds } from "../helpers/doctor-helpers";
+import AuthService from "../../src/services/auth-service";
+import { auth } from "firebase-admin/lib/auth";
+import DecodedIdToken = auth.DecodedIdToken;
 
 describe("#Queues Component", () => {
+  beforeEach(() => {
+    jest.spyOn(AuthService, "verifyJwt").mockResolvedValue({} as DecodedIdToken);
+  });
   const QUEUES_PATH = "/api/v1/queues";
 
   describe("#POST /queues", () => {
@@ -36,6 +42,7 @@ describe("#Queues Component", () => {
     it("should create queue successfully given clinic exists", async () => {
       const response = await request(app)
         .post(QUEUES_PATH)
+        .set("Authorization", "authToken")
         .send({ clinicId })
         .expect(StatusCodes.CREATED);
 
@@ -52,6 +59,7 @@ describe("#Queues Component", () => {
       const clinicIdThatDoesNotExist = 777889;
       const response = await request(app)
         .post(QUEUES_PATH)
+        .set("Authorization", "authToken")
         .send({ clinicId: clinicIdThatDoesNotExist })
         .expect(StatusCodes.NOT_FOUND);
 
@@ -101,6 +109,7 @@ describe("#Queues Component", () => {
     it("should set currentTicketId to the first element from the pendingTicketIdsOrder", async () => {
       const response = await request(app)
         .post(`${QUEUES_PATH}/${queueId}/next-ticket`)
+        .set("Authorization", "authToken")
         .send({ "doctorId": doctorId })
         .expect(StatusCodes.OK);
 
@@ -142,6 +151,7 @@ describe("#Queues Component", () => {
       const response = await request(app)
         .put(`${QUEUES_PATH}/${queueId}`)
         .send({ clinicId, status: QueueStatus.ACTIVE })
+        .set("Authorization", "authToken")
         .expect(StatusCodes.OK);
 
       expect(response.body).toEqual(expect.objectContaining({ id: queueId, status: QueueStatus.ACTIVE }));
@@ -152,6 +162,7 @@ describe("#Queues Component", () => {
       const response = await request(app)
         .put(`${QUEUES_PATH}/${queueIdThatDoesNotExist}`)
         .send({ clinicId, status: QueueStatus.INACTIVE })
+        .set("Authorization", "authToken")
         .expect(StatusCodes.NOT_FOUND);
 
       expect(response.body).toMatchObject({
@@ -164,10 +175,14 @@ describe("#Queues Component", () => {
 
     it("should throw 400 error if existing active queue for clinic exists", async () => {
       // setup to update queue with ACTIVE status
-      await request(app).put(`${QUEUES_PATH}/${queueId}`)
+      await request(app)
+        .put(`${QUEUES_PATH}/${queueId}`)
+        .set("Authorization", "authToken")
         .send({ clinicId, status: QueueStatus.ACTIVE });
 
-      const response = await request(app).put(`${QUEUES_PATH}/${otherClinicQueueId}`)
+      const response = await request(app)
+        .put(`${QUEUES_PATH}/${otherClinicQueueId}`)
+        .set("Authorization", "authToken")
         .send({ clinicId, status: QueueStatus.ACTIVE });
 
       expect(response.body).toMatchObject(
