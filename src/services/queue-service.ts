@@ -84,9 +84,6 @@ class QueueService {
     zoomMeeting?: ZoomMeeting,
   ): Promise<Queue> {
     const updateTicketAttrs = this.getUpdateTicketAttrs(nextTicket, zoomMeeting);
-    // eslint-disable-next-line no-console
-    Logger.info("updateTicketAttrs");
-    Logger.info(JSON.stringify(updateTicketAttrs));
     try {
       return await sequelize.transaction(
         async (transaction) => {
