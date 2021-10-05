@@ -32,6 +32,7 @@ export interface ZoomMeeting {
   id: string
   start_url: string
   join_url: string
+  password: string
 }
 
 export interface ZoomMeetingSettings {

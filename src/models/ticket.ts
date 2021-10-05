@@ -91,6 +91,12 @@ export default class Ticket extends Model {
   })
   public zoomJoinMeetingUrl?: string;
 
+  @Column({
+    allowNull: true,
+    type: DataType.STRING,
+  })
+  public zoomPassword?: string;
+
   @CreatedAt
   public createdAt!: Date;
 

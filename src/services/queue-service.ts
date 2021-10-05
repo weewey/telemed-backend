@@ -114,6 +114,7 @@ class QueueService {
           zoomMeetingId: zoomMeeting.id,
           zoomStartMeetingUrl: zoomMeeting.start_url,
           zoomJoinMeetingUrl: zoomMeeting.join_url,
+          zoomPassword: zoomMeeting.password,
         } };
     }
     return updateTicketAttrs;
