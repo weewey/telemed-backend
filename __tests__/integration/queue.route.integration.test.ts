@@ -21,7 +21,7 @@ import { auth } from "firebase-admin/lib/auth";
 import DecodedIdToken = auth.DecodedIdToken;
 
 describe("#Queues Component", () => {
-  beforeEach(() => {
+  beforeAll(() => {
     jest.spyOn(AuthService, "verifyJwt").mockResolvedValue({} as DecodedIdToken);
   });
   const QUEUES_PATH = "/api/v1/queues";

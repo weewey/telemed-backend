@@ -32,3 +32,10 @@ variable "zoom_api_key" {}
 variable "zoom_api_secret" {}
 
 variable "zoom_base_url" {}
+
+variable "twilio_verify_service_sid" {}
+
+variable "twilio_account_sid" {}
+
+variable "twilio_account_token" {}
+

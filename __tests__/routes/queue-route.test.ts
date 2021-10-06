@@ -8,6 +8,9 @@ import { Errors } from "../../src/errors/error-mappings";
 import { StatusCodes } from "http-status-codes";
 import NotFoundError from "../../src/errors/not-found-error";
 import { Logger } from "../../src/logger";
+import AuthService from "../../src/services/auth-service";
+import { auth } from "firebase-admin/lib/auth";
+import DecodedIdToken = auth.DecodedIdToken;
 
 describe("Queues Route", () => {
   const queuesPath = "/api/v1/queues";
@@ -16,16 +19,19 @@ describe("Queues Route", () => {
 
   beforeAll(() => {
     jest.spyOn(Logger, "error").mockImplementation(() => {});
+    jest.spyOn(AuthService, "verifyJwt").mockResolvedValue({} as DecodedIdToken);
   });
 
   beforeEach(jest.clearAllMocks);
 
   describe("POST /queues", () => {
     describe("Successful scenarios", () => {
+      // eslint-disable-next-line jest/expect-expect
       it("should return 201 with the expected body", async () => {
         jest.spyOn(QueueService, "create").mockResolvedValue(queue);
         await request(app).post(queuesPath)
           .send({ clinicId })
+          .set("Authorization", "authToken")
           .expect(StatusCodes.CREATED)
           .expect(queue);
       });
@@ -34,7 +40,9 @@ describe("Queues Route", () => {
         jest.spyOn(QueueService, "create").mockResolvedValue(queue);
         const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE };
 
-        await request(app).post(queuesPath)
+        await request(app)
+          .post(queuesPath)
+          .set("Authorization", "authToken")
           .send({ clinicId });
 
         expect(QueueService.create).toHaveBeenCalledTimes(1);
@@ -44,7 +52,9 @@ describe("Queues Route", () => {
       describe("when the clinicId is numeric string", () => {
         it("should call QueueService with the clinicId in numeric", async () => {
           jest.spyOn(QueueService, "create").mockResolvedValue(queue);
-          await request(app).post(queuesPath)
+          await request(app)
+            .post(queuesPath)
+            .set("Authorization", "authToken")
             .send({ clinicId: "1" });
           const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE };
           expect(QueueService.create).toHaveBeenCalledTimes(1);
@@ -56,7 +66,9 @@ describe("Queues Route", () => {
     describe("Error scenarios", () => {
       describe("when the clinicId is not a valid number", () => {
         it("should return BAD_REQUEST with the expected body", async () => {
-          const response = await request(app).post(queuesPath)
+          const response = await request(app)
+            .post(queuesPath)
+            .set("Authorization", "authToken")
             .send({ clinicId: "asd" })
             .expect(StatusCodes.BAD_REQUEST);
 
@@ -73,7 +85,9 @@ describe("Queues Route", () => {
           jest.spyOn(QueueService, "create")
             .mockRejectedValue(new NotFoundError(Errors.CLINIC_NOT_FOUND.code, Errors.CLINIC_NOT_FOUND.message));
 
-          const response = await request(app).post(queuesPath)
+          const response = await request(app)
+            .post(queuesPath)
+            .set("Authorization", "authToken")
             .send({ clinicId: 2 })
             .expect(StatusCodes.NOT_FOUND);
 
@@ -95,6 +109,7 @@ describe("Queues Route", () => {
               Errors.UNABLE_TO_CREATE_QUEUE.message));
           const response = await request(app).post(queuesPath)
             .send({ clinicId: 2 })
+            .set("Authorization", "authToken")
             .expect(StatusCodes.BAD_REQUEST);
 
           expect(response.body).toEqual({
@@ -120,6 +135,7 @@ describe("Queues Route", () => {
         const updatedQueue = { id: queueId, status: QueueStatus.ACTIVE, clinicId } as Queue;
         jest.spyOn(QueueService, "update").mockResolvedValue(updatedQueue);
         await request(app).put(QUEUES_PUT_PATH)
+          .set("Authorization", "authToken")
           .send({ status: QueueStatus.ACTIVE, clinicId: "1" })
           .expect(StatusCodes.OK)
           .expect(updatedQueue);
@@ -137,7 +153,9 @@ describe("Queues Route", () => {
           jest.spyOn(QueueService, "update").mockResolvedValue({} as Queue);
           const expectedQueueAttr = { id: queueIdNo, status: status.toUpperCase(), clinicId: 1 };
 
-          await request(app).put(`${queuesPath}/${queueIdNo}`)
+          await request(app)
+            .put(`${queuesPath}/${queueIdNo}`)
+            .set("Authorization", "authToken")
             .send({ status, clinicId: 1 });
 
           expect(QueueService.update).toHaveBeenCalledTimes(1);
@@ -153,7 +171,9 @@ describe("Queues Route", () => {
       ])("should return 400 when queueId in params has incorrect format (%s)", async (queueId, errorReason) => {
         const QUEUES_PUT_PATH = `${queuesPath}/${queueId}`;
         jest.spyOn(QueueService, "update").mockResolvedValue({} as Queue);
-        const response = await request(app).put(QUEUES_PUT_PATH)
+        const response = await request(app)
+          .put(QUEUES_PUT_PATH)
+          .set("Authorization", "authToken")
           .send({ status: QueueStatus.ACTIVE, clinicId: 1 })
           .expect(StatusCodes.BAD_REQUEST);
 
@@ -175,7 +195,9 @@ describe("Queues Route", () => {
         async (status, errorReason) => {
           const QUEUES_PUT_PATH = `${queuesPath}/${144}`;
           jest.spyOn(QueueService, "update").mockResolvedValue({} as Queue);
-          const response = await request(app).put(QUEUES_PUT_PATH)
+          const response = await request(app)
+            .put(QUEUES_PUT_PATH)
+            .set("Authorization", "authToken")
             .send({ status, clinicId: 1 })
             .expect(StatusCodes.BAD_REQUEST);
 
@@ -190,7 +212,9 @@ describe("Queues Route", () => {
 
     it("should return 400 if clinicId does not exist", async () => {
       const QUEUES_PUT_PATH = `${queuesPath}/1`;
-      const response = await request(app).put(QUEUES_PUT_PATH)
+      const response = await request(app)
+        .put(QUEUES_PUT_PATH)
+        .set("Authorization", "authToken")
         .send({ status: QueueStatus.ACTIVE })
         .expect(StatusCodes.BAD_REQUEST);
 
@@ -206,6 +230,7 @@ describe("Queues Route", () => {
     it("should return 400 if clinicId is not a number", async () => {
       const QUEUES_PUT_PATH = `${queuesPath}/1`;
       const response = await request(app).put(QUEUES_PUT_PATH)
+        .set("Authorization", "authToken")
         .send({ status: QueueStatus.ACTIVE, clinicId: "a" })
         .expect(StatusCodes.BAD_REQUEST);
 
@@ -364,6 +389,7 @@ describe("Queues Route", () => {
 
         await request(app)
           .post(`${queuesPath}/${queue.id}/next-ticket`)
+          .set("Authorization", "authToken")
           .send({ doctorId });
 
         expect(QueueService.nextTicket).toHaveBeenCalledWith(doctorId, queue.id);
@@ -374,7 +400,9 @@ describe("Queues Route", () => {
         jest.spyOn(QueueService, "nextTicket").mockResolvedValue(updatedQueue);
 
         const response =
-            await request(app).post(`${queuesPath}/${queue.id}/next-ticket`)
+            await request(app)
+              .post(`${queuesPath}/${queue.id}/next-ticket`)
+              .set("Authorization", "authToken")
               .send({ doctorId })
               .expect(StatusCodes.OK);
         expect(response.body).toMatchObject(updatedQueue);
@@ -386,6 +414,7 @@ describe("Queues Route", () => {
         const response =
             await request(app).post(`${queuesPath}/asd/next-ticket`)
               .send({ "doctorId": 123 })
+              .set("Authorization", "authToken")
               .expect(StatusCodes.BAD_REQUEST);
         expect(response.body).toMatchObject({ error: { invalidParams: [
           { name: "queueId",
@@ -394,7 +423,9 @@ describe("Queues Route", () => {
 
       it("should return badRequest when doctorId is not present", async () => {
         const response =
-            await request(app).post(`${queuesPath}/1/next-ticket`)
+            await request(app)
+              .post(`${queuesPath}/1/next-ticket`)
+              .set("Authorization", "authToken")
               .expect(StatusCodes.BAD_REQUEST);
         expect(response.body).toMatchObject({ error: { invalidParams: [
           { name: "doctorId",

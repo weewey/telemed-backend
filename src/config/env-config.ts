@@ -6,6 +6,12 @@ export interface ZoomConfig {
   baseUrl: string
 }
 
+export interface TwilioConfig {
+  accountSid: string
+  accountToken: string
+  verifyServiceSid: string
+}
+
 class EnvConfig {
   public get nodeEnvironment(): string {
     return get(process.env, "NODE_ENV", "local");
@@ -20,6 +26,14 @@ class EnvConfig {
       apiKey: get(process.env, "ZOOM_API_KEY", ""),
       apiSecret: get(process.env, "ZOOM_API_SECRET", ""),
       baseUrl: get(process.env, "ZOOM_BASE_URL", ""),
+    };
+  }
+
+  public get twilioConfig(): TwilioConfig {
+    return {
+      accountSid: get(process.env, "TWILIO_ACCOUNT_SID", ""),
+      accountToken: get(process.env, "TWILIO_ACCOUNT_TOKEN", ""),
+      verifyServiceSid: get(process.env, "TWILIO_VERIFY_SERVICE_SID", ""),
     };
   }
 }

@@ -19,6 +19,9 @@ jobs:
       ZOOM_API_KEY: 'zoom_api_key'
       ZOOM_API_SECRET: 'zoom_api_secret'
       ZOOM_BASE_URL: 'zoom_base_url'
+      TWILIO_ACCOUNT_SID: 'TWILIO_ACCOUNT_SID'
+      TWILIO_ACCOUNT_TOKEN: 'TWILIO_ACCOUNT_TOKEN'
+      TWILIO_VERIFY_SERVICE_SID: 'TWILIO_VERIFY_SERVICE_SID'
     services:
       postgres:
         image: postgres
@@ -96,6 +99,9 @@ jobs:
       TF_VAR_zoom_api_key: ${{ secrets.STAGING_ZOOM_API_KEY }}
       TF_VAR_zoom_api_secret: ${{ secrets.STAGING_ZOOM_API_SECRET }}
       TF_VAR_zoom_base_url: "https://api.zoom.us/v2/"
+      TF_VAR_twilio_account_sid: ${{ secrets.STAGING_TWILIO_ACCOUNT_SID }}
+      TF_VAR_twilio_account_token: ${{ secrets.STAGING_TWILIO_ACCOUNT_TOKEN }}
+      TF_VAR_twilio_verify_service_sid: ${{ secrets.STAGING_TWILIO_VERIFY_SERVICE_SID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

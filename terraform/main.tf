@@ -68,6 +68,18 @@ resource "google_cloud_run_service" "qdoc" {
           name  = "ZOOM_BASE_URL"
           value = var.zoom_base_url
         }
+        env {
+          name  = "TWILIO_ACCOUNT_SID"
+          value = var.twilio_account_sid
+        }
+        env {
+          name  = "TWILIO_ACCOUNT_TOKEN"
+          value = var.twilio_account_token
+        }
+        env {
+          name  = "TWILIO_VERIFY_SERVICE_SID"
+          value = var.twilio_verify_service_sid
+        }
       }
     }
   }

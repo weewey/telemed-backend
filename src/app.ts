@@ -8,6 +8,7 @@ import { patientRoute } from "./routes/patient-route";
 import { queueRoute } from "./routes/queue-route";
 import { ticketRoute } from "./routes/ticket-route";
 import { adminRoute } from "./routes/admin-route";
+import { mobileRoute } from "./routes/mobile-route";
 
 const app: express.Application = express();
 
@@ -23,6 +24,7 @@ apiV1Router.use("/doctors", doctorRoute);
 apiV1Router.use("/clinic-staffs", clinicStaffRoute);
 apiV1Router.use("/tickets", ticketRoute);
 apiV1Router.use("/admins", adminRoute);
+apiV1Router.use("/mobile", mobileRoute);
 
 app.use(errorHandler);
 
