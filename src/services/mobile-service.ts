@@ -4,7 +4,7 @@ import { Logger } from "../logger";
 import BusinessError from "../errors/business-error";
 import { Errors } from "../errors/error-mappings";
 
-interface CheckVerificationToken {
+interface VerifyMobilePhone {
   to: string
   channel: string
   status: string
@@ -12,7 +12,7 @@ interface CheckVerificationToken {
 }
 
 class MobileService {
-  public static async verifyMobileNumber(mobileNumber: string): Promise<CheckVerificationToken> {
+  public static async verifyMobileNumber(mobileNumber: string): Promise<VerifyMobilePhone> {
     try {
       const { to, channel, status, valid } = await twilioClient.sendMobileVerificationCode(mobileNumber);
       return { to, channel, status, valid };
@@ -23,7 +23,7 @@ class MobileService {
   }
 
   public static async checkVerificationCode(mobileNumber: string,
-    verificationCode: string): Promise<CheckVerificationToken> {
+    verificationCode: string): Promise<VerifyMobilePhone> {
     try {
       const verificationCheckInstance = await twilioClient
         .checkMobileVerificationCode(mobileNumber, verificationCode);
