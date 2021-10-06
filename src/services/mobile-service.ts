@@ -1,16 +1,43 @@
 import { twilioClient } from "../clients/twilio-client";
-import { VerificationInstance } from "twilio/lib/rest/verify/v2/service/verification";
-import { VerificationCheckInstance } from "twilio/lib/rest/verify/v2/service/verificationCheck";
+import TechnicalError from "../errors/technical-error";
+import { Logger } from "../logger";
+import BusinessError from "../errors/business-error";
+import { Errors } from "../errors/error-mappings";
+
+interface CheckVerificationToken {
+  to: string
+  channel: string
+  status: string
+  valid: boolean
+}
 
 class MobileService {
-  public static async verifyPhoneNumber(phoneNumber: string): Promise<VerificationInstance> {
-    return twilioClient.sendPhoneVerificationCode(phoneNumber);
+  public static async verifyMobileNumber(mobileNumber: string): Promise<CheckVerificationToken> {
+    try {
+      const { to, channel, status, valid } = await twilioClient.sendMobileVerificationCode(mobileNumber);
+      return { to, channel, status, valid };
+    } catch (e) {
+      Logger.error(`Error sending mobile verification code to ${mobileNumber} ${e.name} ${e.message}`);
+      throw new TechnicalError(e.message);
+    }
   }
 
-  public static async isVerificationCodeValid(phoneNumber: string,
-    verificationCode: string): Promise<VerificationCheckInstance> {
-    return twilioClient
-      .checkPhoneVerificationCode(phoneNumber, verificationCode);
+  public static async checkVerificationCode(mobileNumber: string,
+    verificationCode: string): Promise<CheckVerificationToken> {
+    try {
+      const verificationCheckInstance = await twilioClient
+        .checkMobileVerificationCode(mobileNumber, verificationCode);
+      if (verificationCheckInstance.valid) {
+        const { to, channel, status, valid } = verificationCheckInstance;
+        return { to, channel, status, valid };
+      }
+    } catch (e) {
+      Logger.error(`Error verifying mobile verification code ${mobileNumber} ${e.name} ${e.message}`);
+      throw new TechnicalError(e.message);
+    }
+
+    throw new BusinessError(Errors.INVALID_MOBILE_VERIFICATION_CODE.code,
+      `${Errors.INVALID_MOBILE_VERIFICATION_CODE.message}`);
   }
 }
 

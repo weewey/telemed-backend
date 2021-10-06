@@ -16,23 +16,23 @@ export class TwilioClient {
     this.verifyServiceSid = verifyServiceSid;
   }
 
-  public async sendPhoneVerificationCode(phoneNumber: string): Promise<VerificationInstance> {
+  public async sendMobileVerificationCode(mobileNumber: string): Promise<VerificationInstance> {
     return this.client.verify
       .services(this.verifyServiceSid)
       .verifications
       .create({
-        to: phoneNumber,
+        to: mobileNumber,
         channel: "sms",
       });
   }
 
-  public async checkPhoneVerificationCode(phoneNumber: string,
+  public async checkMobileVerificationCode(mobileNumber: string,
     verificationCode: string): Promise<VerificationCheckInstance> {
     return this.client.verify
       .services(this.verifyServiceSid)
       .verificationChecks
       .create({
-        to: phoneNumber,
+        to: mobileNumber,
         code: verificationCode,
       });
   }

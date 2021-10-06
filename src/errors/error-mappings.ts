@@ -70,4 +70,8 @@ export const Errors = {
     message: "Doctor not found.",
     code: "QDOC-018",
   },
+  INVALID_MOBILE_VERIFICATION_CODE: {
+    message: "Invalid mobile verification code.",
+    code: "QDOC-019",
+  },
 };
