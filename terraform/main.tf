@@ -80,6 +80,12 @@ resource "google_cloud_run_service" "qdoc" {
           name  = "TWILIO_VERIFY_SERVICE_SID"
           value = var.twilio_verify_service_sid
         }
+        resources {
+          limits = {
+            cpu    = "2Gi"
+            memory = "1Gi"
+          }
+        }
       }
     }
   }
@@ -87,9 +93,10 @@ resource "google_cloud_run_service" "qdoc" {
 
 data "google_iam_policy" "noauth" {
   binding {
-    role = "roles/run.invoker"
+    role    = "roles/run.invoker"
     members = [
-    "allUsers"]
+      "allUsers"
+    ]
   }
 }
 
