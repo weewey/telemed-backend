@@ -82,8 +82,8 @@ resource "google_cloud_run_service" "qdoc" {
         }
         resources {
           limits = {
-            cpu    = "2Gi"
-            memory = "1Gi"
+            cpu    = "2.0"
+            memory = "1024Mi"
           }
         }
       }
