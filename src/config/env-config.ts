@@ -10,6 +10,7 @@ export interface TwilioConfig {
   accountSid: string
   accountToken: string
   verifyServiceSid: string
+  messageServiceSid: string
 }
 
 class EnvConfig {
@@ -34,7 +35,17 @@ class EnvConfig {
       accountSid: get(process.env, "TWILIO_ACCOUNT_SID", ""),
       accountToken: get(process.env, "TWILIO_ACCOUNT_TOKEN", ""),
       verifyServiceSid: get(process.env, "TWILIO_VERIFY_SERVICE_SID", ""),
+      messageServiceSid: get(process.env, "TWILIO_MESSAGE_SERVICE_SID", ""),
     };
+  }
+
+  public get pendingTicketNumToNotify(): number {
+    const pendingTicketNumToNotify = get(process.env, "PENDING_TICKET_NUM_TO_NOTIFY", "2");
+    return Number(pendingTicketNumToNotify);
+  }
+
+  public get qdocPortalBaseUrl(): string {
+    return get(process.env, "QDOC_PORTAL_BASE_URL", "");
   }
 }
 

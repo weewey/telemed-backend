@@ -18,6 +18,8 @@ import TicketService from "../../src/services/ticket-service";
 import TicketTypes from "../../src/ticket_types";
 import ZoomService from "../../src/services/zoom-service";
 import { ZoomMeeting } from "../../src/clients/zoom-client";
+import { queueFactory } from "../factories/queue";
+import PatientsNotificationService from "../../src/services/patients-notification-service";
 
 describe("QueueService", () => {
   beforeEach(() => {
@@ -291,16 +293,26 @@ describe("QueueService", () => {
             pendingTicketIdsOrder: [ 1, 2 ],
             clinicId: 1,
             status: QueueStatus.ACTIVE,
-            update: () => {
-            },
-            reload: () => {
-            },
+            update: () => {},
+            reload: () => {},
           } as unknown as Queue;
+          const updatedQueue = queueFactory.instantiate(
+            { status: QueueStatus.INACTIVE,
+              reload: () => {},
+              update: () => {} },
+          );
+
           beforeEach(() => {
+            updatedQueue.currentTicketId = 1;
+            updatedQueue.pendingTicketIdsOrder = [ 2 ];
             jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
             jest.spyOn(QueueRepository, "getById").mockResolvedValue(queue);
-            jest.spyOn(queue, "update").mockResolvedValue(queue);
+            jest.spyOn(queue, "update").mockResolvedValue(updatedQueue);
+            jest.spyOn(updatedQueue, "reload").mockResolvedValue(updatedQueue);
+            jest.spyOn(PatientsNotificationService, "notifyQueueCurrentTicketUpdate").mockResolvedValue();
+            jest.spyOn(PatientsNotificationService, "notifyQueuePendingTicketUpdate").mockResolvedValue();
           });
+
           describe("when the next ticket is a physical ticket", () => {
             beforeEach(() => {
               jest.spyOn(TicketService, "get").mockResolvedValue({ id: 1, type: TicketTypes.PHYSICAL } as Ticket);
@@ -326,6 +338,31 @@ describe("QueueService", () => {
                 status: TicketStatus.SERVING,
               },
               expect.any(Transaction));
+            });
+
+            it("return the expected updated queue value", async () => {
+              const actualQueue = await QueueService.nextTicket(doctorId, queueId);
+              expect(actualQueue).toEqual(updatedQueue);
+            });
+
+            it("call queue.reload with the expected params", async () => {
+              const spy = jest.spyOn(updatedQueue, "reload").mockResolvedValue(updatedQueue);
+              await QueueService.nextTicket(doctorId, queueId);
+              expect(spy).toBeCalledWith({ "include": [ { model: Ticket, as: "currentTicket" },
+                { model: Doctor } ],
+              transaction: expect.any(Transaction) });
+            });
+
+            it("call PatientsNotificationService.notifyQueueCurrentTicketUpdate with the expected params", async () => {
+              const spy = jest.spyOn(PatientsNotificationService, "notifyQueueCurrentTicketUpdate").mockResolvedValue();
+              await QueueService.nextTicket(doctorId, queueId);
+              expect(spy).toBeCalledWith(updatedQueue);
+            });
+
+            it("call PatientsNotificationService.notifyQueuePendingTicketUpdate with the expected params", async () => {
+              const spy = jest.spyOn(PatientsNotificationService, "notifyQueuePendingTicketUpdate").mockResolvedValue();
+              await QueueService.nextTicket(doctorId, queueId);
+              expect(spy).toBeCalledWith(updatedQueue);
             });
           });
 

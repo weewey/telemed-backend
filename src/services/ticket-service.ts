@@ -10,7 +10,7 @@ import BusinessError from "../errors/business-error";
 import { Errors } from "../errors/error-mappings";
 import TicketStatus from "../ticket_status";
 import { sequelize } from "../utils/db-connection";
-import { Transaction } from "sequelize";
+import { FindOptions, Transaction } from "sequelize";
 import TechnicalError from "../errors/technical-error";
 import { Logger } from "../logger";
 import NotFoundError from "../errors/not-found-error";
@@ -124,8 +124,8 @@ class TicketService {
     );
   }
 
-  public static async get(ticketId: number): Promise<Ticket> {
-    const ticket = await TicketRepository.get(ticketId);
+  public static async get(ticketId: number, options?: FindOptions<Ticket>): Promise<Ticket> {
+    const ticket = await TicketRepository.get(ticketId, options);
     if (ticket == null) {
       throw new NotFoundError(Errors.TICKET_NOT_FOUND.code, Errors.TICKET_NOT_FOUND.message);
     }

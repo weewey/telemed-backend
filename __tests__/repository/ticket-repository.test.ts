@@ -132,7 +132,15 @@ describe("TicketRepository", () => {
     it("should call the Ticket.find with the right params", async () => {
       const spy = jest.spyOn(Ticket, "findByPk");
       await TicketRepository.get(ticketId);
-      expect(spy).toHaveBeenCalledWith(ticketId, { include: Queue });
+      expect(spy).toHaveBeenCalledWith(ticketId);
+    });
+
+    describe("when options is being passed in", () => {
+      it("should call Ticket.find with the right params", async () => {
+        const spy = jest.spyOn(Ticket, "findByPk");
+        await TicketRepository.get(ticketId, { include: Queue });
+        expect(spy).toHaveBeenCalledWith(ticketId, { include: Queue });
+      });
     });
   });
 });

@@ -1,5 +1,5 @@
 import Ticket, { TicketAttributes, TicketAttributesWithId } from "../models/ticket";
-import { ForeignKeyConstraintError, Op, Transaction, ValidationError } from "sequelize";
+import { FindOptions, ForeignKeyConstraintError, Op, Transaction, ValidationError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
@@ -73,8 +73,11 @@ class TicketRepository {
     return ticket.update(updateAttributes);
   }
 
-  public static async get(ticketId: number): Promise<Ticket|null> {
-    return Ticket.findByPk(ticketId, { include: Queue });
+  public static async get(ticketId: number, options?: FindOptions<Ticket>): Promise<Ticket|null> {
+    if (options) {
+      return Ticket.findByPk(ticketId, options);
+    }
+    return Ticket.findByPk(ticketId);
   }
 }
 

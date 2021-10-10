@@ -39,6 +39,16 @@ class MobileService {
     throw new BusinessError(Errors.INVALID_MOBILE_VERIFICATION_CODE.code,
       `${Errors.INVALID_MOBILE_VERIFICATION_CODE.message}`);
   }
+
+  public static async sendMessage(mobileNumber: string, messageBody: string): Promise<void> {
+    try {
+      await twilioClient.sendMessage(mobileNumber, messageBody);
+    } catch (e) {
+      const errorMessage = `Failed to send message via TwilioClient to ${mobileNumber}`;
+      Logger.error(errorMessage);
+      throw new TechnicalError(errorMessage);
+    }
+  }
 }
 
 export default MobileService;

@@ -42,6 +42,9 @@ export default class Ticket extends Model {
   })
   public patientId!: number;
 
+  @BelongsTo(() => Patient)
+  public patient!: Patient;
+
   @Column({
     type: DataType.ENUM(),
     values: [ TicketStatus.WAITING, TicketStatus.SERVING, TicketStatus.CLOSED ],

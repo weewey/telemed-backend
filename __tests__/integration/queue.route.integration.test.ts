@@ -18,6 +18,7 @@ import { doctorFactory } from "../factories/doctor";
 import { destroyDoctorsByIds } from "../helpers/doctor-helpers";
 import AuthService from "../../src/services/auth-service";
 import { auth } from "firebase-admin/lib/auth";
+import EnvConfig from "../../src/config/env-config";
 import DecodedIdToken = auth.DecodedIdToken;
 
 describe("#Queues Component", () => {
@@ -80,6 +81,7 @@ describe("#Queues Component", () => {
     let doctorId: number;
 
     beforeAll(async () => {
+      jest.spyOn(EnvConfig, "pendingTicketNumToNotify", "get").mockReturnValue(1);
       const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
       const queueCreated = await queueFactory.build({ clinicId,
@@ -93,7 +95,7 @@ describe("#Queues Component", () => {
         clinicId,
         patientId });
       ticketId = ticketCreated.id;
-      const doctorCreated = await doctorFactory.build();
+      const doctorCreated = await doctorFactory.build({ queueId });
       doctorId = doctorCreated.id;
       await queueCreated.update({ pendingTicketIdsOrder: [ ticketCreated.id ] });
     });

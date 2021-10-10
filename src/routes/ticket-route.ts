@@ -7,6 +7,7 @@ import { ticketIdRule, ticketUpdateRules } from "../validation-rules/ticket-upda
 import { StatusCodes } from "http-status-codes";
 import { FindAllTicketAttributes } from "../respository/ticket-repository";
 import { ticketGetRules } from "../validation-rules/ticket-get-rule";
+import Queue from "../models/queue";
 
 export const ticketRoute = Router();
 
@@ -37,7 +38,7 @@ ticketRoute.get("/:ticketId",
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { ticketId } = req.params;
 
-    const ticket = await TicketService.get(Number(ticketId));
+    const ticket = await TicketService.get(Number(ticketId), { include: Queue });
     res.status(StatusCodes.OK).json(ticket);
   }));
 

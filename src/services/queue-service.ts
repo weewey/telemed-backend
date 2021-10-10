@@ -17,6 +17,9 @@ import TicketTypes from "../ticket_types";
 import TicketService from "./ticket-service";
 import { ZoomMeeting } from "../clients/zoom-client";
 import Ticket from "../models/ticket";
+import Doctor from "../models/doctor";
+// eslint-disable-next-line import/no-cycle
+import PatientsNotificationService from "./patients-notification-service";
 
 class QueueService {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -54,12 +57,18 @@ class QueueService {
 
     const ticket = await TicketService.get(nextTicketId);
 
+    let updatedQueue: Queue;
+
     if (ticket.type === TicketTypes.TELEMED) {
       const zoomMeeting = await ZoomService.createMeeting(doctor.email);
-      return this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder, zoomMeeting);
+      updatedQueue = await this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder, zoomMeeting);
+    } else {
+      updatedQueue = await this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder);
     }
 
-    return this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder);
+    await PatientsNotificationService.notifyQueueCurrentTicketUpdate(updatedQueue);
+    await PatientsNotificationService.notifyQueuePendingTicketUpdate(updatedQueue);
+    return updatedQueue;
   }
 
   private static validateNoCurrentTicketId(currentTicketId: number): void {
@@ -94,7 +103,9 @@ class QueueService {
 
           await TicketRepository.update(updateTicketAttrs, transaction);
 
-          return updatedQueue.reload({ "include": { model: Ticket, as: "currentTicket" }, transaction });
+          return updatedQueue.reload({ "include": [ { model: Ticket, as: "currentTicket" },
+            { model: Doctor } ],
+          transaction });
         },
       );
     } catch (e) {

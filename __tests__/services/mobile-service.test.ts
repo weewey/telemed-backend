@@ -5,6 +5,7 @@ import MobileService from "../../src/services/mobile-service";
 import TechnicalError from "../../src/errors/technical-error";
 import BusinessError from "../../src/errors/business-error";
 import { Errors } from "../../src/errors/error-mappings";
+import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
 
 describe("MobileServiceTest", () => {
   describe("#verifyMobileNumber", () => {
@@ -52,6 +53,27 @@ describe("MobileServiceTest", () => {
         await expect(MobileService.checkVerificationCode("123", "1"))
           .rejects
           .toThrow(new TechnicalError("test"));
+      });
+    });
+  });
+
+  describe("#sendMessage", () => {
+    let spy: jest.SpyInstance;
+    beforeEach(() => {
+      spy = jest.spyOn(twilioClient, "sendMessage").mockResolvedValue({} as MessageInstance);
+    });
+
+    it("should call twilioClient.sendMessage", async () => {
+      await MobileService.sendMessage("123", "hello");
+      expect(spy).toBeCalledWith("123", "hello");
+    });
+
+    describe("when it errors", () => {
+      it("should raise a TechnicalError", async () => {
+        spy = jest.spyOn(twilioClient, "sendMessage").mockRejectedValue(new Error("twilio error"));
+        await expect(MobileService.sendMessage("123", "hello"))
+          .rejects
+          .toThrow("Failed to send message via TwilioClient to 123");
       });
     });
   });
