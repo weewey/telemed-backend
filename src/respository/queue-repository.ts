@@ -5,6 +5,7 @@ import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
 import NotFoundError from "../errors/not-found-error";
 import Ticket from "../models/ticket";
+import Clinic from "../models/clinic";
 
 export interface FindAllQueueAttributes {
   clinicId: number,
@@ -45,10 +46,10 @@ class QueueRepository {
 
   public static async getById(queueId: number): Promise<Queue | null> {
     return Queue.findByPk(queueId, {
-      include: {
+      include: [ {
         model: Ticket,
         as: "currentTicket",
-      },
+      }, { model: Clinic } ],
     });
   }
 

@@ -1,5 +1,6 @@
 /* eslint-disable import/no-cycle */
 import {
+  BelongsTo,
   Column,
   CreatedAt,
   DataType,
@@ -43,6 +44,9 @@ export default class Queue extends Model {
   @ForeignKey(() => Clinic)
   @Column
   public clinicId!: number;
+
+  @BelongsTo(() => Clinic)
+  public clinic!: Clinic;
 
   @Column({
     type: DataType.ENUM(),
