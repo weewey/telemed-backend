@@ -44,7 +44,7 @@ class MobileService {
     try {
       await twilioClient.sendMessage(mobileNumber, messageBody);
     } catch (e) {
-      const errorMessage = `Failed to send message via TwilioClient to ${mobileNumber}`;
+      const errorMessage = `Failed to send message via TwilioClient to ${mobileNumber}: ${e.message}`;
       Logger.error(errorMessage);
       throw new TechnicalError(errorMessage);
     }

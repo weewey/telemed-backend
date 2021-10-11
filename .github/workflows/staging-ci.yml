@@ -22,6 +22,7 @@ jobs:
       TWILIO_ACCOUNT_SID: 'AC_TWILIO_ACCOUNT_SID'
       TWILIO_ACCOUNT_TOKEN: 'TWILIO_ACCOUNT_TOKEN'
       TWILIO_VERIFY_SERVICE_SID: 'TWILIO_VERIFY_SERVICE_SID'
+      TWILIO_MESSAGE_SERVICE_SID: 'TWILIO_MESSAGE_SERVICE_SID'
       PENDING_TICKET_NUM_TO_MESSAGE: '2'
       QDOC_PORTAL_BASE_URL: 'https://www.qdoc.sg'
     services:
@@ -104,6 +105,7 @@ jobs:
       TF_VAR_twilio_account_sid: ${{ secrets.STAGING_TWILIO_ACCOUNT_SID }}
       TF_VAR_twilio_account_token: ${{ secrets.STAGING_TWILIO_ACCOUNT_TOKEN }}
       TF_VAR_twilio_verify_service_sid: ${{ secrets.STAGING_TWILIO_VERIFY_SERVICE_SID }}
+      TF_VAR_twilio_message_service_sid: ${{ secrets.STAGING_TWILIO_MESSAGE_SERVICE_SID }}
       PENDING_TICKET_NUM_TO_MESSAGE: "2"
       QDOC_PORTAL_BASE_URL: "https://qdoc-portal-staging-6vhcpljcmq-as.a.run.app"
     steps:

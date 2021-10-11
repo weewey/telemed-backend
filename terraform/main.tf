@@ -80,6 +80,10 @@ resource "google_cloud_run_service" "qdoc" {
           name  = "TWILIO_VERIFY_SERVICE_SID"
           value = var.twilio_verify_service_sid
         }
+        env {
+          name  = "TWILIO_MESSAGE_SERVICE_SID"
+          value = var.twilio_message_service_sid
+        }
         resources {
           limits = {
             cpu    = "2.0"

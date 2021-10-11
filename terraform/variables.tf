@@ -39,3 +39,5 @@ variable "twilio_account_sid" {}
 
 variable "twilio_account_token" {}
 
+variable "twilio_message_service_sid" {}
+
