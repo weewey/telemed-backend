@@ -50,6 +50,12 @@ export default class Admin extends Model {
   })
   public mobileNumber!: string;
 
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: false,
+  })
+  public dateOfBirth!: Date;
+
   @CreatedAt
   public createdAt!: Date;
 

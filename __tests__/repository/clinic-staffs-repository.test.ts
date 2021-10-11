@@ -15,6 +15,7 @@ describe("Staff Repository", () => {
       firstName: "first name",
       lastName: "last",
       mobileNumber: generateUUID(),
+      dateOfBirth: "1990-01-01",
       ...overrideAttrs,
     };
   };

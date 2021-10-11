@@ -12,6 +12,7 @@ export interface ClinicStaffAttributes {
   authId: string,
   mobileNumber: string,
   clinicId?: number,
+  dateOfBirth: string,
 }
 
 class ClinicStaffRepository {

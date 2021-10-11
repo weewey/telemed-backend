@@ -17,6 +17,7 @@ describe("#Patient Component", () => {
     email: "email1@gmail.com",
     authId: "Patient-component-authId",
     mobileNumber: "910481234",
+    dateOfBirth: "1990-01-01",
   };
 
   const patientAttributes = (overrides?: Partial<PatientAttributes>): PatientAttributes => {
@@ -26,6 +27,7 @@ describe("#Patient Component", () => {
       email: `${generateRandomString(8)}@gmail.com`,
       authId: generateRandomString(8),
       mobileNumber: generateRandomString(8),
+      dateOfBirth: "1990-01-01",
     };
     return { ...patient, ...overrides };
   };

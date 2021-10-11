@@ -16,6 +16,7 @@ describe("Patients Route", () => {
     email: "email-route@gmail.com",
     authId,
     mobileNumber: "91110002",
+    dateOfBirth: "1990-01-01",
   };
 
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe("Patients Route", () => {
     describe("Successful scenarios", () => {
       let patientServiceSpy: jest.SpyInstance;
       beforeEach(() => {
-        patientServiceSpy = jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+        patientServiceSpy = jest.spyOn(patientService, "create").mockResolvedValue(patient as unknown as Patient);
       });
 
       it("should return 201 with the expected body", async () => {
@@ -50,6 +51,7 @@ describe("Patients Route", () => {
         expect(patientServiceSpy).toBeCalledWith({
           "authId": authId,
           "email": "email-route@gmail.com",
+          "dateOfBirth": "1990-01-01",
           "firstName": "firstName",
           "lastName": "lastName-route",
           "mobileNumber": "91110002",
@@ -65,9 +67,10 @@ describe("Patients Route", () => {
           [ "email" ],
           [ "authId" ],
           [ "mobileNumber" ],
+          [ "dateOfBirth" ],
         ])("should throw validation error when field does not exist (%s)", async (missingField) => {
           const patientDetailsWithMissingField = omit(patient, missingField);
-          jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+          jest.spyOn(patientService, "create").mockResolvedValue(patient as unknown as Patient);
 
           const response = await request(app).post(patientBaseUrl)
             .send(patientDetailsWithMissingField)
@@ -79,7 +82,7 @@ describe("Patients Route", () => {
 
         it("should throw validation error when firstName has > 50 characters", async () => {
           const patientDetails = { ...patient, firstName: "long-name-more-than-fifty-characters-for-sure-i-know-it" };
-          jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+          jest.spyOn(patientService, "create").mockResolvedValue(patient as unknown as Patient);
 
           const response = await request(app).post(patientBaseUrl)
             .send(patientDetails)
@@ -91,7 +94,7 @@ describe("Patients Route", () => {
 
         it("should throw validation error when lastName has > 50 characters", async () => {
           const patientDetails = { ...patient, lastName: "long-name-more-than-fifty-characters-for-sure-i-know-it" };
-          jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+          jest.spyOn(patientService, "create").mockResolvedValue(patient as unknown as Patient);
 
           const response = await request(app).post(patientBaseUrl)
             .send(patientDetails)
@@ -103,7 +106,7 @@ describe("Patients Route", () => {
 
         it("should throw validation error when email is not a valid email", async () => {
           const patientDetails = { ...patient, email: "invalid-email" };
-          jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+          jest.spyOn(patientService, "create").mockResolvedValue(patient as unknown as Patient);
 
           const response = await request(app).post(patientBaseUrl)
             .send(patientDetails)
@@ -115,7 +118,7 @@ describe("Patients Route", () => {
 
         it("should throw validation error when mobileNumber has less then 8 characters", async () => {
           const patientDetails = { ...patient, mobileNumber: "9108" };
-          jest.spyOn(patientService, "create").mockResolvedValue(patient as Patient);
+          jest.spyOn(patientService, "create").mockResolvedValue(patient as unknown as Patient);
 
           const response = await request(app).post(patientBaseUrl)
             .send(patientDetails)

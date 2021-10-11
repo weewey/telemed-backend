@@ -12,13 +12,14 @@ clinicStaffRoute.use(express.json());
 clinicStaffRoute.post("/",
   validateRequest(usersCreateRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, email, authId, mobileNumber, clinicId } = req.body;
+    const { firstName, lastName, email, authId, mobileNumber, clinicId, dateOfBirth } = req.body;
 
     const staff = await ClinicStaffsService.create({ firstName,
       lastName,
       email,
       authId,
       mobileNumber,
+      dateOfBirth,
       clinicId });
 
     res.status(StatusCodes.CREATED).json(staff);

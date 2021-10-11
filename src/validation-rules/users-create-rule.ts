@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import { ValidationChain } from "express-validator/src/chain/validation-chain";
-import { emailRule, nameRules } from "./common-rules";
+import { dateOfBirthRule, emailRule, nameRules } from "./common-rules";
 
 const FIRST_NAME = "firstName";
 const LAST_NAME = "lastName";
@@ -24,4 +24,5 @@ const mobileNumberRule: ValidationChain = body(MOBILE_NUMBER)
 export const usersCreateRule = [
   ...nameRules([ FIRST_NAME, LAST_NAME ]),
   emailRule(EMAIL), authIdRule, mobileNumberRule,
+  dateOfBirthRule,
 ];

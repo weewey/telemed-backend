@@ -44,6 +44,7 @@ describe("Ticket", () => {
       email: `${generateUUID()}@gmail.com`,
       authId: generateUUID(),
       mobileNumber: generateUUID(),
+      dateOfBirth: "1990-01-01",
     };
     const patient = await Patient.create(patientDetails);
     patientId = patient.id;

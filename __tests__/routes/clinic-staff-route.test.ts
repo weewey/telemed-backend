@@ -15,6 +15,7 @@ describe("ClinicStaff Route", () => {
     email: "email@email.com",
     authId: "authId",
     mobileNumber: "123456789",
+    dateOfBirth: "1990-01-01",
   };
   const mockClinicStaff = { id: 1, firstName: "Monk", lastName: "Wong" } as ClinicStaff;
 

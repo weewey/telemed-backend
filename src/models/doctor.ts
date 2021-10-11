@@ -25,6 +25,7 @@ export interface DoctorAttributes {
   authId: string,
   mobileNumber: string,
   onDuty: boolean,
+  dateOfBirth: string
   queueId?: number,
   clinicId?: number,
   zoomUserId?: string
@@ -100,6 +101,12 @@ export default class Doctor extends Model {
     type: DataType.INTEGER,
   })
   public clinicId?: number;
+
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: false,
+  })
+  public dateOfBirth!: Date;
 
   @CreatedAt
   public createdAt!: Date;

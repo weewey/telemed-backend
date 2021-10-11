@@ -15,6 +15,7 @@ describe("Admin Route", () => {
     email: "email@email.com",
     authId: "authId",
     mobileNumber: "123456789",
+    dateOfBirth: "1990-01-01",
   };
   const mockAdmin = { id: 1, firstName: "Monk", lastName: "Wong" } as Admin;
 
@@ -52,6 +53,7 @@ describe("Admin Route", () => {
           [ "email" ],
           [ "authId" ],
           [ "mobileNumber" ],
+          [ "dateOfBirth" ],
         ])("should throw validation error when field does not exist (%s)", async (missingField) => {
           const adminAttrsWithMissingKey = omit(adminAttrs, missingField);
           const response = await request(app).post(adminBaseUrl)

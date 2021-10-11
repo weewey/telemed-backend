@@ -1,5 +1,6 @@
 import { body } from "express-validator";
 import { ValidationChain } from "express-validator/src/chain/validation-chain";
+import { dateOfBirthRule } from "./common-rules";
 
 const FIRST_NAME = "firstName";
 const LAST_NAME = "lastName";
@@ -44,4 +45,5 @@ export const patientCreateRules = [
   emailRule,
   authIdRule,
   mobileNumberRule,
+  dateOfBirthRule,
 ];

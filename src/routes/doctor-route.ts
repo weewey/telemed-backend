@@ -13,16 +13,21 @@ doctorRoute.use(express.json());
 doctorRoute.post("/",
   validateRequest(doctorCreateRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, onDuty, email, authId, mobileNumber, queueId, clinicId } = req.body;
+    const {
+      firstName, lastName, onDuty, email, authId, mobileNumber, queueId, dateOfBirth, clinicId,
+    } = req.body;
 
-    const doctorAttrs = { firstName,
+    const doctorAttrs = {
+      firstName,
       lastName,
       email,
       authId,
       mobileNumber,
       queueId,
       clinicId,
-      onDuty: onDuty || false };
+      dateOfBirth,
+      onDuty: onDuty || false,
+    };
     const doctor = await DoctorService.create(doctorAttrs);
 
     res.status(StatusCodes.CREATED).json(doctor);

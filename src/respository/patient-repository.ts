@@ -10,6 +10,7 @@ export interface PatientAttributes {
   email: string;
   authId: string;
   mobileNumber: string;
+  dateOfBirth: string,
 }
 
 class PatientRepository {

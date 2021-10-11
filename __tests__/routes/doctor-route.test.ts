@@ -15,6 +15,7 @@ describe("Doctors Route", () => {
     authId: "authId",
     mobileNumber: "123456789",
     onDuty: false,
+    dateOfBirth: "1990-01-01",
   };
   const mockDoctor = { id: 1, firstName: "doctor", lastName: "strange" } as Doctor;
 

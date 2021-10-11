@@ -12,6 +12,7 @@ describe("Patient", () => {
       email: `${generateUUID()}@gmail.com`,
       authId: generateUUID(),
       mobileNumber: generateUUID(),
+      dateOfBirth: "1990-01-01",
       ...overrideDetails,
     };
   };

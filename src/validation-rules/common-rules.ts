@@ -51,3 +51,12 @@ export const stringRule = (fields: string[]): ValidationChain[] => {
       .isString()
       .withMessage(`${field} must be of string`));
 };
+
+const DATE_OF_BIRTH = "dateOfBirth";
+
+export const dateOfBirthRule = body(DATE_OF_BIRTH)
+  .exists()
+  .withMessage("dateOfBirth must be present")
+  .bail()
+  .isDate()
+  .withMessage("dateOfBirth must be valid date format YYYY-MM-DD");

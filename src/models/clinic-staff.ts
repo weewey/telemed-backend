@@ -61,6 +61,12 @@ export default class ClinicStaff extends Model {
   })
   public clinicId?: number;
 
+  @Column({
+    type: DataType.DATEONLY,
+    allowNull: false,
+  })
+  public dateOfBirth!: Date;
+
   @CreatedAt
   public createdAt!: Date;
 

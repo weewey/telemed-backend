@@ -12,8 +12,8 @@ patientRoute.use(express.json());
 patientRoute.post("/",
   validateRequest(patientCreateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, email, authId, mobileNumber } = req.body;
-    const patientAttributes = { firstName, lastName, email, authId, mobileNumber };
+    const { firstName, lastName, email, authId, mobileNumber, dateOfBirth } = req.body;
+    const patientAttributes = { firstName, lastName, email, authId, mobileNumber, dateOfBirth };
 
     const patient = await PatientService.create(patientAttributes);
 

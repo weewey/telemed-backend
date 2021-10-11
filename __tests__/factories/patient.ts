@@ -10,6 +10,7 @@ const patient = Factory.define<Patient>("patient", Patient)
   .attr("email", () => `${generateRandomString(8)}@gmail.com`)
   .attr("authId", () => generateUUID())
   .attr("mobileNumber", () => generateRandomString(8))
+  .attr("dateOfBirth", () => new Date(Date.now()))
   .attr("createdAt", () => new Date(Date.now()))
   .attr("updatedAt", () => new Date(Date.now()));
 

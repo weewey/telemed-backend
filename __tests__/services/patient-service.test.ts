@@ -17,6 +17,7 @@ describe("Patient service", () => {
       email: "email-service@gmail.com",
       authId,
       mobileNumber: "91110001",
+      dateOfBirth: "1992-1-1",
     };
 
     beforeEach(() => {

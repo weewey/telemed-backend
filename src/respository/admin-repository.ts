@@ -11,6 +11,7 @@ export interface AdminAttributes {
   email: string,
   authId: string,
   mobileNumber: string,
+  dateOfBirth: string,
 }
 
 class AdminRepository {

@@ -17,6 +17,7 @@ describe("Doctor Repository", () => {
       lastName: "last",
       mobileNumber: generateUUID(),
       onDuty: false,
+      dateOfBirth: "1990-01-01",
       ...overrideAttrs,
     };
   };
