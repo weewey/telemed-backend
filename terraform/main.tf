@@ -84,6 +84,14 @@ resource "google_cloud_run_service" "qdoc" {
           name  = "TWILIO_MESSAGE_SERVICE_SID"
           value = var.twilio_message_service_sid
         }
+        env {
+          name  = "PENDING_TICKET_NUM_TO_NOTIFY"
+          value = var.pending_ticket_num_to_notify
+        }
+        env {
+          name  = "QDOC_PORTAL_BASE_URL"
+          value = var.qdoc_portal_base_url
+        }
         resources {
           limits = {
             cpu    = "2.0"

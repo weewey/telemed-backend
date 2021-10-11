@@ -41,3 +41,7 @@ variable "twilio_account_token" {}
 
 variable "twilio_message_service_sid" {}
 
+variable "pending_ticket_num_to_notify" {}
+
+variable "qdoc_portal_base_url" {}
+
