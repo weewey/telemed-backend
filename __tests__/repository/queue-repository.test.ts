@@ -6,6 +6,7 @@ import { Errors } from "../../src/errors/error-mappings";
 import QueueRepository from "../../src/respository/queue-repository";
 import Ticket from "../../src/models/ticket";
 import Clinic from "../../src/models/clinic";
+import Patient from "../../src/models/patient";
 import objectContaining = jasmine.objectContaining;
 
 describe("QueueRepository", () => {
@@ -118,7 +119,9 @@ describe("QueueRepository", () => {
       await QueueRepository.getById(queueId);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toBeCalledWith(queueId, { "include": [ { model: Ticket, as: "currentTicket" }, { model: Clinic } ] });
+      expect(spy).toBeCalledWith(queueId, { "include": [ { model: Ticket,
+        as: "currentTicket",
+        include: [ Patient ] }, { model: Clinic } ] });
     });
   });
 });
