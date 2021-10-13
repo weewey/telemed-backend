@@ -51,7 +51,9 @@ class QueueRepository {
         model: Ticket,
         as: "currentTicket",
         include: [ Patient ],
-      }, { model: Clinic } ],
+      },
+      { model: Clinic },
+      ],
     });
   }
 
@@ -60,22 +62,19 @@ class QueueRepository {
       id,
       ...updateAttributes
     } = queueModelAttributes;
-    const queue = await Queue.findByPk(id, {
-      include: {
-        model: Ticket,
-        as: "currentTicket",
-      },
-    });
+    const queue = await Queue.findByPk(id);
     if (!queue) {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
     }
 
     const updatedQueue = await queue.update(updateAttributes);
     return updatedQueue.reload({
-      include: {
+      include: [ {
         model: Ticket,
         as: "currentTicket",
+        include: [ Patient ],
       },
+      { model: Clinic } ],
     });
   }
 }

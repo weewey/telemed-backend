@@ -20,6 +20,8 @@ import Ticket from "../models/ticket";
 import Doctor from "../models/doctor";
 // eslint-disable-next-line import/no-cycle
 import PatientsNotificationService from "./patients-notification-service";
+import Patient from "../models/patient";
+import Clinic from "../models/clinic";
 
 class QueueService {
   public static async create(queueAttr: QueueAttributes): Promise<Queue> {
@@ -103,8 +105,8 @@ class QueueService {
 
           await TicketRepository.update(updateTicketAttrs, transaction);
 
-          return updatedQueue.reload({ "include": [ { model: Ticket, as: "currentTicket" },
-            { model: Doctor } ],
+          return updatedQueue.reload({ "include": [ { model: Ticket, as: "currentTicket", include: [ Patient ] },
+            { model: Doctor }, { model: Clinic } ],
           transaction });
         },
       );

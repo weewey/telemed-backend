@@ -20,6 +20,8 @@ import ZoomService from "../../src/services/zoom-service";
 import { ZoomMeeting } from "../../src/clients/zoom-client";
 import { queueFactory } from "../factories/queue";
 import PatientsNotificationService from "../../src/services/patients-notification-service";
+import Patient from "../../src/models/patient";
+import Clinic from "../../src/models/clinic";
 
 describe("QueueService", () => {
   beforeEach(() => {
@@ -348,8 +350,8 @@ describe("QueueService", () => {
             it("call queue.reload with the expected params", async () => {
               const spy = jest.spyOn(updatedQueue, "reload").mockResolvedValue(updatedQueue);
               await QueueService.nextTicket(doctorId, queueId);
-              expect(spy).toBeCalledWith({ "include": [ { model: Ticket, as: "currentTicket" },
-                { model: Doctor } ],
+              expect(spy).toBeCalledWith({ "include": [ { model: Ticket, as: "currentTicket", include: [ Patient ] },
+                { model: Doctor }, { model: Clinic } ],
               transaction: expect.any(Transaction) });
             });
 
