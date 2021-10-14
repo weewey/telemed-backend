@@ -5,11 +5,21 @@ import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 import AuthService from "./auth-service";
 import { Role } from "../clients/auth-client";
+import NotFoundError from "../errors/not-found-error";
+import { Errors } from "../errors/error-mappings";
 
 class PatientService {
   public static async create(patientAttributes: PatientAttributes): Promise<Patient> {
     const patient = await this.createInRepo(patientAttributes);
     await this.setPermissions(patient);
+    return patient;
+  }
+
+  public static async getPatientById(patientId: number): Promise<Patient> {
+    const patient = await PatientRepository.getById(patientId);
+    if (patient == null) {
+      throw new NotFoundError(Errors.PATIENT_NOT_FOUND.code, Errors.PATIENT_NOT_FOUND.message);
+    }
     return patient;
   }
 

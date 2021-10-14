@@ -55,4 +55,12 @@ describe("PatientRepository", () => {
       await expect(PatientRepository.create).rejects.toThrow(Error);
     });
   });
+
+  describe("getById", () => {
+    it("should call Patient.findByPk", () => {
+      const spy = jest.spyOn(Patient, "findByPk").mockResolvedValue(null);
+      PatientRepository.getById(1);
+      expect(spy).toBeCalledWith(1);
+    });
+  });
 });

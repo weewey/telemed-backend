@@ -1,5 +1,6 @@
 import request from "supertest";
 import patientService from "../../src/services/patient-service";
+import PatientService from "../../src/services/patient-service";
 import Patient from "../../src/models/patient";
 import { StatusCodes } from "http-status-codes";
 import app from "../../src/app";
@@ -128,6 +129,18 @@ describe("Patients Route", () => {
             { name: "mobileNumber", reason: "mobileNumber must have min 8 characters" } ] });
         });
       });
+    });
+  });
+
+  describe("GET /:patientId", () => {
+    it("should return the expected patient", async () => {
+      const expectedPatient = { id: 1 } as Patient;
+      jest.spyOn(PatientService, "getPatientById").mockResolvedValue(expectedPatient);
+      const response = await request(app)
+        .get(`${patientBaseUrl}/1`)
+        .expect(StatusCodes.OK);
+
+      expect(response.body).toEqual(expectedPatient);
     });
   });
 });

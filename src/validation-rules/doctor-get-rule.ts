@@ -6,7 +6,7 @@ const DOCTOR_ID = "doctorId";
 export const doctorIdRule: ValidationChain[] = [
   check(DOCTOR_ID)
     .exists()
-    .withMessage("DOctor Id is required.")
+    .withMessage("Doctor Id is required.")
     .bail()
     .isNumeric()
     .withMessage("Doctor Id must contain only numbers.")

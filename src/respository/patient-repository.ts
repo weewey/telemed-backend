@@ -35,6 +35,10 @@ class PatientRepository {
     }
     return patient;
   }
+
+  public static async getById(patientId: number): Promise<Patient|null> {
+    return Patient.findByPk(patientId);
+  }
 }
 
 export default PatientRepository;
