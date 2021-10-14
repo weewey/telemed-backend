@@ -8,6 +8,7 @@ module.exports = {
       mobileNumber: "90000001",
       createdAt: new Date(),
       updatedAt: new Date(),
+      dateOfBirth: new Date(),
     },
     {
       firstName: "Peter",
@@ -17,6 +18,7 @@ module.exports = {
       mobileNumber: "90000002",
       createdAt: new Date(),
       updatedAt: new Date(),
+      dateOfBirth: new Date(),
     },
     ]);
   },

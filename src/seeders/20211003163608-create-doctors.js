@@ -8,6 +8,7 @@ module.exports = {
       mobileNumber: "90000003",
       createdAt: new Date(),
       updatedAt: new Date(),
+      dateOfBirth: new Date(),
       onDuty: false,
     },
     ]);

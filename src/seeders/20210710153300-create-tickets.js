@@ -6,7 +6,7 @@ module.exports = {
     await queryInterface.bulkInsert("Tickets", [ {
       displayNumber: 1,
       patientId: patients[0][0].id,
-      status: "WAITING",
+      status: "CLOSED",
       queueId: queues[0][0].id,
       clinicId: clinics[0][0].id,
       createdAt: new Date(),

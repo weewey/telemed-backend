@@ -48,3 +48,10 @@ doctorRoute.get("/",
     const doctors = await DoctorService.getDoctors();
     res.status(StatusCodes.OK).json(doctors);
   }));
+
+doctorRoute.get("/:doctorId",
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.doctorId;
+    const doctor = await DoctorService.get(Number(id));
+    res.status(StatusCodes.OK).json(doctor);
+  }));

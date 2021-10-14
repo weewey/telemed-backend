@@ -31,7 +31,7 @@ module.exports = {
         clinicId: clinic[0][0].id,
         status: "INACTIVE",
         pendingTicketIdsOrder: "{}",
-        latestGeneratedTicketDisplayNumber: 0,
+        latestGeneratedTicketDisplayNumber: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       },

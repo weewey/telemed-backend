@@ -106,4 +106,15 @@ describe("Doctors Route", () => {
       expect(response.body).toEqual([ doctor ]);
     });
   });
+
+  describe("Get /doctors/:doctorId", () => {
+    it("should call DoctorService.get", async () => {
+      const doctor = { id: 1 } as Doctor;
+      jest.spyOn(DoctorService, "get").mockResolvedValue(doctor);
+      const response = await request(app).get(`${doctorsBaseUrl}/${doctor.id}`)
+        .expect(StatusCodes.OK);
+
+      expect(response.body).toEqual(doctor);
+    });
+  });
 });
