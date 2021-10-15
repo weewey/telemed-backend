@@ -25,7 +25,7 @@ describe("QueueRepository", () => {
       await QueueRepository.create(queueAttr);
 
       expect(Queue.create).toHaveBeenCalledTimes(1);
-      expect(Queue.create).toBeCalledWith(queueAttr);
+      expect(Queue.create).toBeCalledWith(queueAttr, undefined);
     });
 
     describe("Error scenarios", () => {

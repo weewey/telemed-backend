@@ -1,5 +1,11 @@
 import Doctor, { DoctorAttributes, DoctorAttributesWithId } from "../models/doctor";
-import { BaseError, ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
+import {
+  BaseError,
+  ForeignKeyConstraintError,
+  InstanceUpdateOptions,
+  UniqueConstraintError,
+  ValidationError,
+} from "sequelize";
 import { Logger } from "../logger";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
@@ -21,13 +27,14 @@ class DoctorRepository {
     return Doctor.findByPk(doctorId);
   }
 
-  public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>): Promise<Doctor> {
+  public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>,
+    options?: InstanceUpdateOptions): Promise<Doctor> {
     const { id, ...updateAttributes } = doctorAttributesWithId;
-    const doctor = await Doctor.findByPk(id);
+    const doctor = await Doctor.findByPk(id, options);
     if (!doctor) {
       throw new NotFoundError(Errors.ENTITY_NOT_FOUND.code, Errors.ENTITY_NOT_FOUND.message);
     }
-    return doctor.update(updateAttributes);
+    return doctor.update(updateAttributes, options);
   }
 
   private static handleCreateDoctorError(error: BaseError): RepositoryError {

@@ -25,12 +25,14 @@ describe("Queues Route", () => {
   beforeEach(jest.clearAllMocks);
 
   describe("POST /queues", () => {
+    const doctorId = 1;
+
     describe("Successful scenarios", () => {
       // eslint-disable-next-line jest/expect-expect
       it("should return 201 with the expected body", async () => {
         jest.spyOn(QueueService, "create").mockResolvedValue(queue);
         await request(app).post(queuesPath)
-          .send({ clinicId })
+          .send({ clinicId, doctorId })
           .set("Authorization", "authToken")
           .expect(StatusCodes.CREATED)
           .expect(queue);
@@ -43,10 +45,10 @@ describe("Queues Route", () => {
         await request(app)
           .post(queuesPath)
           .set("Authorization", "authToken")
-          .send({ clinicId });
+          .send({ clinicId, doctorId });
 
         expect(QueueService.create).toHaveBeenCalledTimes(1);
-        expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
+        expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr, doctorId);
       });
 
       describe("when the clinicId is numeric string", () => {
@@ -55,10 +57,10 @@ describe("Queues Route", () => {
           await request(app)
             .post(queuesPath)
             .set("Authorization", "authToken")
-            .send({ clinicId: "1" });
+            .send({ clinicId: "1", doctorId });
           const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE };
           expect(QueueService.create).toHaveBeenCalledTimes(1);
-          expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
+          expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr, doctorId);
         });
       });
     });
@@ -69,12 +71,28 @@ describe("Queues Route", () => {
           const response = await request(app)
             .post(queuesPath)
             .set("Authorization", "authToken")
-            .send({ clinicId: "asd" })
+            .send({ clinicId: "asd", doctorId })
             .expect(StatusCodes.BAD_REQUEST);
 
           expect(response.body).toEqual({ error: {
             id: expect.anything(),
             invalidParams: [ { name: "clinicId", reason: "clinicId must be numeric" } ],
+            type: "validation",
+          } });
+        });
+      });
+
+      describe("when the doctorId is not a valid number", () => {
+        it("should return BAD_REQUEST with the expected body", async () => {
+          const response = await request(app)
+            .post(queuesPath)
+            .set("Authorization", "authToken")
+            .send({ clinicId, doctorId: "asd" })
+            .expect(StatusCodes.BAD_REQUEST);
+
+          expect(response.body).toEqual({ error: {
+            id: expect.anything(),
+            invalidParams: [ { name: "doctorId", reason: "doctorId must be numeric" } ],
             type: "validation",
           } });
         });
@@ -88,7 +106,7 @@ describe("Queues Route", () => {
           const response = await request(app)
             .post(queuesPath)
             .set("Authorization", "authToken")
-            .send({ clinicId: 2 })
+            .send({ clinicId: 2, doctorId })
             .expect(StatusCodes.NOT_FOUND);
 
           expect(response.body).toEqual({
@@ -108,7 +126,7 @@ describe("Queues Route", () => {
             .mockRejectedValue(new BusinessError(Errors.UNABLE_TO_CREATE_QUEUE.code,
               Errors.UNABLE_TO_CREATE_QUEUE.message));
           const response = await request(app).post(queuesPath)
-            .send({ clinicId: 2 })
+            .send({ clinicId: 2, doctorId })
             .set("Authorization", "authToken")
             .expect(StatusCodes.BAD_REQUEST);
 

@@ -29,22 +29,26 @@ describe("#Queues Component", () => {
 
   describe("#POST /queues", () => {
     let clinicId: number;
+    let doctorId: number;
 
     beforeAll(async () => {
       const clinicCreated = await clinicFactory.build();
+      const doctorCreated = await doctorFactory.build();
       clinicId = clinicCreated.id;
+      doctorId = doctorCreated.id;
     });
 
     afterAll(async () => {
       const queueIdsToDelete = await getQueueIdsByClinicId(clinicId);
       await destroyQueuesByIds(queueIdsToDelete);
       await destroyClinicById([ clinicId ]);
+      await destroyDoctorsByIds([ doctorId ]);
     });
     it("should create queue successfully given clinic exists", async () => {
       const response = await request(app)
         .post(QUEUES_PATH)
         .set("Authorization", "authToken")
-        .send({ clinicId })
+        .send({ clinicId, doctorId })
         .expect(StatusCodes.CREATED);
 
       expect(response.body).toEqual(expect.objectContaining({
@@ -61,7 +65,7 @@ describe("#Queues Component", () => {
       const response = await request(app)
         .post(QUEUES_PATH)
         .set("Authorization", "authToken")
-        .send({ clinicId: clinicIdThatDoesNotExist })
+        .send({ clinicId: clinicIdThatDoesNotExist, doctorId })
         .expect(StatusCodes.NOT_FOUND);
 
       expect(response.body).toMatchObject({

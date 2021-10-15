@@ -17,9 +17,9 @@ queueRoute.use(express.json());
 queueRoute.post("/",
   validateRequest(queueCreateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { clinicId } = req.body;
+    const { clinicId, doctorId } = req.body;
     const queueAttr = { clinicId, status: QueueStatus.INACTIVE };
-    const queueInfo = await QueueService.create(queueAttr);
+    const queueInfo = await QueueService.create(queueAttr, Number(doctorId));
     res.status(StatusCodes.CREATED).json(queueInfo);
   }));
 

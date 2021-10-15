@@ -9,6 +9,7 @@ import ZoomService from "./zoom-service";
 import { ZoomUser } from "../clients/zoom-client";
 import NotFoundError from "../errors/not-found-error";
 import { Errors } from "../errors/error-mappings";
+import { InstanceUpdateOptions } from "sequelize";
 
 class DoctorService {
   public static async create(doctorAttributes: DoctorAttributes): Promise<Doctor> {
@@ -17,9 +18,10 @@ class DoctorService {
     return doctor;
   }
 
-  public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>): Promise<Doctor> {
+  public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>,
+    options?: InstanceUpdateOptions): Promise<Doctor> {
     try {
-      return await DoctorRepository.update(doctorAttributesWithId);
+      return await DoctorRepository.update(doctorAttributesWithId, options);
     } catch (e) {
       throw mapRepositoryErrors(e);
     }

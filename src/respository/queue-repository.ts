@@ -1,5 +1,5 @@
 import Queue, { QueueAttributes, QueueAttributesWithId } from "../models/queue";
-import { ForeignKeyConstraintError } from "sequelize";
+import { CreateOptions, ForeignKeyConstraintError } from "sequelize";
 import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import QueueStatus from "../queue_status";
@@ -14,10 +14,10 @@ export interface FindAllQueueAttributes {
 }
 
 class QueueRepository {
-  public static async create(queueAttr: QueueAttributes): Promise<Queue> {
+  public static async create(queueAttr: QueueAttributes, createOpts?: CreateOptions): Promise<Queue> {
     let queue: Queue;
     try {
-      queue = await Queue.create(queueAttr);
+      queue = await Queue.create(queueAttr, createOpts);
     } catch (error) {
       if (error instanceof ForeignKeyConstraintError) {
         throw new RepositoryError(Errors.ENTITY_NOT_FOUND.code,

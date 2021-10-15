@@ -107,7 +107,7 @@ describe("Doctor Repository", () => {
         jest.spyOn(doctor, "update").mockResolvedValue({} as Doctor);
         await DoctorRepository.update(doctorModelAttributes);
 
-        expect(doctor.update).toHaveBeenCalledWith(updateAttributes);
+        expect(doctor.update).toHaveBeenCalledWith(updateAttributes, undefined);
       });
     });
 

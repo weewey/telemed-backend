@@ -122,7 +122,7 @@ describe("Doctor Service", () => {
     it("should call DoctorRepository.update", () => {
       const spy = jest.spyOn(DoctorRepository, "update").mockResolvedValue({} as Doctor);
       DoctorService.update(doctorAttrsWithId);
-      expect(spy).toBeCalledWith(doctorAttrsWithId);
+      expect(spy).toBeCalledWith(doctorAttrsWithId, undefined);
     });
   });
 

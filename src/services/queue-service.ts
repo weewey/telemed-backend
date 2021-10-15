@@ -24,7 +24,7 @@ import Patient from "../models/patient";
 import Clinic from "../models/clinic";
 
 class QueueService {
-  public static async create(queueAttr: QueueAttributes): Promise<Queue> {
+  public static async create(queueAttr: QueueAttributes, doctorId: number): Promise<Queue> {
     if (queueAttr.status === QueueStatus.CLOSED) {
       throw new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code,
         Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message);
@@ -33,7 +33,15 @@ class QueueService {
     await this.validateNoOtherClinicActiveQueues(queueAttr.clinicId);
 
     try {
-      return await QueueRepository.create(queueAttr);
+      return await sequelize.transaction(
+        async (transaction) => {
+          const queue = await QueueRepository.create(queueAttr, { transaction });
+          await DoctorService.update(
+            { id: doctorId, queueId: queue.id }, { transaction },
+          );
+          return queue.reload({ include: Doctor, transaction });
+        },
+      );
     } catch (error) {
       Logger.error(`Error creating queue. ErrorMessage: ${error.message}, Queue attributes: `, queueAttr);
       throw mapRepositoryErrors(error);
