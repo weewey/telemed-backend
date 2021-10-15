@@ -130,6 +130,14 @@ describe("Doctors Route", () => {
         expect(spy).toBeCalledWith();
       });
     });
+
+    describe("when there is invalid params", () => {
+      it("should return bad request", async () => {
+        await request(app)
+          .get(`${doctorsBaseUrl}?onDuty="asd"`)
+          .expect(StatusCodes.BAD_REQUEST);
+      });
+    });
   });
 
   describe("Get /doctors/:doctorId", () => {

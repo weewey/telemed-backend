@@ -6,6 +6,7 @@ import { validateRequest } from "./validate-request";
 import { doctorCreateRule } from "../validation-rules/doctor-create-rule";
 import { doctorUpdateRule } from "../validation-rules/doctor-update-rule";
 import { FindAllDoctorAttributes } from "../respository/doctor-repository";
+import { doctorGetRule, doctorIdRule } from "../validation-rules/doctor-get-rule";
 
 export const doctorRoute = Router();
 
@@ -45,6 +46,7 @@ doctorRoute.put("/:doctorId",
   }));
 
 doctorRoute.get("/",
+  validateRequest(doctorGetRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { clinicId, onDuty, queueId } = req.query;
     const findAllDoctorAttributes = {
@@ -62,6 +64,7 @@ doctorRoute.get("/",
   }));
 
 doctorRoute.get("/:doctorId",
+  validateRequest([ doctorIdRule ]),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.doctorId;
     const doctor = await DoctorService.get(Number(id));
