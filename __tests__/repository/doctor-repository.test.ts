@@ -1,11 +1,12 @@
 import { v4 as generateUUID } from "uuid";
 import DoctorRepository from "../../src/respository/doctor-repository";
 import Doctor, { DoctorAttributes } from "../../src/models/doctor";
-import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, ValidationErrorItem } from "sequelize";
+import { ForeignKeyConstraintError, Op, UniqueConstraintError, ValidationError, ValidationErrorItem } from "sequelize";
 import RepositoryError from "../../src/errors/repository-error";
 import { Logger } from "../../src/logger";
 import { Errors } from "../../src/errors/error-mappings";
 import NotFoundError from "../../src/errors/not-found-error";
+import Clinic from "../../src/models/clinic";
 import objectContaining = jasmine.objectContaining;
 
 describe("Doctor Repository", () => {
@@ -130,6 +131,39 @@ describe("Doctor Repository", () => {
 
       await DoctorRepository.get(doctorId);
       expect(spy).toBeCalled();
+    });
+  });
+
+  describe("findAll", () => {
+    it("should call Doctor.findAll with the expected Attrs", () => {
+      const findAllDoctorAttrs = { clinicId: 1, onDuty: false };
+      const spy = jest.spyOn(Doctor, "findAll").mockResolvedValue([]);
+      DoctorRepository.findAll(findAllDoctorAttrs);
+      expect(spy).toBeCalledWith({ where: {
+        [Op.and]: [
+          { clinicId: 1 },
+          { onDuty: false },
+        ],
+      },
+      include: Clinic });
+    });
+
+    it("should call Doctor.findAll with the expected Attrs when there's only one attrs", () => {
+      const findAllDoctorAttrs = { clinicId: 1 };
+      const spy = jest.spyOn(Doctor, "findAll").mockResolvedValue([]);
+      DoctorRepository.findAll(findAllDoctorAttrs);
+      expect(spy).toBeCalledWith({ where: {
+        [Op.and]: [
+          { clinicId: 1 },
+        ],
+      },
+      include: Clinic });
+    });
+
+    it("should call Doctor.findAll with the expected Attrs when there's no attrs", () => {
+      const spy = jest.spyOn(Doctor, "findAll").mockResolvedValue([]);
+      DoctorRepository.findAll();
+      expect(spy).toBeCalledWith({ include: Clinic });
     });
   });
 });

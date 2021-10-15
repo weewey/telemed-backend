@@ -1,5 +1,5 @@
 import Doctor, { DoctorAttributes, DoctorAttributesWithId } from "../models/doctor";
-import DoctorRepository from "../respository/doctor-repository";
+import DoctorRepository, { FindAllDoctorAttributes } from "../respository/doctor-repository";
 import { mapRepositoryErrors } from "./helpers/handle-repository-errors";
 import AuthService from "./auth-service";
 import { Role, UserPermissions } from "../clients/auth-client";
@@ -27,8 +27,14 @@ class DoctorService {
     }
   }
 
-  public static async getDoctors(): Promise<Doctor[]> {
-    return Doctor.findAll();
+  public static async findDoctors(findAllDoctorAttributes?: FindAllDoctorAttributes): Promise<Doctor[]> {
+    try {
+      return await DoctorRepository.findAll(findAllDoctorAttributes);
+    } catch (e) {
+      const errorMessage = `Error finding doctors with attrs: ${JSON.stringify(findAllDoctorAttributes)}`;
+      Logger.error(`${errorMessage}: ${e.message}`);
+      throw mapRepositoryErrors(e);
+    }
   }
 
   public static async get(doctorId: number): Promise<Doctor> {

@@ -128,9 +128,9 @@ describe("Doctor Service", () => {
 
   describe("getDoctors", () => {
     it("should call Doctors.findAll", async () => {
-      const spy = jest.spyOn(Doctor, "findAll").mockResolvedValue([]);
-      await DoctorService.getDoctors();
-      expect(spy).toBeCalled();
+      const spy = jest.spyOn(DoctorRepository, "findAll").mockResolvedValue([]);
+      await DoctorService.findDoctors({ clinicId: 1 });
+      expect(spy).toBeCalledWith({ clinicId: 1 });
     });
   });
 

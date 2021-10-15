@@ -97,13 +97,38 @@ describe("Doctors Route", () => {
   });
 
   describe("GET /doctors", () => {
-    it("should call DoctorService.getDoctors", async () => {
+    it("should return doctors from DoctorService", async () => {
       const doctor = { id: 1 } as Doctor;
-      jest.spyOn(DoctorService, "getDoctors").mockResolvedValue([ doctor ]);
-      const response = await request(app).get(doctorsBaseUrl)
+      jest.spyOn(DoctorService, "findDoctors").mockResolvedValue([ doctor ]);
+      const response = await request(app)
+        .get(doctorsBaseUrl)
         .expect(StatusCodes.OK);
 
       expect(response.body).toEqual([ doctor ]);
+    });
+
+    describe("when there is query params", () => {
+      it("call DoctorService.findDoctors with the expected attrs", async () => {
+        const doctor = { id: 1 } as Doctor;
+        const spy = jest.spyOn(DoctorService, "findDoctors").mockResolvedValue([ doctor ]);
+        await request(app)
+          .get(`${doctorsBaseUrl}?clinicId=1&onDuty=true`)
+          .expect(StatusCodes.OK);
+
+        expect(spy).toBeCalledWith({ clinicId: 1, onDuty: true });
+      });
+    });
+
+    describe("when there is no query params", () => {
+      it("call DoctorService.findDoctors with the expected attrs", async () => {
+        const doctor = { id: 1 } as Doctor;
+        const spy = jest.spyOn(DoctorService, "findDoctors").mockResolvedValue([ doctor ]);
+        await request(app)
+          .get(`${doctorsBaseUrl}`)
+          .expect(StatusCodes.OK);
+
+        expect(spy).toBeCalledWith();
+      });
     });
   });
 

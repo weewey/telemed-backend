@@ -5,6 +5,7 @@ import DoctorService from "../services/doctor-service";
 import { validateRequest } from "./validate-request";
 import { doctorCreateRule } from "../validation-rules/doctor-create-rule";
 import { doctorUpdateRule } from "../validation-rules/doctor-update-rule";
+import { FindAllDoctorAttributes } from "../respository/doctor-repository";
 
 export const doctorRoute = Router();
 
@@ -45,7 +46,18 @@ doctorRoute.put("/:doctorId",
 
 doctorRoute.get("/",
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const doctors = await DoctorService.getDoctors();
+    const { clinicId, onDuty, queueId } = req.query;
+    const findAllDoctorAttributes = {
+      ...(clinicId && { clinicId: Number(clinicId) }),
+      ...(queueId && { queueId: Number(queueId) }),
+      ...(onDuty && { onDuty: Boolean(onDuty) }),
+    } as FindAllDoctorAttributes;
+    if (findAllDoctorAttributes && Object.keys(findAllDoctorAttributes).length === 0) {
+      const doctors = await DoctorService.findDoctors();
+      res.status(StatusCodes.OK).json(doctors);
+      return;
+    }
+    const doctors = await DoctorService.findDoctors(findAllDoctorAttributes);
     res.status(StatusCodes.OK).json(doctors);
   }));
 

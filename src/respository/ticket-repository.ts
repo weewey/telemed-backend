@@ -7,6 +7,7 @@ import { Logger } from "../logger";
 import TicketStatus from "../ticket_status";
 import NotFoundError from "../errors/not-found-error";
 import Queue from "../models/queue";
+import { getQueryOps } from "./respository-helper";
 
 export interface FindAllTicketAttributes {
   patientId?: number,
@@ -38,12 +39,8 @@ class TicketRepository {
   }
 
   public static async findAll(findAllTicketAttributes: FindAllTicketAttributes):Promise<Ticket[]> {
-    const queryOps = Object.keys(findAllTicketAttributes).map((key) => {
-      // @ts-ignore
-      return { [key]: findAllTicketAttributes[key] };
-    });
     return Ticket.findAll({ where: {
-      [Op.and]: queryOps,
+      [Op.and]: getQueryOps<FindAllTicketAttributes>(findAllTicketAttributes),
     },
     include: Queue });
   }

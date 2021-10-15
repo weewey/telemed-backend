@@ -3,6 +3,7 @@ import {
   BaseError,
   ForeignKeyConstraintError,
   InstanceUpdateOptions,
+  Op,
   UniqueConstraintError,
   ValidationError,
 } from "sequelize";
@@ -11,6 +12,14 @@ import RepositoryError from "../errors/repository-error";
 import { Errors } from "../errors/error-mappings";
 import { mapSequelizeErrorToErrorMessage } from "../utils/helpers";
 import NotFoundError from "../errors/not-found-error";
+import { getQueryOps } from "./respository-helper";
+import Clinic from "../models/clinic";
+
+export interface FindAllDoctorAttributes {
+  clinicId? :number,
+  onDuty?: boolean,
+  queueId?: number
+}
 
 class DoctorRepository {
   public static async create(doctorAttributes: DoctorAttributes): Promise<Doctor> {
@@ -25,6 +34,16 @@ class DoctorRepository {
 
   public static async get(doctorId: number): Promise<Doctor|null> {
     return Doctor.findByPk(doctorId);
+  }
+
+  public static async findAll(findAllDoctorAttributes?: FindAllDoctorAttributes): Promise<Doctor[]> {
+    if (findAllDoctorAttributes) {
+      return Doctor.findAll({ where: {
+        [Op.and]: getQueryOps<FindAllDoctorAttributes>(findAllDoctorAttributes),
+      },
+      include: Clinic });
+    }
+    return Doctor.findAll({ include: Clinic });
   }
 
   public static async update(doctorAttributesWithId: Partial<DoctorAttributesWithId>,
