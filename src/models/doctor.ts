@@ -102,6 +102,9 @@ export default class Doctor extends Model {
   })
   public clinicId?: number;
 
+  @BelongsTo(() => Clinic)
+  public clinic?: Clinic;
+
   @Column({
     type: DataType.DATEONLY,
     allowNull: false,
