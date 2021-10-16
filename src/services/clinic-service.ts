@@ -31,7 +31,11 @@ class ClinicService {
   }
 
   public static async getClinics(): Promise<Clinic[]> {
-    return Clinic.findAll();
+    try {
+      return await Clinic.scope("currentQueueWithDoctor").findAll();
+    } catch (e) {
+      throw mapRepositoryErrors(e);
+    }
   }
 }
 
