@@ -4,7 +4,13 @@ import ClinicRepository from "../../src/respository/clinic-repository";
 import clinicService from "../../src/services/clinic-service";
 import * as handleRepositoryErrors from "../../src/services/helpers/handle-repository-errors";
 import { getClinicAttrs } from "../helpers/clinic-helpers";
+import { ModelCtor } from "sequelize/types/lib/model";
+import NotFoundError from "../../src/errors/not-found-error";
+import TechnicalError from "../../src/errors/technical-error";
+
 describe("Clinic service", () => {
+  beforeEach(jest.clearAllMocks);
+
   describe("#create", () => {
     it("should call ClinicRepository.create with the right params", async () => {
       const clinicAttrs = getClinicAttrs();
@@ -31,22 +37,51 @@ describe("Clinic service", () => {
         jest.spyOn(ClinicRepository, "create").mockRejectedValue(
           new RepositoryError("error-code", "message"),
         );
-        jest.spyOn(handleRepositoryErrors, "mapRepositoryErrors").mockReturnValue(
-          new Error("MockError"),
-        );
-        await expect(clinicService.create(clinicAttrs)).rejects.toThrowError(new Error("MockError"));
+        await expect(clinicService.create(clinicAttrs))
+          .rejects
+          .toThrowError(new TechnicalError("message"));
       });
     });
   });
 
   describe("#getClinicById", () => {
-    let findByPkSpy: jest.SpyInstance;
+    const clinic = { id: 1 } as Clinic;
+    const scopeMock = { findByPk: (id: number) => {} } as ModelCtor<Clinic>;
 
-    it("should call Clinic.findByPk", async () => {
-      findByPkSpy = jest.spyOn(Clinic, "findByPk").mockResolvedValue(null);
+    it("should call scope with the expected value", async () => {
+      const scopeSpy = jest.spyOn(Clinic, "scope").mockReturnValue(scopeMock);
+      jest.spyOn(scopeMock, "findByPk").mockResolvedValue(clinic);
       await clinicService.getClinicById("1");
 
-      expect(findByPkSpy).toHaveBeenCalled();
+      expect(scopeSpy).toHaveBeenCalledWith("currentQueueWithDoctor");
+    });
+
+    it("should call findByPk", async () => {
+      jest.spyOn(Clinic, "scope").mockReturnValue(scopeMock);
+      const findByPk = jest.spyOn(scopeMock, "findByPk").mockResolvedValue(clinic);
+      await clinicService.getClinicById("1");
+
+      expect(findByPk).toHaveBeenCalled();
+    });
+
+    describe("when the clinic is not found", () => {
+      it("should throw NotFoundError", async () => {
+        jest.spyOn(Clinic, "scope").mockReturnValue(scopeMock);
+        jest.spyOn(scopeMock, "findByPk").mockResolvedValue(null);
+        await expect(clinicService.getClinicById("1"))
+          .rejects
+          .toThrowError(NotFoundError);
+      });
+    });
+
+    describe("when there is not unexpected error", () => {
+      it("should throw NotFoundError", async () => {
+        jest.spyOn(Clinic, "scope").mockReturnValue(scopeMock);
+        jest.spyOn(scopeMock, "findByPk").mockRejectedValue(new Error("test"));
+        await expect(clinicService.getClinicById("1"))
+          .rejects
+          .toThrowError(TechnicalError);
+      });
     });
   });
 

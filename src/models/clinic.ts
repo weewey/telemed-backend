@@ -1,6 +1,8 @@
-import { Column, CreatedAt, DataType, HasMany, Model, Table, UpdatedAt } from "sequelize-typescript";
-// eslint-disable-next-line import/no-cycle
+/* eslint-disable import/no-cycle */
+import { Column, CreatedAt, DataType, HasMany, Model, Scopes, Table, UpdatedAt } from "sequelize-typescript";
 import Queue from "./queue";
+import QueueStatus from "../queue_status";
+import Doctor from "./doctor";
 
 export interface ClinicAttributes {
   name: string,
@@ -14,6 +16,15 @@ export interface ClinicAttributes {
 }
 
 @Table({ tableName: "Clinics" })
+
+@Scopes(() => ({
+  currentQueueWithDoctor: {
+    include: [ { model: Queue,
+      where: { status: QueueStatus.ACTIVE },
+      required: false,
+      include: [ { model: Doctor } ] } ],
+  },
+}))
 
 export default class Clinic extends Model {
   @Column({

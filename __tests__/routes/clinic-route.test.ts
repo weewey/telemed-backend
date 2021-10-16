@@ -6,6 +6,7 @@ import ClinicService from "../../src/services/clinic-service";
 import { getClinicAttrs } from "../helpers/clinic-helpers";
 import { Logger } from "../../src/logger";
 import { omit } from "lodash";
+import NotFoundError from "../../src/errors/not-found-error";
 
 describe("Clinics Route", () => {
   const clinicBaseUrl = "/api/v1/clinics";
@@ -40,7 +41,8 @@ describe("Clinics Route", () => {
 
     describe("when the clinic is not found", () => {
       beforeAll(async () => {
-        getClinicByIdSpy = jest.spyOn(ClinicService, "getClinicById").mockResolvedValue(null);
+        getClinicByIdSpy = jest.spyOn(ClinicService,
+          "getClinicById").mockRejectedValue(new NotFoundError("not found", "not found"));
       });
 
       const notFoundClinicId = 99999;

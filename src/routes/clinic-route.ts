@@ -13,11 +13,7 @@ clinicRoute.get("/:clinicId",
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { clinicId } = req.params;
     const clinicInfo = await ClinicService.getClinicById(clinicId);
-    if (clinicInfo) {
-      res.json(clinicInfo);
-    } else {
-      res.status(404).send();
-    }
+    res.json(clinicInfo);
   }));
 
 clinicRoute.get("/",

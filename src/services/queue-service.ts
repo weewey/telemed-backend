@@ -186,9 +186,7 @@ class QueueService {
       }
       return queue;
     } catch (e) {
-      if (e instanceof NotFoundError) {
-        throw e;
-      }
+      if (e instanceof NotFoundError) { throw e; }
       throw new TechnicalError(e.message);
     }
   }
