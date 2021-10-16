@@ -24,7 +24,7 @@ patientRoute.post("/",
 patientRoute.get("/:patientId",
   validateRequest(patientIdRule),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { patientId } = req.query;
+    const { patientId } = req.params;
     const patient = await PatientService.getPatientById(Number(patientId));
     res.status(StatusCodes.OK).json(patient);
   }));
