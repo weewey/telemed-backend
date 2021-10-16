@@ -8,6 +8,7 @@ import TicketStatus from "../ticket_status";
 import NotFoundError from "../errors/not-found-error";
 import Queue from "../models/queue";
 import { getQueryOps } from "./respository-helper";
+import Patient from "../models/patient";
 
 export interface FindAllTicketAttributes {
   patientId?: number,
@@ -42,7 +43,7 @@ class TicketRepository {
     return Ticket.findAll({ where: {
       [Op.and]: getQueryOps<FindAllTicketAttributes>(findAllTicketAttributes),
     },
-    include: Queue });
+    include: [ { model: Queue }, { model: Patient } ] });
   }
 
   public static async findByPatientIdAndStatus(patientId: number,

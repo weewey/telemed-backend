@@ -7,6 +7,7 @@ import TicketRepository from "../../src/respository/ticket-repository";
 import NotFoundError from "../../src/errors/not-found-error";
 import Queue from "../../src/models/queue";
 import TicketTypes from "../../src/ticket_types";
+import Patient from "../../src/models/patient";
 import objectContaining = jasmine.objectContaining;
 
 describe("TicketRepository", () => {
@@ -70,7 +71,7 @@ describe("TicketRepository", () => {
           { patientId: 1 },
         ],
       },
-      include: Queue });
+      include: [ { model: Queue }, { model: Patient } ] });
     });
   });
   describe("findByPatientIdAndStatus", () => {
