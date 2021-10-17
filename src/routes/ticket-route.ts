@@ -9,6 +9,7 @@ import { FindAllTicketAttributes } from "../respository/ticket-repository";
 import { ticketGetRules } from "../validation-rules/ticket-get-rule";
 import Queue from "../models/queue";
 import Clinic from "../models/clinic";
+import Patient from "../models/patient";
 
 export const ticketRoute = Router();
 
@@ -42,6 +43,7 @@ ticketRoute.get("/:ticketId",
     const ticket = await TicketService.get(Number(ticketId), { include: [
       { model: Queue },
       { model: Clinic },
+      { model: Patient },
     ] });
     res.status(StatusCodes.OK).json(ticket);
   }));

@@ -10,6 +10,7 @@ import NotFoundError from "../../src/errors/not-found-error";
 import TicketTypes from "../../src/ticket_types";
 import Queue from "../../src/models/queue";
 import Clinic from "../../src/models/clinic";
+import Patient from "../../src/models/patient";
 
 describe("Tickets Route", () => {
   const clinicId = 1;
@@ -175,6 +176,7 @@ describe("Tickets Route", () => {
       expect(spy).toBeCalledWith(1, { include: [
         { model: Queue },
         { model: Clinic },
+        { model: Patient },
       ] });
     });
 
