@@ -9,7 +9,7 @@ const validate = (errorExtractor: ErrorExtractor) => (rules: RequestHandler[]): 
   const errorThrower = (req: Request, res: Response, next: NextFunction): any => {
     const errors = errorExtractor(req);
     if (!errors.isEmpty()) {
-      Logger.error(`Error in payload params. Errors: ${errors}`);
+      Logger.error(`Error in payload params. Errors: ${JSON.stringify(errors)}`);
       next(ValidationError.from({ expressValidatorErrors: errors.array() }));
     }
     next();
