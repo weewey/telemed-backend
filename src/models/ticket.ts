@@ -77,6 +77,9 @@ export default class Ticket extends Model {
   })
   public clinicId!: number;
 
+  @BelongsTo(() => Clinic)
+  public clinic!: Clinic;
+
   @Column({
     allowNull: true,
     type: DataType.STRING,

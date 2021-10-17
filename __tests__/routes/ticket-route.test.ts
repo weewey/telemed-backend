@@ -8,6 +8,8 @@ import { StatusCodes } from "http-status-codes";
 import { Logger } from "../../src/logger";
 import NotFoundError from "../../src/errors/not-found-error";
 import TicketTypes from "../../src/ticket_types";
+import Queue from "../../src/models/queue";
+import Clinic from "../../src/models/clinic";
 
 describe("Tickets Route", () => {
   const clinicId = 1;
@@ -162,6 +164,18 @@ describe("Tickets Route", () => {
       jest.spyOn(TicketService, "get").mockResolvedValue(mockTicket);
       await request(app).get(TICKET_GET_PATH)
         .expect(StatusCodes.OK, mockTicket);
+    });
+
+    it("should call TicketService with the expected params", async () => {
+      const mockTicket = { id: 1 } as Ticket;
+      const spy = jest.spyOn(TicketService, "get").mockResolvedValue(mockTicket);
+      await request(app).get(TICKET_GET_PATH)
+        .expect(StatusCodes.OK, mockTicket);
+
+      expect(spy).toBeCalledWith(1, { include: [
+        { model: Queue },
+        { model: Clinic },
+      ] });
     });
 
     describe("Error scenarios", () => {
