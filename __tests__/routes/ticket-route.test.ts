@@ -11,6 +11,7 @@ import TicketTypes from "../../src/ticket_types";
 import Queue from "../../src/models/queue";
 import Clinic from "../../src/models/clinic";
 import Patient from "../../src/models/patient";
+import Doctor from "../../src/models/doctor";
 
 describe("Tickets Route", () => {
   const clinicId = 1;
@@ -174,7 +175,7 @@ describe("Tickets Route", () => {
         .expect(StatusCodes.OK, mockTicket);
 
       expect(spy).toBeCalledWith(1, { include: [
-        { model: Queue },
+        { model: Queue, include: [ { model: Doctor } ] },
         { model: Clinic },
         { model: Patient },
       ] });

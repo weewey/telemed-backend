@@ -10,6 +10,7 @@ import { ticketGetRules } from "../validation-rules/ticket-get-rule";
 import Queue from "../models/queue";
 import Clinic from "../models/clinic";
 import Patient from "../models/patient";
+import Doctor from "../models/doctor";
 
 export const ticketRoute = Router();
 
@@ -41,7 +42,7 @@ ticketRoute.get("/:ticketId",
     const { ticketId } = req.params;
 
     const ticket = await TicketService.get(Number(ticketId), { include: [
-      { model: Queue },
+      { model: Queue, include: [ { model: Doctor } ] },
       { model: Clinic },
       { model: Patient },
     ] });
