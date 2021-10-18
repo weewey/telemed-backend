@@ -45,3 +45,7 @@ variable "pending_ticket_num_to_notify" {}
 
 variable "qdoc_portal_base_url" {}
 
+variable "twilio_video_api_key_sid" {}
+
+variable "twilio_video_api_secret" {}
+

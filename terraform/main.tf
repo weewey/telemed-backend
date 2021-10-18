@@ -92,6 +92,14 @@ resource "google_cloud_run_service" "qdoc" {
           name  = "QDOC_PORTAL_BASE_URL"
           value = var.qdoc_portal_base_url
         }
+        env {
+          name  = "TWILIO_VIDEO_API_KEY_SID"
+          value = var.twilio_video_api_key_sid
+        }
+        env {
+          name  = "TWILIO_VIDEO_API_SECRET"
+          value = var.twilio_video_api_secret
+        }
         resources {
           limits = {
             cpu    = "2.0"

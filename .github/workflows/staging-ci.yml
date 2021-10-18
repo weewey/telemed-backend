@@ -23,6 +23,8 @@ jobs:
       TWILIO_ACCOUNT_TOKEN: 'TWILIO_ACCOUNT_TOKEN'
       TWILIO_VERIFY_SERVICE_SID: 'TWILIO_VERIFY_SERVICE_SID'
       TWILIO_MESSAGE_SERVICE_SID: 'TWILIO_MESSAGE_SERVICE_SID'
+      TWILIO_VIDEO_API_KEY_SID: 'TWILIO_VIDEO_API_KEY_SID'
+      TWILIO_VIDEO_API_SECRET: 'TWILIO_VIDEO_API_SECRET'
       PENDING_TICKET_NUM_TO_MESSAGE: '2'
       QDOC_PORTAL_BASE_URL: 'https://www.qdoc.sg'
     services:
@@ -108,6 +110,8 @@ jobs:
       TF_VAR_twilio_message_service_sid: ${{ secrets.STAGING_TWILIO_MESSAGE_SERVICE_SID }}
       TF_VAR_pending_ticket_num_to_notify: "2"
       TF_VAR_qdoc_portal_base_url: "https://qdoc-portal-staging-6vhcpljcmq-as.a.run.app"
+      TF_VAR_twilio_video_api_key_sid: ${{ secrets.STAGING_TWILIO_VIDEO_API_KEY_SID }}
+      TF_VAR_twilio_video_api_secret: ${{ secrets.STAGING_TWILIO_VIDEO_API_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

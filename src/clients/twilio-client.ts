@@ -3,6 +3,7 @@ import { VerificationInstance } from "twilio/lib/rest/verify/v2/service/verifica
 import { VerificationCheckInstance } from "twilio/lib/rest/verify/v2/service/verificationCheck";
 import EnvConfig from "../config/env-config";
 import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
+import AccessToken, { VideoGrant } from "twilio/lib/jwt/AccessToken";
 
 export class TwilioClient {
   private client: Twilio;
@@ -11,16 +12,29 @@ export class TwilioClient {
 
   private readonly messageServiceSid: string;
 
-  constructor(accountSid: string,
+  private readonly videoApiKeySid: string;
+
+  private readonly videoApiSecret: string;
+
+  private readonly accountSid: string;
+
+  constructor(
+    accountSid: string,
     accountToken: string,
     verifyServiceSid: string,
-    messageServiceSid: string) {
+    messageServiceSid: string,
+    videoApiKeySid: string,
+    videoApiSecret: string,
+  ) {
     this.client = twilio(accountSid, accountToken, {
       edge: "singapore",
       lazyLoading: true,
     });
+    this.accountSid = accountSid;
     this.verifyServiceSid = verifyServiceSid;
     this.messageServiceSid = messageServiceSid;
+    this.videoApiKeySid = videoApiKeySid;
+    this.videoApiSecret = videoApiSecret;
   }
 
   public async sendMobileVerificationCode(mobileNumber: string): Promise<VerificationInstance> {
@@ -55,6 +69,15 @@ export class TwilioClient {
         messagingServiceSid: this.messageServiceSid,
       });
   }
+
+  public generateVideoToken(identity: string, room: string): string {
+    const token = new AccessToken(this.accountSid, this.videoApiKeySid, this.videoApiSecret, { region: "sg1" });
+    token.identity = identity;
+    const grant = new VideoGrant();
+    grant.room = room;
+    token.addGrant(grant);
+    return token.toJwt();
+  }
 }
 
 export const twilioClient = new TwilioClient(
@@ -62,4 +85,6 @@ export const twilioClient = new TwilioClient(
   EnvConfig.twilioConfig.accountToken,
   EnvConfig.twilioConfig.verifyServiceSid,
   EnvConfig.twilioConfig.messageServiceSid,
+  EnvConfig.twilioConfig.videoApiKeySid,
+  EnvConfig.twilioConfig.videoApiSecret,
 );

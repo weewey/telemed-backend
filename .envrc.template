@@ -8,6 +8,8 @@ export GOOGLE_CLOUD_PROJECT="local"
 export ZOOM_API_KEY="zoom_api"
 export ZOOM_API_SECRET="zoom_api_secret"
 export ZOOM_BASE_URL="zoom_base_url"
+export TWILIO_VIDEO_API_KEY_SID="twilio_video_key"
+export TWILIO_VIDEO_API_SECRET="twilio_video_secret"
 
 // NOTE
 // REACT_APP_FIREBASE_CONFIG => get from qdoc.kdbx, ensure that the object {} is wrapped with SINGLE quotes e.g. '{}'
