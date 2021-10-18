@@ -120,7 +120,7 @@ class QueueService {
     }
   }
 
-  private static getUpdateTicketAttrs(nextTicket: Ticket, zoomMeeting: ZoomMeeting | undefined) {
+  private static getUpdateTicketAttrs(nextTicket: Ticket, zoomMeeting: ZoomMeeting | undefined):any {
     const updateTicketAttrs = {
       id: nextTicket.id,
       status: TicketStatus.SERVING,

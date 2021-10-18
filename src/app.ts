@@ -9,6 +9,7 @@ import { queueRoute } from "./routes/queue-route";
 import { ticketRoute } from "./routes/ticket-route";
 import { adminRoute } from "./routes/admin-route";
 import { mobileRoute } from "./routes/mobile-route";
+import { videoRoute } from "./routes/video-route";
 
 const app: express.Application = express();
 
@@ -25,6 +26,7 @@ apiV1Router.use("/clinic-staffs", clinicStaffRoute);
 apiV1Router.use("/tickets", ticketRoute);
 apiV1Router.use("/admins", adminRoute);
 apiV1Router.use("/mobile", mobileRoute);
+apiV1Router.use("/video", videoRoute);
 
 app.use(errorHandler);
 
