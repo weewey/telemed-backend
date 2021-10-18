@@ -88,8 +88,11 @@ describe("#Queues Component", () => {
       jest.spyOn(EnvConfig, "pendingTicketNumToNotify", "get").mockReturnValue(1);
       const clinicCreated = await clinicFactory.build();
       clinicId = clinicCreated.id;
+      const doctorCreated = await doctorFactory.build();
+      doctorId = doctorCreated.id;
       const queueCreated = await queueFactory.build({ clinicId,
         status: QueueStatus.ACTIVE,
+        doctorId,
         latestGeneratedTicketDisplayNumber: 1 });
       queueId = queueCreated.id;
       const patientCreated = await patientFactory.build();
@@ -99,8 +102,6 @@ describe("#Queues Component", () => {
         clinicId,
         patientId });
       ticketId = ticketCreated.id;
-      const doctorCreated = await doctorFactory.build({ queueId });
-      doctorId = doctorCreated.id;
       await queueCreated.update({ pendingTicketIdsOrder: [ ticketCreated.id ] });
     });
 

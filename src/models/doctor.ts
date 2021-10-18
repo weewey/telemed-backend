@@ -3,7 +3,7 @@ import {
   Column,
   CreatedAt,
   DataType,
-  ForeignKey,
+  ForeignKey, HasOne,
   Model,
   Table,
   Unique,
@@ -79,20 +79,13 @@ export default class Doctor extends Model {
   })
   public onDuty!: boolean;
 
-  @ForeignKey(() => Queue)
-  @Column({
-    allowNull: true,
-    type: DataType.INTEGER,
-  })
-  public queueId?: number;
-
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
   public zoomUserId?: string;
 
-  @BelongsTo(() => Queue)
+  @HasOne(() => Queue)
   public queue?: Queue;
 
   @ForeignKey(() => Clinic)

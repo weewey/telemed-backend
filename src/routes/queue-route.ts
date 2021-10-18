@@ -18,8 +18,8 @@ queueRoute.post("/",
   validateRequest(queueCreateRules),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { clinicId, doctorId } = req.body;
-    const queueAttr = { clinicId, status: QueueStatus.INACTIVE };
-    const queueInfo = await QueueService.create(queueAttr, Number(doctorId));
+    const queueAttr = { clinicId, status: QueueStatus.INACTIVE, doctorId: Number(doctorId) };
+    const queueInfo = await QueueService.create(queueAttr);
     res.status(StatusCodes.CREATED).json(queueInfo);
   }));
 

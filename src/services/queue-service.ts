@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import BusinessError from "../errors/business-error";
 import { Errors } from "../errors/error-mappings";
 import Queue, { QueueAttributes, QueueAttributesWithId } from "../models/queue";
@@ -13,18 +14,16 @@ import { sequelize } from "../utils/db-connection";
 import DoctorService from "./doctor-service";
 import ZoomService from "./zoom-service";
 import TicketTypes from "../ticket_types";
-// eslint-disable-next-line import/no-cycle
 import TicketService from "./ticket-service";
 import { ZoomMeeting } from "../clients/zoom-client";
 import Ticket from "../models/ticket";
 import Doctor from "../models/doctor";
-// eslint-disable-next-line import/no-cycle
 import PatientsNotificationService from "./patients-notification-service";
 import Patient from "../models/patient";
 import Clinic from "../models/clinic";
 
 class QueueService {
-  public static async create(queueAttr: QueueAttributes, doctorId: number): Promise<Queue> {
+  public static async create(queueAttr: QueueAttributes): Promise<Queue> {
     if (queueAttr.status === QueueStatus.CLOSED) {
       throw new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code,
         Errors.QUEUE_CREATION_NO_CLOSED_STATUS.message);
@@ -36,9 +35,6 @@ class QueueService {
       return await sequelize.transaction(
         async (transaction) => {
           const queue = await QueueRepository.create(queueAttr, { transaction });
-          await DoctorService.update(
-            { id: doctorId, queueId: queue.id }, { transaction },
-          );
           return queue.reload({ include: Doctor, transaction });
         },
       );

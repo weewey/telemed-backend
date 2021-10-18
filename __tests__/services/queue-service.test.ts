@@ -35,6 +35,7 @@ describe("QueueService", () => {
     const queueAttr: QueueAttributes = {
       clinicId: 1,
       status: QueueStatus.INACTIVE,
+      doctorId,
     };
     const updatedQueue = { id: 1, doctorId: 1 } as unknown as Queue;
     const mockQueue = { id: 1, reload: () => updatedQueue } as unknown as Queue;
@@ -48,20 +49,8 @@ describe("QueueService", () => {
       jest.spyOn(DoctorService, "update").mockResolvedValue(
         mockDoctor,
       );
-      const queueResult = await QueueService.create(queueAttr, doctorId);
+      const queueResult = await QueueService.create(queueAttr);
       expect(queueResult).toEqual(updatedQueue);
-    });
-
-    it("should update the doctor with queueId", async () => {
-      jest.spyOn(QueueService, "getQueuesByClinicAndStatus").mockResolvedValueOnce([]);
-      jest.spyOn(QueueRepository, "create").mockResolvedValue(
-        mockQueue,
-      );
-      const spy = jest.spyOn(DoctorService, "update").mockResolvedValue(mockDoctor);
-      await QueueService.create(queueAttr, doctorId);
-      expect(spy).toBeCalledWith({ id: 1, queueId: 1 }, {
-        transaction: expect.any(Transaction),
-      });
     });
 
     describe("Error scenarios", () => {
@@ -70,7 +59,7 @@ describe("QueueService", () => {
           await expect(QueueService.create({
             ...queueAttr,
             status: QueueStatus.CLOSED,
-          }, doctorId))
+          }))
             .rejects
             .toThrow(
               new BusinessError(Errors.QUEUE_CREATION_NO_CLOSED_STATUS.code,
@@ -87,7 +76,7 @@ describe("QueueService", () => {
         });
 
         it("should throw NotFound error CLINIC_NOT_FOUND", async () => {
-          await expect(QueueService.create(queueAttr, doctorId)).rejects.toThrow(new NotFoundError(
+          await expect(QueueService.create(queueAttr)).rejects.toThrow(new NotFoundError(
             Errors.ENTITY_NOT_FOUND.code, "clinic id not found",
           ));
         });
@@ -103,7 +92,7 @@ describe("QueueService", () => {
           jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([ mockActiveQueue ]);
         });
         it("should throw business error UNABLE_TO_CREATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS", async () => {
-          await expect(QueueService.create(queueAttr, doctorId))
+          await expect(QueueService.create(queueAttr))
             .rejects
             .toThrow(
               new BusinessError(Errors.UNABLE_TO_CREATE_OR_UPDATE_QUEUE_AS_ACTIVE_QUEUE_EXISTS.code,
@@ -118,7 +107,7 @@ describe("QueueService", () => {
           jest.spyOn(QueueRepository, "create").mockRejectedValueOnce(new Error("some DB problem"));
         });
         it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE", async () => {
-          await expect(QueueService.create(queueAttr, doctorId)).rejects.toThrow(new TechnicalError("some DB problem"));
+          await expect(QueueService.create(queueAttr)).rejects.toThrow(new TechnicalError("some DB problem"));
         });
       });
 
@@ -129,21 +118,9 @@ describe("QueueService", () => {
         });
 
         it("should throw 500 Technical error UNABLE_TO_CREATE_QUEUE", async () => {
-          await expect(QueueService.create(queueAttr, doctorId)).rejects
+          await expect(QueueService.create(queueAttr)).rejects
             .toThrow(new TechnicalError(Errors.UNABLE_TO_CREATE_QUEUE.message,
               Errors.UNABLE_TO_CREATE_QUEUE.code));
-        });
-      });
-
-      describe("when DoctorService.update errors", () => {
-        beforeEach(() => {
-          jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
-          jest.spyOn(QueueRepository, "create").mockResolvedValue({ id: 1 } as Queue);
-          jest.spyOn(DoctorService, "update").mockRejectedValue(new TechnicalError("db issue"));
-        });
-
-        it("should throw the expected error", async () => {
-          await expect(QueueService.create(queueAttr, doctorId)).rejects.toThrow(new TechnicalError("db issue"));
         });
       });
     });
@@ -163,6 +140,7 @@ describe("QueueService", () => {
           id: 333,
           clinicId: 1,
           status,
+          doctorId: 1,
         };
         jest.spyOn(QueueRepository, "getByClinicIdAndStatus").mockResolvedValueOnce([]);
 
@@ -178,6 +156,7 @@ describe("QueueService", () => {
         id: 333,
         clinicId: 1,
         currentTicketId: null,
+        doctorId: 1,
       };
       const updatedQueue = {} as Queue;
       jest.spyOn(QueueRepository, "update").mockResolvedValueOnce(updatedQueue);

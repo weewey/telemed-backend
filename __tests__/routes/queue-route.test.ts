@@ -40,7 +40,7 @@ describe("Queues Route", () => {
 
       it("calls QueueService#create with the expected params", async () => {
         jest.spyOn(QueueService, "create").mockResolvedValue(queue);
-        const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE };
+        const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE, doctorId };
 
         await request(app)
           .post(queuesPath)
@@ -48,7 +48,7 @@ describe("Queues Route", () => {
           .send({ clinicId, doctorId });
 
         expect(QueueService.create).toHaveBeenCalledTimes(1);
-        expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr, doctorId);
+        expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
       });
 
       describe("when the clinicId is numeric string", () => {
@@ -58,9 +58,9 @@ describe("Queues Route", () => {
             .post(queuesPath)
             .set("Authorization", "authToken")
             .send({ clinicId: "1", doctorId });
-          const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE };
+          const expectedQueueAttr = { clinicId, status: QueueStatus.INACTIVE, doctorId };
           expect(QueueService.create).toHaveBeenCalledTimes(1);
-          expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr, doctorId);
+          expect(QueueService.create).toHaveBeenCalledWith(expectedQueueAttr);
         });
       });
     });

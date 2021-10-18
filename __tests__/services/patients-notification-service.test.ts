@@ -20,7 +20,7 @@ describe("PatientsNotificationService", () => {
     beforeEach(() => {
       currentTicketWithPatient.patient = { mobileNumber: "123" } as Patient;
       queue.currentTicket = currentTicket;
-      queue.doctors = [ {} as Doctor ];
+      queue.doctor = {} as Doctor;
       jest.spyOn(currentTicket, "reload").mockResolvedValue(currentTicketWithPatient);
       jest.spyOn(MessageBodyGenerator, "generate").mockReturnValue("current ticket message body");
     });
@@ -47,7 +47,7 @@ describe("PatientsNotificationService", () => {
       pendingTicket.id = 1;
       pendingTicket.patient = { mobileNumber: "456" } as Patient;
       queue.pendingTicketIdsOrder = [ 2, 3, pendingTicket.id ];
-      queue.doctors = [ {} as Doctor ];
+      queue.doctor = {} as Doctor;
       jest.spyOn(TicketService, "get").mockResolvedValue(pendingTicket);
       jest.spyOn(MessageBodyGenerator, "generate").mockReturnValue("reaching soon ticket message body");
     });

@@ -5,7 +5,6 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
-  HasMany,
   HasOne,
   Model,
   Table,
@@ -24,6 +23,7 @@ export interface QueueAttributes {
   currentTicketId?: number| null
   startedAt?: Date
   closedAt?: Date | null
+  doctorId: number
 }
 
 export interface QueueAttributesWithId extends QueueAttributes {
@@ -87,8 +87,15 @@ export default class Queue extends Model {
   })
   public latestGeneratedTicketDisplayNumber!: number;
 
-  @HasMany(() => Doctor)
-  public doctors!: Doctor[];
+  @ForeignKey(() => Doctor)
+  @Column({
+    allowNull: true,
+    type: DataType.INTEGER,
+  })
+  public doctorId!: number;
+
+  @BelongsTo(() => Doctor)
+  public doctor!: Doctor;
 
   @CreatedAt
   public readonly createdAt!: Date;

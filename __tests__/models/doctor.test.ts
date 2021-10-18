@@ -1,9 +1,6 @@
 import { UniqueConstraintError, ValidationError } from "sequelize";
-import QueueStatus from "../../src/queue_status";
-import Queue from "../../src/models/queue";
 import { v4 as generateUUID } from "uuid";
 import Doctor, { DoctorAttributes } from "../../src/models/doctor";
-import { clinicFactory } from "../factories/clinic";
 
 describe("Doctor", () => {
   const doctorIdsToBeDeleted: Array<number> = [];
@@ -30,36 +27,6 @@ describe("Doctor", () => {
       expect(doctor).toBeDefined();
 
       doctorIdsToBeDeleted.push(doctor.id);
-    });
-
-    describe("when the doctor has a queue", () => {
-      let clinicId: number;
-      let queueId: number;
-      let doctor: Doctor;
-
-      beforeEach(async () => {
-        const clinic = await clinicFactory.build();
-        clinicId = clinic.id;
-        const queueAttributes = {
-          "clinicId": clinicId,
-          "createdAt": new Date(Date.now()),
-          "updatedAt": new Date(Date.now()),
-          "status": QueueStatus.CLOSED,
-          "startedAt": new Date(Date.now()),
-          "closedAt": new Date(Date.now()),
-        };
-        const queue = await Queue.create(queueAttributes);
-        queueId = queue.id;
-      });
-
-      it("should associate correctly to queue", async () => {
-        doctor = await Doctor.create(getDoctorAttrs({ queueId }));
-
-        const foundDoctor = await Doctor.findOne({ where: { id: doctor.id }, include: Queue });
-        expect(foundDoctor?.queue?.id).toEqual(queueId);
-
-        doctorIdsToBeDeleted.push(doctor.id);
-      });
     });
   });
 
