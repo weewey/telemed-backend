@@ -11,6 +11,7 @@ export interface TwilioConfig {
   accountToken: string
   verifyServiceSid: string
   messageServiceSid: string
+  chatServiceSid: string
   videoApiKeySid: string
   videoApiSecret: string
 }
@@ -38,6 +39,7 @@ class EnvConfig {
       accountToken: get(process.env, "TWILIO_ACCOUNT_TOKEN", ""),
       verifyServiceSid: get(process.env, "TWILIO_VERIFY_SERVICE_SID", ""),
       messageServiceSid: get(process.env, "TWILIO_MESSAGE_SERVICE_SID", ""),
+      chatServiceSid: get(process.env, "TWILIO_CHAT_SERVICE_SID", ""),
       videoApiKeySid: get(process.env, "TWILIO_VIDEO_API_KEY_SID", ""),
       videoApiSecret: get(process.env, "TWILIO_VIDEO_API_SECRET", ""),
     };

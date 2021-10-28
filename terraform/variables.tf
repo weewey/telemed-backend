@@ -49,3 +49,4 @@ variable "twilio_video_api_key_sid" {}
 
 variable "twilio_video_api_secret" {}
 
+variable "twilio_chat_service_sid" {}

@@ -3,7 +3,7 @@ import { VerificationInstance } from "twilio/lib/rest/verify/v2/service/verifica
 import { VerificationCheckInstance } from "twilio/lib/rest/verify/v2/service/verificationCheck";
 import EnvConfig from "../config/env-config";
 import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
-import AccessToken, { VideoGrant } from "twilio/lib/jwt/AccessToken";
+import AccessToken from "twilio/lib/jwt/AccessToken";
 
 export class TwilioClient {
   private client: Twilio;
@@ -11,6 +11,8 @@ export class TwilioClient {
   private readonly verifyServiceSid: string;
 
   private readonly messageServiceSid: string;
+
+  private readonly chatServiceSid: string;
 
   private readonly videoApiKeySid: string;
 
@@ -25,6 +27,7 @@ export class TwilioClient {
     messageServiceSid: string,
     videoApiKeySid: string,
     videoApiSecret: string,
+    chatServiceSid: string,
   ) {
     this.client = twilio(accountSid, accountToken, {
       edge: "singapore",
@@ -35,6 +38,7 @@ export class TwilioClient {
     this.messageServiceSid = messageServiceSid;
     this.videoApiKeySid = videoApiKeySid;
     this.videoApiSecret = videoApiSecret;
+    this.chatServiceSid = chatServiceSid;
   }
 
   public async sendMobileVerificationCode(mobileNumber: string): Promise<VerificationInstance> {
@@ -62,20 +66,20 @@ export class TwilioClient {
     toMobileNumber: string,
     message: string,
   ): Promise<MessageInstance> {
-    return this.client.messages
-      .create({
-        body: message,
-        to: toMobileNumber,
-        messagingServiceSid: this.messageServiceSid,
-      });
+    return this.client.messages.create({
+      body: message,
+      to: toMobileNumber,
+      messagingServiceSid: this.messageServiceSid,
+    });
   }
 
   public generateVideoToken(identity: string, room: string): string {
     const token = new AccessToken(this.accountSid, this.videoApiKeySid, this.videoApiSecret, { region: "sg1" });
     token.identity = identity;
-    const grant = new VideoGrant();
-    grant.room = room;
+    const grant = new AccessToken.VideoGrant({ room });
+    const chatGrant = new AccessToken.ChatGrant({ serviceSid: this.chatServiceSid });
     token.addGrant(grant);
+    token.addGrant(chatGrant);
     return token.toJwt();
   }
 }
@@ -87,4 +91,5 @@ export const twilioClient = new TwilioClient(
   EnvConfig.twilioConfig.messageServiceSid,
   EnvConfig.twilioConfig.videoApiKeySid,
   EnvConfig.twilioConfig.videoApiSecret,
+  EnvConfig.twilioConfig.chatServiceSid,
 );
