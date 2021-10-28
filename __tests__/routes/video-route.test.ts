@@ -14,7 +14,7 @@ describe("VideoRoute", () => {
 
   describe("POST /token", () => {
     it("should call video service with the right params", async () => {
-      jest.spyOn(VideoService, "generateToken").mockReturnValue("token");
+      jest.spyOn(VideoService, "generateToken").mockResolvedValue("token");
 
       const response = await request(app)
         .post(`${mobileBaseUrl}/token`)
