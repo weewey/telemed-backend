@@ -3,9 +3,12 @@ import { Logger } from "../logger";
 import TechnicalError from "../errors/technical-error";
 
 class VideoService {
-  public static generateToken(identity: string, room: string): string {
+  public static async generateToken(identity: string, roomName: string): Promise<string> {
     try {
-      return twilioClient.generateVideoToken(identity, room);
+      const room = await twilioClient.createRoom(identity);
+      await twilioClient.createConversation(room.sid);
+      await twilioClient.addParticipantToConversation(room.sid, identity);
+      return twilioClient.generateVideoToken(identity, roomName);
     } catch (e) {
       const errorMessage = `Error generating video token from Twilio: ${e.message}`;
       Logger.error(errorMessage);

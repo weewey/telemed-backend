@@ -4,6 +4,11 @@ import { VerificationCheckInstance } from "twilio/lib/rest/verify/v2/service/ver
 import EnvConfig from "../config/env-config";
 import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
 import AccessToken from "twilio/lib/jwt/AccessToken";
+import { RoomInstance } from "twilio/lib/rest/video/v1/room";
+import { Logger } from "../logger";
+import { ConversationInstance } from "twilio/lib/rest/conversations/v1/service/conversation";
+
+const CONVERSATION_PARTICIPANT_ALREADY_EXISTS_ERROR_CODE = 50433;
 
 export class TwilioClient {
   private client: Twilio;
@@ -81,6 +86,50 @@ export class TwilioClient {
     token.addGrant(grant);
     token.addGrant(chatGrant);
     return token.toJwt();
+  }
+
+  public async createRoom(roomName: string): Promise<RoomInstance> {
+    try {
+      return await this.client.video.rooms(roomName).fetch();
+    } catch (error) {
+      try {
+        return await this.client.video.rooms.create({ uniqueName: roomName, type: "group-small" });
+      } catch (e) {
+        const errorMessage = `Error creating Twilio Video Room: ${e.message}`;
+        Logger.error(errorMessage);
+        throw e;
+      }
+    }
+  }
+
+  public async addParticipantToConversation(roomSid: string, identity: string): Promise<void> {
+    const conversationsClient = this.client.conversations.services(this.chatServiceSid);
+    try {
+      await conversationsClient.conversations(roomSid).participants.create({ identity });
+    } catch (e) {
+      if (e.code !== CONVERSATION_PARTICIPANT_ALREADY_EXISTS_ERROR_CODE) {
+        const errorMessage = `Error creating Twilio conversation participant: ${e.message}`;
+        Logger.error(errorMessage);
+        throw e;
+      }
+    }
+  }
+
+  public async createConversation(roomSid: string): Promise<ConversationInstance> {
+    const conversationsClient = this.client.conversations.services(this.chatServiceSid);
+    try {
+      return await conversationsClient.conversations(roomSid).fetch();
+    } catch (error) {
+      try {
+        return conversationsClient.conversations.create(
+          { uniqueName: roomSid, timers: { closed: "P1D" } },
+        );
+      } catch (e) {
+        const errorMessage = `Error creating Twilio Conversation: ${e.message}`;
+        Logger.error(errorMessage);
+        throw e;
+      }
+    }
   }
 }
 
