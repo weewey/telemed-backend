@@ -5,7 +5,7 @@ import TechnicalError from "../errors/technical-error";
 class VideoService {
   public static async generateToken(identity: string, roomName: string): Promise<string> {
     try {
-      const room = await twilioClient.createRoom(identity);
+      const room = await twilioClient.createRoom(roomName);
       await twilioClient.createConversation(room.sid);
       await twilioClient.addParticipantToConversation(room.sid, identity);
       return twilioClient.generateVideoToken(identity, roomName);

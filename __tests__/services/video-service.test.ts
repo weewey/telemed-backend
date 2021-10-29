@@ -26,7 +26,7 @@ describe("VideoServiceTest", () => {
 
   it("should call createRoom", async () => {
     await VideoService.generateToken("doctor@gmail.com", "roomName");
-    expect(createRoomSpyInstance).toBeCalledWith("doctor@gmail.com");
+    expect(createRoomSpyInstance).toBeCalledWith("roomName");
   });
 
   it("should call addParticipantToConversation", async () => {
