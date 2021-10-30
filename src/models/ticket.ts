@@ -13,10 +13,6 @@ export interface TicketAttributes {
   displayNumber: number,
   clinicId: number,
   type: TicketTypes,
-  zoomMeetingId?: string,
-  zoomStartMeetingUrl?: string,
-  zoomJoinMeetingUrl?: string
-  zoomMeetingPassword?: string
 }
 
 export interface TicketAttributesWithId extends TicketAttributes {
@@ -79,30 +75,6 @@ export default class Ticket extends Model {
 
   @BelongsTo(() => Clinic)
   public clinic!: Clinic;
-
-  @Column({
-    allowNull: true,
-    type: DataType.STRING,
-  })
-  public zoomMeetingId?: string;
-
-  @Column({
-    allowNull: true,
-    type: DataType.STRING,
-  })
-  public zoomStartMeetingUrl?: string|null;
-
-  @Column({
-    allowNull: true,
-    type: DataType.STRING,
-  })
-  public zoomJoinMeetingUrl?: string;
-
-  @Column({
-    allowNull: true,
-    type: DataType.STRING,
-  })
-  public zoomMeetingPassword?: string;
 
   @CreatedAt
   public createdAt!: Date;

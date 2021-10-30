@@ -13,7 +13,6 @@ const doctor = Factory.define<Doctor>("doctor", Doctor)
   .attr("dateOfBirth", () => new Date(Date.now()))
   .attr("createdAt", () => new Date(Date.now()))
   .attr("updatedAt", () => new Date(Date.now()))
-  .attr("zoomUserId", () => `zoom-user-id-${generateUUID()}`)
   .attr("onDuty", () => true);
 
 export const doctorFactory = buildWrapper<Doctor>(doctor);
