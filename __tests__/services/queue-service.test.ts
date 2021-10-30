@@ -16,8 +16,6 @@ import DoctorService from "../../src/services/doctor-service";
 import Doctor from "../../src/models/doctor";
 import TicketService from "../../src/services/ticket-service";
 import TicketTypes from "../../src/ticket_types";
-import ZoomService from "../../src/services/zoom-service";
-import { ZoomMeeting } from "../../src/clients/zoom-client";
 import { queueFactory } from "../factories/queue";
 import PatientsNotificationService from "../../src/services/patients-notification-service";
 import Patient from "../../src/models/patient";
@@ -382,25 +380,12 @@ describe("QueueService", () => {
               jest.spyOn(TicketService, "get").mockResolvedValue({ id: 1, type: TicketTypes.TELEMED } as Ticket);
             });
 
-            it("should call ZoomService.createMeeting", async () => {
-              const spy = jest.spyOn(ZoomService, "createMeeting").mockResolvedValue({} as ZoomMeeting);
-              await QueueService.nextTicket(doctorId, queueId);
-              expect(spy).toBeCalledWith(doctorEmail);
-            });
-
             it("should call TicketRepository.update with the expected params", async () => {
-              jest.spyOn(ZoomService, "createMeeting").mockResolvedValue({ id: "1",
-                uuid: "123",
-                join_url: "join_url",
-                start_url: "start_url" } as ZoomMeeting);
               const spy = jest.spyOn(TicketRepository, "update").mockResolvedValue({} as Ticket);
               await QueueService.nextTicket(doctorId, queueId);
               expect(spy).toBeCalledWith({
                 id: 1,
                 status: TicketStatus.SERVING,
-                zoomJoinMeetingUrl: "join_url",
-                zoomMeetingId: "1",
-                zoomStartMeetingUrl: "start_url",
               },
               expect.any(Transaction));
             });

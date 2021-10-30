@@ -11,11 +11,7 @@ import NotFoundError from "../errors/not-found-error";
 import TicketRepository from "../respository/ticket-repository";
 import TicketStatus from "../ticket_status";
 import { sequelize } from "../utils/db-connection";
-import DoctorService from "./doctor-service";
-import ZoomService from "./zoom-service";
-import TicketTypes from "../ticket_types";
 import TicketService from "./ticket-service";
-import { ZoomMeeting } from "../clients/zoom-client";
 import Ticket from "../models/ticket";
 import Doctor from "../models/doctor";
 import PatientsNotificationService from "./patients-notification-service";
@@ -45,8 +41,6 @@ class QueueService {
   }
 
   public static async nextTicket(doctorId: number, queueId: number): Promise<Queue> {
-    const doctor = await DoctorService.get(doctorId);
-
     const queue = await QueueRepository.getById(queueId);
     if (!queue) {
       throw new NotFoundError(Errors.QUEUE_NOT_FOUND.code, Errors.QUEUE_NOT_FOUND.message);
@@ -63,14 +57,7 @@ class QueueService {
 
     const ticket = await TicketService.get(nextTicketId);
 
-    let updatedQueue: Queue;
-
-    if (ticket.type === TicketTypes.TELEMED) {
-      const zoomMeeting = await ZoomService.createMeeting(doctor.email);
-      updatedQueue = await this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder, zoomMeeting);
-    } else {
-      updatedQueue = await this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder);
-    }
+    const updatedQueue = await this.setQueueNextTicket(queue, ticket, pendingTicketIdsOrder);
 
     await PatientsNotificationService.notifyQueueCurrentTicketUpdate(updatedQueue);
     await PatientsNotificationService.notifyQueuePendingTicketUpdate(updatedQueue);
@@ -96,9 +83,8 @@ class QueueService {
     queue: Queue,
     nextTicket: Ticket,
     pendingTicketIdsOrder: Array<number>,
-    zoomMeeting?: ZoomMeeting,
   ): Promise<Queue> {
-    const updateTicketAttrs = this.getUpdateTicketAttrs(nextTicket, zoomMeeting);
+    const updateTicketAttrs = this.getUpdateTicketAttrs(nextTicket);
     try {
       return await sequelize.transaction(
         async (transaction) => {
@@ -120,21 +106,11 @@ class QueueService {
     }
   }
 
-  private static getUpdateTicketAttrs(nextTicket: Ticket, zoomMeeting: ZoomMeeting | undefined):any {
-    const updateTicketAttrs = {
+  private static getUpdateTicketAttrs(nextTicket: Ticket):any {
+    return {
       id: nextTicket.id,
       status: TicketStatus.SERVING,
     };
-    if (nextTicket.type === TicketTypes.TELEMED && zoomMeeting) {
-      return { ...updateTicketAttrs,
-        ...{
-          zoomMeetingId: zoomMeeting.id,
-          zoomStartMeetingUrl: zoomMeeting.start_url,
-          zoomJoinMeetingUrl: zoomMeeting.join_url,
-          zoomMeetingPassword: zoomMeeting.password,
-        } };
-    }
-    return updateTicketAttrs;
   }
 
   private static async validateNoOtherClinicActiveQueues(clinicId: number, queueId?: number): Promise<void> {

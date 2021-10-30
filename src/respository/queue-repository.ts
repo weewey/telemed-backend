@@ -7,6 +7,7 @@ import NotFoundError from "../errors/not-found-error";
 import Ticket from "../models/ticket";
 import Clinic from "../models/clinic";
 import Patient from "../models/patient";
+import Doctor from "../models/doctor";
 
 export interface FindAllQueueAttributes {
   clinicId: number,
@@ -53,6 +54,7 @@ class QueueRepository {
         include: [ Patient ],
       },
       { model: Clinic },
+      { model: Doctor },
       ],
     });
   }

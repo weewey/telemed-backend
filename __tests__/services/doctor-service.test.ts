@@ -9,8 +9,6 @@ import TechnicalError from "../../src/errors/technical-error";
 import NotFoundError from "../../src/errors/not-found-error";
 import AuthService from "../../src/services/auth-service";
 import { Role } from "../../src/clients/auth-client";
-import ZoomService from "../../src/services/zoom-service";
-import { ZoomUser } from "../../src/clients/zoom-client";
 
 describe("Doctor Service", () => {
   const getDoctorAttrs = (overrideAttrs?: Partial<DoctorAttributes>): DoctorAttributes => {
@@ -27,23 +25,14 @@ describe("Doctor Service", () => {
   };
 
   describe("#create", () => {
-    const zoomUserId = "123";
     beforeEach(() => {
-      jest.spyOn(ZoomService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
       jest.spyOn(AuthService, "setPermissions").mockResolvedValue(undefined);
     });
     it("should call DoctorRepository.create with the right params", async () => {
       const spy = jest.spyOn(DoctorRepository, "create").mockResolvedValue({} as Doctor);
       const doctorAttrs = getDoctorAttrs();
       await DoctorService.create(doctorAttrs);
-      expect(spy).toBeCalledWith({ ...doctorAttrs, zoomUserId });
-    });
-
-    it("should call TeleConsultService.createUser", async () => {
-      const spy = jest.spyOn(ZoomService, "createUser").mockResolvedValue({ id: zoomUserId } as ZoomUser);
-      const doctorAttrs = getDoctorAttrs();
-      await DoctorService.create(doctorAttrs);
-      expect(spy).toBeCalledWith(doctorAttrs.email, doctorAttrs.firstName, doctorAttrs.lastName);
+      expect(spy).toBeCalledWith({ ...doctorAttrs });
     });
   });
 
