@@ -27,12 +27,6 @@ variable "db_user" {}
 
 variable "docker_image_tag" {}
 
-variable "zoom_api_key" {}
-
-variable "zoom_api_secret" {}
-
-variable "zoom_base_url" {}
-
 variable "twilio_verify_service_sid" {}
 
 variable "twilio_account_sid" {}
