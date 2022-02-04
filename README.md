@@ -1,6 +1,5 @@
-# qdoc
+# telemed-backend
 
-[![Staging CI](https://github.com/qdoctech/qdoc/actions/workflows/staging-ci.yml/badge.svg?branch=main)](https://github.com/qdoctech/qdoc/actions/workflows/staging-ci.yml)
 
 ## Requirements
 - node v15.12.0
